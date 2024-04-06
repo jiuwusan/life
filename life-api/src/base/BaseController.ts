@@ -1,21 +1,21 @@
-import type { ResponseResult } from '../types';
+import type { ResponseResult } from '../types'
 
 export default class BaseController {
-    constructor() { }
+  constructor() {}
 
-    sendResult(data: any): ResponseResult {
-        return {
-            code: 200,
-            msg: '成功',
-            data
-        }
+  sendResult(data: any): ResponseResult {
+    return {
+      code: 200,
+      msg: '成功',
+      data
     }
+  }
 
-    sendError(code: number, msg: string): ResponseResult {
-        return {
-            code,
-            msg,
-            data: null
-        }
+  sendError(code: number, msg: string): ResponseResult {
+    return {
+      code,
+      msg,
+      data: null
     }
+  }
 }

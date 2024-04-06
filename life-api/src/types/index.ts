@@ -1,5 +1,5 @@
 export type ResponseResult = {
-    code: number
-    msg: string
-    data: any
+  code: number
+  msg: string
+  data: Record<string, any> | null
 }
