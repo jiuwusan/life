@@ -10,7 +10,7 @@ export class Lottery {
 
   // 下注时间
   @Column({ name: 'bet_time', type: 'datetime' })
-  betTime: string;
+  betTime: Date;
 
   //下注号码
   @Column({ name: 'bet_ball', type: 'text' })
@@ -18,7 +18,7 @@ export class Lottery {
 
   // 开奖时间
   @Column({ name: 'win_time', type: 'datetime', nullable: true })
-  winTime: string;
+  winTime: Date;
 
   //开奖号码
   @Column({ name: 'win_ball', type: 'text', nullable: true })

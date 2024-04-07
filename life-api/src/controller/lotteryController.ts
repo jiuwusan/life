@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { LotteryService } from '@/service';
 import { BaseController } from '@/base';
 import { type ResponseResult } from '@/types';
@@ -10,7 +10,8 @@ export default class LotteryController extends BaseController {
   }
 
   @Get('/lottery/bet')
-  lotteryBet(): ResponseResult {
-    return this.sendResult(this.lotteryService.create(5));
+  lotteryBet(@Query('uid') uid: string, @Query('count') count = 5, @Query('type') type = '1'): ResponseResult {
+    const result = this.lotteryService.create(type, uid, count);
+    return this.sendResult(result);
   }
 }
