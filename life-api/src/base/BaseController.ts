@@ -1,4 +1,4 @@
-import type { ResponseResult } from '../types'
+import type { ResponseResult } from '../types';
 
 export default class BaseController {
   constructor() {}
@@ -8,7 +8,7 @@ export default class BaseController {
       code: 200,
       msg: '成功',
       data
-    }
+    };
   }
 
   sendError(code: number, msg: string): ResponseResult {
@@ -16,6 +16,6 @@ export default class BaseController {
       code,
       msg,
       data: null
-    }
+    };
   }
 }

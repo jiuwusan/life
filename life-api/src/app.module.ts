@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { Module } from '@nestjs/common';
+import { LotteryController } from '@/controller';
+import { LotteryService } from '@/service';
+import mysql from '@/module/mysql';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [mysql],
+  controllers: [LotteryController],
+  providers: [LotteryService]
 })
 export class AppModule {}

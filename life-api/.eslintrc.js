@@ -36,7 +36,7 @@ module.exports = {
         // 行尾序列
         endOfLine: 'auto',
         // 末尾使用 分号
-        semi: false
+        semi: true
       }
     ]
   }
