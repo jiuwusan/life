@@ -11,12 +11,12 @@ export default class LotteryService {
     private lotteryRepository: Repository<Lottery>
   ) {}
 
-  async create(type: string, uid: string, count: number) {
+  async bet(type: string, uid: string, count: number) {
     const betBall = createLottery(count);
     const lottery = new Lottery();
     lottery.uid = uid;
     lottery.type = type;
-    lottery.betBall = JSON.stringify(betBall);
+    lottery.betBall = betBall;
     lottery.betTime = new Date();
     // lottery = {
     //   uid,
@@ -37,5 +37,14 @@ export default class LotteryService {
    */
   verify(lotteryNumbers: Array<string>, multiUserNumbers: Array<Array<string>>) {
     return batchCheckLottery(lotteryNumbers, multiUserNumbers);
+  }
+
+  /**
+   * 查询列表
+   *
+   * @returns
+   */
+  querylist() {
+    return this.lotteryRepository.find();
   }
 }
