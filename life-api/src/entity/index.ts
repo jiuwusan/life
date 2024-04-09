@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Repository } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Entity()
@@ -26,8 +26,6 @@ export class Lottery {
   winBall: Array<string>;
 }
 
-export type LotteryRepository = Repository<Lottery>;
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -40,7 +38,5 @@ export class User {
   @Column()
   password: string;
 }
-
-export type UserRepository = Repository<User>;
 
 export const EntityFeature = TypeOrmModule.forFeature([Lottery, User]);

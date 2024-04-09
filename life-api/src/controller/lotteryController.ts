@@ -5,13 +5,7 @@ import { LotteryService } from '@/service';
 export default class LotteryController {
   constructor(private readonly lotteryService: LotteryService) {}
 
-  // @Post('/lottery/bet')
-  // async bet(@Body() { type = '1', uid, count = 5 }) {
-  //   const result = await this.lotteryService.bet(type, uid, count);
-  //   return result;
-  // }
-
-  @Get('bet')
+  @Post('bet')
   async bet(@Body() { type = '1', uid, count = 5 }) {
     const result = await this.lotteryService.bet(type, uid, count);
     return result;

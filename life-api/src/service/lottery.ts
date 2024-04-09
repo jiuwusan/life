@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
+import { API } from '@/external';
 
 @Injectable()
 export default class LotteryService {
@@ -46,5 +47,20 @@ export default class LotteryService {
    */
   querylist() {
     return this.lotteryRepository.find();
+  }
+
+  /**
+   * 查询列表
+   *
+   * @returns
+   */
+  history() {
+    return API.queryLotteryHistory({
+      gameNo: 85,
+      provinceId: 0,
+      isVerify: 1,
+      pageNo: 1,
+      pageSize: 100
+    });
   }
 }
