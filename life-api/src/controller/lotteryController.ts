@@ -7,11 +7,11 @@ export default class LotteryController {
 
   @Post('bet')
   async bet(@Body() { type = '1', uid, count = 5 }) {
-    const result = await this.lotteryService.bet(type, uid, count);
+    const result = await this.lotteryService.bet(type, count, uid);
     return result;
   }
 
-  @Get('list')
+  @Get('query/list')
   async querylist() {
     const result = await this.lotteryService.querylist();
     return result;
@@ -19,6 +19,6 @@ export default class LotteryController {
 
   @Get('query/history')
   async history() {
-    return await this.lotteryService.queryHistory();
+    return await this.lotteryService.queryWinHistory();
   }
 }

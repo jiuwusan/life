@@ -4,7 +4,8 @@ type Prize = { grade: number; gradeCn?: string; amount: number };
  * 获取等级
  */
 export const getPrize = (frontHits: number, backHits: number) => {
-  const prizes: Prize[][] = [[]];
+  const nullPrize = { grade: 99, amount: 0 };
+  const prizes: Prize[][] = Array.from({ length: 6 }, () => Array(3).fill(nullPrize));
   prizes[5][2] = { grade: 1, amount: 1000 };
   prizes[5][1] = { grade: 2, amount: 3000 };
   prizes[5][0] = { grade: 3, amount: 3000 };
@@ -12,9 +13,13 @@ export const getPrize = (frontHits: number, backHits: number) => {
   prizes[4][1] = { grade: 5, amount: 3000 };
   prizes[3][2] = { grade: 6, amount: 3000 };
   prizes[4][0] = { grade: 7, amount: 3000 };
-  prizes[2][2] = prizes[3][1] = prizes[1][3] = { grade: 8, amount: 15 };
-  prizes[0][2] = prizes[1][2] = prizes[2][1] = { grade: 9, amount: 5 };
-  return prizes[frontHits][backHits] || { grade: 99, amount: 0 };
+  prizes[2][2] = { grade: 8, amount: 15 };
+  prizes[3][1] = prizes[2][2];
+  // prizes[1][3] = prizes[2][2];
+  prizes[0][2] = { grade: 9, amount: 5 };
+  prizes[1][2] = prizes[0][2];
+  prizes[2][1] = prizes[0][2];
+  return prizes[frontHits][backHits] || nullPrize;
 };
 
 /**
@@ -26,9 +31,11 @@ export const getPrize = (frontHits: number, backHits: number) => {
 export const checkLottery = (lotteryNumbers: Array<string>, userNumbers: Array<string>) => {
   if (!lotteryNumbers || !userNumbers) {
     return {
-      prize: getPrize(0, 0),
+      grade: 99,
+      amount: 0,
       frontHits: '无',
-      backHits: '无'
+      backHits: '无',
+      gradeCn: '未中奖'
     };
   }
   const frontNumbers = lotteryNumbers.slice(0, 5);
@@ -57,15 +64,15 @@ export const checkLottery = (lotteryNumbers: Array<string>, userNumbers: Array<s
   const winHits = [].concat(frontHits).concat(['+']).concat(backHits);
   const prize = getPrize(frontHits.length, backHits.length);
   const numMaps = '零一二三四五六七八九'.split('');
-  let prizeCn = '未中奖';
-  prize.grade < 99 && (prizeCn = `${numMaps[prize.grade]}等奖`);
+  let gradeCn = '未中奖';
+  prize.grade < 99 && (gradeCn = `${numMaps[prize.grade]}等奖`);
 
   return {
-    prizeCn,
-    prize: prize,
-    frontHits: frontHits.join(' ') || '无',
-    backHits: backHits.join(' ') || '无',
-    winHits: winHits.join(' ')
+    ...prize,
+    gradeCn,
+    front: frontHits.join(' ') || '无',
+    back: backHits.join(' ') || '无',
+    win: winHits.join(' ')
   };
 };
 
@@ -126,11 +133,18 @@ const getRandomNumbers = (bets, count) => {
  * @param multiUserNumbers
  * @returns
  */
-export const batchCheckLottery = (lotteryNumbers: Array<string>, multiUserNumbers: Array<Array<string>>) => {
+export const batchCheckLottery = (
+  lotteryNumbers: Array<string>,
+  multiUserNumbers: Array<Array<string>>,
+  onlyWin?: boolean
+) => {
   const result = [];
   multiUserNumbers.forEach(userNumbers => {
     const currentResult = checkLottery(lotteryNumbers, userNumbers);
-    result.push(currentResult);
+    if (!onlyWin) {
+      return result.push(currentResult);
+    }
+    currentResult.grade < 99 && result.push(currentResult);
   });
   return result;
 };
