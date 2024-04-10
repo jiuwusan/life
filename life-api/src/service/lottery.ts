@@ -54,13 +54,17 @@ export default class LotteryService {
    *
    * @returns
    */
-  history() {
-    return API.queryLotteryHistory({
+  async queryHistory() {
+    const apiResult = await API.queryLotteryHistory({
       gameNo: 85,
       provinceId: 0,
       isVerify: 1,
       pageNo: 1,
       pageSize: 100
     });
+    if (apiResult?.errorCode !== '0') {
+      return [];
+    }
+    return apiResult.value?.list || [];
   }
 }

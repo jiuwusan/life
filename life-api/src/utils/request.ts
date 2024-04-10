@@ -1,4 +1,3 @@
-import fetch, { type RequestInfo, type RequestInit } from 'node-fetch';
 import { appendQueryParams } from '@/utils/util';
 
 interface RequestOptions extends RequestInit {

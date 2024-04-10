@@ -17,9 +17,8 @@ export default class LotteryController {
     return result;
   }
 
-  @Get('query/:uid')
-  async queryById() {
-    const result = await this.lotteryService.querylist();
-    return result;
+  @Get('query/history')
+  async history() {
+    return await this.lotteryService.queryHistory();
   }
 }
