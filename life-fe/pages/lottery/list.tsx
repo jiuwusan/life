@@ -1,11 +1,7 @@
-import { FunctionComponent } from "react"
+import { RoutePage } from '@/components';
 
-type Props = {
+type Props = {};
 
-}
-
-export default function FPage(props:Props) {
-    return (<div>
-        列表
-    </div>)
+export default function Page(props: Props) {
+  return <RoutePage image>列表</RoutePage>;
 }

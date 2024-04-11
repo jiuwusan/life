@@ -7,7 +7,7 @@ export class Lottery {
   @PrimaryGeneratedColumn('uuid')
   uid: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', nullable: true })
   userId: string;
 
   @Column()

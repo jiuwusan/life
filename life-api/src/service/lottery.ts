@@ -45,7 +45,7 @@ export default class LotteryService {
     const winHistory = await this.queryWinHistory();
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
-      if (lottery.winTime) {
+      if (!!lottery.winTime) {
         break;
       }
       const winLottery = this.findWinLottery(winHistory, lottery.betTime);
@@ -67,7 +67,11 @@ export default class LotteryService {
    * @returns
    */
   async querylist() {
-    const list = await this.lotteryRepository.find();
+    const list = await this.lotteryRepository.find({
+      order: {
+        betTime: 'DESC'
+      }
+    });
     return this.batchVerify(list);
   }
 
@@ -77,6 +81,7 @@ export default class LotteryService {
    * @returns
    */
   async queryWinHistory(): Promise<Array<WinLottery>> {
+    // 查询历史
     const apiResult = await API.queryLotteryHistory({
       gameNo: 85,
       provinceId: 0,
@@ -91,8 +96,7 @@ export default class LotteryService {
   }
 
   /**
-   * 查询
-   *
+   * 寻找对应开奖期
    * @param list
    * @param betTime
    * @returns
@@ -104,10 +108,8 @@ export default class LotteryService {
       if (index + 1 === list.length) {
         return betTime < saleEndTime;
       }
-      console.log('saleEndTime---->', { saleEndTime });
       return betTime < saleEndTime && betTime > new Date(list[index + 1].lotterySaleEndtime);
     });
-    console.log('findWinLottery---->', { betTime });
     return result;
   }
 }
