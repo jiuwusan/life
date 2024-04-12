@@ -1,6 +1,7 @@
 .routePageWrap {
   width: 100%;
-  .routePageImageBg {
+  &::after {
+    display: var(--page-bg-display, block);
     content: '';
     position: fixed;
     width: 100%;
@@ -8,6 +9,9 @@
     left: 0;
     top: 0;
     z-index: -1;
-    object-fit: cover;
+    background-image: var(--page-bg-image, none);
+    background-color: var(--page-bg-color, none);
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 }

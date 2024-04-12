@@ -7,7 +7,7 @@ interface RequestOptions extends RequestInit {
 
 const request = (url: RequestInfo, options?: string | RequestOptions) => {
   let ACIDCount = 0;
-  const ACIDREQ = async (url: RequestInfo, options?: string | RequestOptions) => {
+  const ACIDREQ = async (url: RequestInfo, options?: string | RequestOptions): Promise<Response> => {
     ACIDCount++;
     try {
       if (typeof options === 'string') {
@@ -31,7 +31,7 @@ const request = (url: RequestInfo, options?: string | RequestOptions) => {
     } catch (error) {
       console.error('Failed to fetch data:', error);
       if (ACIDCount < 3) {
-        console.error(`第一次 ${ACIDCount} 尝试重连 --> ${url}`);
+        console.error(`第 ${ACIDCount} 次尝试重连 --> ${url}`);
         return ACIDREQ(url, options);
       }
       throw error;

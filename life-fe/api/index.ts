@@ -1,0 +1,24 @@
+import { ApiGenerator } from '@/utils/fetch';
+
+export type ResponseResult = {
+  code: number;
+  msg: string;
+  data: Record<string, any> | null;
+};
+
+const APIV1 = new ApiGenerator({
+  baseUrl: 'http://localhost:9000',
+  formatResponse: res => {
+    if ([200].includes(res.code)) {
+      return res.data;
+    }
+    return void 0;
+  }
+});
+
+export const lotteryApi = {
+  // 查询列表
+  querylist: (query?: { pageNo?: number; pageSize?: number }) => APIV1.fetch('lottery/query/list', { query }),
+  // 投注
+  bet: (data: { uid: string; type: string }) => APIV1.fetch('lottery/bet', { data })
+};
