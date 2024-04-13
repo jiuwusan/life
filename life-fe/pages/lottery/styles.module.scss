@@ -6,40 +6,59 @@
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
   padding: 8px;
+  margin-top: 12px;
+
+  &:nth-child(1) {
+    margin-top: 0px;
+  }
+
   .itemRow {
     font-weight: 400;
-    font-size: 14px;
+    font-size: 18px;
     color: #333333;
     line-height: 22px;
+    margin-top: 8px;
+
+    &:nth-child(1) {
+      margin-top: 0px;
+    }
+
     .title {
       color: rgba(153, 153, 153, 1);
     }
+
     &.row {
       display: flex;
     }
 
     .ball {
-      font-size: 18px;
+      font-size: 28px;
       width: 1em;
       height: 1em;
       display: inline-block;
       position: relative;
+      margin: 0 0 4px 8px;
+      border: 1px solid #0f85f8;
+      border-radius: 50%;
+      color: #0f85f8;
+
+      &:nth-child(1) {
+        margin: 0 0 4px 0;
+      }
+
       &::after {
+        font-size: 0.6em;
         display: inline-block;
         position: absolute;
-        left: 0;
-        top: 0;
-        border: 1px solid #0f85f8;
-        border-radius: 50%;
-        color: #0f85f8;
+        left: 50%;
+        top: 50%;
         font-weight: 500;
-        display: inline-block;
-        font-size: calc(1em * 0.66);
-        width: 2em;
-        height: 2em;
-        line-height: 2em;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        transform-origin: center;
         content: var(--ball-text, '');
       }
+
       &.red {
         color: #fb3d30;
         border: 1px solid #fb3d30;

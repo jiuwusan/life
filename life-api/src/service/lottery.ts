@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
-import { API } from '@/external';
+import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 
 @Injectable()
@@ -82,17 +82,14 @@ export default class LotteryService {
    */
   async queryWinHistory(): Promise<Array<WinLottery>> {
     // 查询历史
-    const apiResult = await API.queryLotteryHistory({
+    const result = await lotteryApi.queryLotteryHistory({
       gameNo: 85,
       provinceId: 0,
       isVerify: 1,
       pageNo: 1,
       pageSize: 100
     });
-    if (apiResult?.errorCode !== '0') {
-      return [];
-    }
-    return apiResult.value?.list || [];
+    return result?.list || [];
   }
 
   /**

@@ -1,4 +1,5 @@
 import { ApiGenerator } from '@/utils/fetch';
+import { isServer } from '@/utils/util';
 
 export type ResponseResult = {
   code: number;
@@ -7,7 +8,7 @@ export type ResponseResult = {
 };
 
 const APIV1 = new ApiGenerator({
-  baseUrl: 'http://localhost:9000',
+  baseUrl: isServer() ? 'http://localhost:9000' : '/life-api',
   formatResponse: res => {
     if ([200].includes(res.code)) {
       return res.data;

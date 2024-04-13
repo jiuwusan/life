@@ -1,6 +1,14 @@
 const path = require('path');
 
 module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/life-api/:path*',
+        destination: 'http://localhost:9000/:path*' // 这里替换为您要代理的目标地址
+      }
+    ];
+  },
   webpack: config => {
     config.resolve.alias['@/components'] = path.join(__dirname, 'components');
     config.resolve.alias['@/hooks'] = path.join(__dirname, 'hooks');
