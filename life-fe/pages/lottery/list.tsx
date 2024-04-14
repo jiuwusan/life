@@ -1,19 +1,10 @@
 import classNames from 'classnames';
 import { RoutePage, Button } from '@/components';
-import { getBackgroundImage, formatDateToStr } from '@/utils/util';
-import { lotteryApi } from '@/api';
-import styles from './styles.module.scss';
+import { getBackgroundImage } from '@/utils/util';
 import { CSSProperties, useMemo } from 'react';
 import { useFetchState } from '@/hooks/extend';
-
-const queryLotteryList = async (query?: { pageNo: number }) => {
-  const list = (await lotteryApi.querylist(query)) || [];
-  return list.map((item: any) => ({
-    ...item,
-    betTime: formatDateToStr(item.betTime),
-    winTime: item.winTime && formatDateToStr(item.winTime)
-  }));
-};
+import { queryLotteryList } from './hooks';
+import styles from './styles.module.scss';
 
 // 在服务端获取数据
 export async function getServerSideProps() {

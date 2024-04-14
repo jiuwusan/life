@@ -1,6 +1,8 @@
 const path = require('path');
 
 module.exports = {
+  // 仅 tsx 文件作为页面
+  pageExtensions: ['tsx','jsx'],
   async rewrites() {
     return [
       {
