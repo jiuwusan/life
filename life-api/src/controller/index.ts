@@ -1,1 +1,1 @@
-export { default as LotteryController } from './LotteryController';
+export * from './LotteryController';

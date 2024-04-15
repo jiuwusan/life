@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { LotteryService } from '@/service';
 
 @Controller('lottery')
-export default class LotteryController {
+export class LotteryController {
   constructor(private readonly lotteryService: LotteryService) {}
 
   @Post('bet')
