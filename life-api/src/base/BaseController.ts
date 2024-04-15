@@ -1,6 +1,6 @@
 import type { ResponseResult } from '../types';
 
-export default class BaseController {
+export class BaseController {
   constructor() {}
 
   sendResult(data: any): ResponseResult {

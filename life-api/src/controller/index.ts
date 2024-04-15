@@ -1,1 +1,1 @@
-export * from './LotteryController';
+export * from './lottery';
