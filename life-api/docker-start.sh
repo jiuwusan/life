@@ -20,7 +20,6 @@ for ((idx = 0; idx < $slbCount; idx++)); do
     docker remove $webServer
     # 这里需要 注入 api url host，同时暴露 3000 端口
     docker run -itd \
-        #--network network-xs \
         --add-host=$apiHost \
         --name=$webServer \
         --restart=always $dockerImage
