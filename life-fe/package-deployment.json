@@ -1,0 +1,11 @@
+{
+    "name": "file-fe",
+    "dependencies": {
+      "next": "14.1.2"
+    },
+    "scripts": {
+      "dev": "next",
+      "build": "next build",
+      "start": "next start"
+    }
+  }

@@ -11,6 +11,7 @@ module.exports = {
       }
     ];
   },
+  basePath: '/life',
   webpack: config => {
     config.resolve.alias['@/components'] = path.join(__dirname, 'components');
     config.resolve.alias['@/hooks'] = path.join(__dirname, 'hooks');

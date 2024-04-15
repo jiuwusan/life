@@ -21,7 +21,7 @@ const getPageStyle = (bg?: string, padding?: string | number) => {
     if (isColor(bg)) {
       pageStyle['--page-bg-color'] = bg;
     } else {
-      pageStyle['--page-bg-image'] = `url(${bg})`;
+      pageStyle['--page-bg-image'] = `url(/life${bg})`;
     }
   }
   // 边距
