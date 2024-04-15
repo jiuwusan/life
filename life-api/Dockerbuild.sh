@@ -34,8 +34,8 @@ docker build -t $webAppName:$version .
 
 # 添加 tag
 # docker tag $webAppName:$version docker.xinshucredit.com/riskalter/$webAppName:$version
-docker tag $webAppName:$version localhost/jiuwusan-life/$webAppName:$version
+# docker tag $webAppName:$version localhost/jiuwusan-life/$webAppName:$version
 
 # 将镜像推送到 私有仓库
 # docker push docker.xinshucredit.com/$webAppName/riskalter:$version
-docker push localhost/jiuwusan-life/$webAppName:$version
+# docker push localhost/jiuwusan-life/$webAppName:$version

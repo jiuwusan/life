@@ -7,7 +7,8 @@ appName=$2
 # 
 slbCount=${3:-1}
 # 镜像
-dockerImage=localhost/jiuwusan-life/$appVersion
+# dockerImage=localhost/jiuwusan-life/$appVersion
+dockerImage=$appVersion
 # 映射本机地址
 apiHost=jiuwusan.cn:172.17.0.1
 # 拉取
