@@ -12,8 +12,8 @@ dockerImage=$appVersion
 # 映射本机地址
 apiHost=jiuwusan.cn:172.17.0.1
 # 拉取
-docker pull $dockerImage
-# 启用 5台 做负载均衡
+# docker pull $dockerImage
+# 负载均衡
 for ((idx = 0; idx < !slbCount; idx++)); do
     webServer=$appName-$idx
     docker stop $webServer
