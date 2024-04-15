@@ -22,10 +22,10 @@ git checkout $remoteBranch
 git pull
 
 # 安装依赖包
-yarn install
+# yarn install
 
 # 构建
-yarn build
+# yarn build
 # yarn build，并且将占用内存设置为 4GB
 # NODE_OPTIONS="--max-old-space-size=4096" yarn build
 
