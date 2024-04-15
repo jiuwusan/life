@@ -28,7 +28,7 @@ RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 # 复制打包好的内容到容器内目录
-COPY --from=builder /app/ ./
+COPY --from=builder /app/dist/ ./
 # 容器对外暴露的端口号
 EXPOSE 9000
 # 容器启动时执行的命令，类似npm run start
