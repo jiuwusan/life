@@ -31,7 +31,7 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package-deployment.json ./package.json
 # 生产环境安装依赖
-RUN npm install --production
+RUN yarn install --production
 # 容器对外暴露的端口号
 EXPOSE 3000
 # 容器启动时执行的命令，类似npm run start
