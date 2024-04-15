@@ -14,7 +14,7 @@ apiHost=jiuwusan.cn:172.17.0.1
 # 拉取
 # docker pull $dockerImage
 # 负载均衡
-for ((idx = 0; idx < !slbCount; idx++)); do
+for ((idx = 0; idx < $slbCount; idx++)); do
     webServer=$appName-$idx
     docker stop $webServer
     docker remove $webServer
