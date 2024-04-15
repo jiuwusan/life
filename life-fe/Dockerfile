@@ -8,7 +8,7 @@ WORKDIR /app
 # 文件拷贝
 COPY . .
 # 安装 Yarn
-RUN npm install -g yarn
+# RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn install
 # 构建
