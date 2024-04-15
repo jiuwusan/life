@@ -1,1 +1,1 @@
-export { default as LotteryService } from './lottery';
+export * from './lottery';

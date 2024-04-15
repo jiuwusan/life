@@ -7,7 +7,7 @@ import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 
 @Injectable()
-export default class LotteryService {
+export class LotteryService {
   constructor(
     @InjectRepository(Lottery)
     private lotteryRepository: Repository<Lottery>

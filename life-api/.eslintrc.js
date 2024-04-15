@@ -22,7 +22,7 @@ module.exports = {
     'prettier/prettier': [
       'error',
       {
-        parser: 'flow',
+        // parser: 'flow',
         // 单引号
         singleQuote: true,
         // 单行长度
