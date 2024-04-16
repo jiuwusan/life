@@ -29,7 +29,7 @@ RUN mkdir -p /app
 WORKDIR /app
 # 复制打包好的内容到容器内目录
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package-deployment.json ./package.json
+COPY --from=builder /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn install --production
 # 容器对外暴露的端口号
