@@ -29,6 +29,9 @@ RUN mkdir -p /app
 WORKDIR /app
 # 复制打包好的内容到容器内目录
 COPY --from=builder /app/dist/ ./
+COPY --from=builder /app/package.json ./package.json
+# 安装依赖
+RUN yarn install --production
 # 容器对外暴露的端口号
 EXPOSE 9000
 # 容器启动时执行的命令，类似npm run start
