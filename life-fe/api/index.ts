@@ -21,5 +21,5 @@ export const lotteryApi = {
   // 查询列表
   querylist: (query?: { pageNo?: number; pageSize?: number }) => APIV1.fetch('lottery/query/list', { query }),
   // 投注
-  bet: (data: { uid: string; type: string }) => APIV1.fetch('lottery/bet', { data })
+  bet: (data: { uid?: string; type?: string }) => APIV1.fetch('lottery/bet', { method: 'POST', data })
 };

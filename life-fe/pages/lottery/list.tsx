@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { RoutePage, Button } from '@/components';
 import { getBackgroundImage } from '@/utils/util';
-import { CSSProperties, useMemo } from 'react';
-import { useFetchState } from '@/hooks/extend';
-import { queryLotteryList } from './hooks';
+import { useMemo } from 'react';
+import { useFetchState, useFetchClient } from '@/hooks/extend';
+import { queryLotteryList, betLottery, matchLottery } from './hooks';
 import styles from './styles.module.scss';
 
 // 在服务端获取数据
@@ -18,17 +18,19 @@ export async function getServerSideProps() {
 }
 
 // 每一项
-export function BallsRow(props: { data: Array<string> }) {
-  const { data } = props;
+export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
+  const { data, win } = props;
 
   const formatData = useMemo(() => {
-    return data.map(item => ({ '--ball-text': `'${item}'` }));
-  }, [data]);
+    return matchLottery(data, win);
+  }, [data, win]);
 
   return (
     <div>
       {formatData.map((ball, idx) => (
-        <span key={idx} className={classNames([styles.ball, idx > 4 && styles.red])} style={ball as CSSProperties} />
+        <span key={idx} className={classNames([styles.ball, idx > 4 && styles.red, ball.isMatch && styles.active])}>
+          {ball.value}
+        </span>
       ))}
     </div>
   );
@@ -51,7 +53,7 @@ export function LotteryItem(props: ItemProps) {
         <div className={styles.title}>投注号码：</div>
         <div>
           {data.betBall.map((item: Array<string>, idx: number) => (
-            <BallsRow key={idx} data={item} />
+            <BallsRow key={idx} data={item} win={data.winBall} />
           ))}
         </div>
       </div>
@@ -69,18 +71,19 @@ export function LotteryItem(props: ItemProps) {
           </div>
         </div>
       )}
-      <div className={classNames([styles.itemRow, styles.row])}>
-        <div className={styles.title}>开奖结果：</div>
-        {!data.winTime && <div>待开奖</div>}
-        {data.winTime && !data.winResults && <div>未中奖</div>}
+      <div className={classNames([styles.itemRow])}>
+        <span className={styles.title}>开奖结果：</span>
+        {!data.winTime && <span className={styles.notDrawn}>待开奖</span>}
+        {data.winTime && !data.winResults && <span className={styles.notWin}>未中奖</span>}
         {data.winResults && (
-          <div>
+          <span className={styles.win}>
             {data.winResults.map((item: any, idx: number) => (
-              <div key={idx}>
-                {item.win}，{item.gradeCn}，¥{item.amount}
-              </div>
+              <span key={idx}>
+                {idx !== 0 ? ' | ' : ''}
+                {item.gradeCn}，¥{item.amount}
+              </span>
             ))}
-          </div>
+          </span>
         )}
       </div>
     </div>
@@ -95,10 +98,15 @@ type PageProps = {
 export default function Page(props: PageProps) {
   const { bgImage, list = [] } = props;
   const [historyList, { fetchData }] = useFetchState(list, queryLotteryList);
+  const [pending, createBet] = useFetchClient(async () => {
+    await betLottery();
+    fetchData();
+  });
+
   return (
     <RoutePage bg={bgImage} padding="8px">
-      <div>
-        <Button block onClick={() => fetchData(1)}>
+      <div className={styles.toolWrap}>
+        <Button block onClick={() => createBet('1')}>
           投注
         </Button>
       </div>

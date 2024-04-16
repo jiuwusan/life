@@ -9,3 +9,23 @@ export const queryLotteryList = async (query?: { pageNo: number }) => {
     winTime: item.winTime && formatDateToStr(item.winTime)
   }));
 };
+
+export const betLottery = async (type?: string, uid?: string) => {
+  const result = await lotteryApi.bet({ uid, type });
+  return result;
+};
+
+export const matchLottery = (userBalls: Array<string>, winBalls?: Array<string>) => {
+  if (!winBalls) {
+    return userBalls.map(item => ({ value: item, isMatch: false }));
+  }
+  const frontNumbers = winBalls.slice(0, 5);
+  const backNumbers = winBalls.slice(-2);
+
+  return userBalls.map((item, index) => {
+    return {
+      value: item,
+      isMatch: index < 5 ? frontNumbers.includes(item) : backNumbers.includes(item)
+    };
+  });
+};

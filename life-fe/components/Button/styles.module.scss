@@ -6,7 +6,7 @@
     display: block;
   }
 
-  .primary {
+  &.primary {
     height: 44px;
     background-color: var(--primary-color);
     color: var(--white-color);
