@@ -1,8 +1,14 @@
 .button {
-    border: none;
+  border: none;
 
-    &.block {
-        width: 100%;
-        display: block;
-    }
+  &.block {
+    width: 100%;
+    display: block;
+  }
+
+  .primary {
+    height: 44px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+  }
 }

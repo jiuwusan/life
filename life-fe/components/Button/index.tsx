@@ -10,5 +10,7 @@ type ButtonProps = {
 
 export function Button(props: ButtonProps) {
   const { type = 'button', block, ...rest } = props;
-  return <button type={type} className={classNames([styles.button, block && styles.block])} {...rest} />;
+  return (
+    <button type={type} className={classNames([styles.button, styles.primary, block && styles.block])} {...rest} />
+  );
 }
