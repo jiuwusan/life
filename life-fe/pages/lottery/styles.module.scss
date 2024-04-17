@@ -11,16 +11,16 @@
   border-radius: 4px;
   padding: 8px;
   margin-top: 12px;
+  font-size: 16px;
+  color: var(--desc-color);
+  line-height: 22px;
+  font-weight: 400;
 
   &:nth-child(1) {
     margin-top: 0px;
   }
 
   .itemRow {
-    font-weight: 400;
-    font-size: 18px;
-    color: var(--desc-color);
-    line-height: 22px;
     margin-top: 8px;
 
     &:nth-child(1) {
@@ -29,6 +29,7 @@
  
     .title {
       color: var(--title-color);
+      white-space: nowrap;
     }
 
     &.row {
@@ -40,11 +41,11 @@
     }
 
     .ball {
-      font-size: 16px;
-      line-height: 26px;
+      font-size: 14px;
+      line-height: 24px;
       text-align: center;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       display: inline-block;
       position: relative;
       margin: 4px 0 4px 8px;
@@ -65,7 +66,7 @@
         font-weight: 700;
         border: 2px solid var(--success-color);
         color: var(--success-color);
-        line-height: 24px;
+        line-height: 22px;
       }
     }
 

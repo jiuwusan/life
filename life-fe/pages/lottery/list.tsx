@@ -26,7 +26,7 @@ export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
   }, [data, win]);
 
   return (
-    <div>
+    <div style={{ whiteSpace: 'nowrap' }}>
       {formatData.map((ball, idx) => (
         <span key={idx} className={classNames([styles.ball, idx > 4 && styles.red, ball.isMatch && styles.active])}>
           {ball.value}
