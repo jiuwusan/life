@@ -1,12 +1,22 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --pageground-rgb: 245, 247, 253;
-  --info-color: #909399;
-  --warning-color: #e6a23c;
-  --danger-color: #f56c6c;
-  --primary-color: #409eff;
-  --white-color: #ffffff;
-  --success-color: #67c23a;
+  --white-rgb: 255, 255, 255;
+  --info-rgb: 144, 147, 153;
+  --warning-rgb: 230, 162, 60;
+  --danger-rgb: 245, 108, 108;
+  --primary-rgb: 64, 158, 255;
+  --success-rgb: 103, 194, 58;
+  --title-rgb: 153, 153, 153;
+  --desc-rgb: 102, 102, 102;
+  --info-color: rgba(var(--info-rgb), 1);
+  --warning-color: rgba(var(--warning-rgb), 1);
+  --danger-color: rgba(var(--danger-rgb), 1);
+  --primary-color: rgba(var(--primary-rgb), 1);
+  --white-color: rgba(var(--white-rgb), 1);
+  --success-color: rgba(var(--success-rgb), 1);
+  --title-color: rgba(var(--title-rgb), 1);
+  --desc-color: rgba(var(--desc-rgb), 1);
 }
 
 * {

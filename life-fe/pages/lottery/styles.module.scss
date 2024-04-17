@@ -7,7 +7,7 @@
 }
 
 .itemWrap {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(var(--white-rgb), 0.8);
   border-radius: 4px;
   padding: 8px;
   margin-top: 12px;
@@ -19,16 +19,16 @@
   .itemRow {
     font-weight: 400;
     font-size: 18px;
-    color: #333333;
+    color: var(--desc-color);
     line-height: 22px;
     margin-top: 8px;
 
     &:nth-child(1) {
       margin-top: 0px;
     }
-
+ 
     .title {
-      color: rgba(153, 153, 153, 1);
+      color: var(--title-color);
     }
 
     &.row {
@@ -41,30 +41,31 @@
 
     .ball {
       font-size: 16px;
-      line-height: 28px;
+      line-height: 26px;
       text-align: center;
       width: 28px;
       height: 28px;
       display: inline-block;
       position: relative;
       margin: 4px 0 4px 8px;
-      border: 1px solid #0f85f8;
+      border: 1px solid var(--primary-color);
       border-radius: 50%;
-      color: #0f85f8;
+      color: var(--primary-color);
 
       &:nth-child(1) {
         margin: 4px 0 4px 0;
       }
 
       &.red {
-        color: #fb3d30;
-        border: 1px solid #fb3d30;
+        color: var(--danger-color);
+        border: 1px solid var(--danger-color);
       }
 
       &.active {
-        font-weight: 700px;
-        border: 1px solid var(--success-color);
+        font-weight: 700;
+        border: 2px solid var(--success-color);
         color: var(--success-color);
+        line-height: 24px;
       }
     }
 
