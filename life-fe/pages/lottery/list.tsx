@@ -80,7 +80,7 @@ export function LotteryItem(props: ItemProps) {
             {data.winResults.map((item: any, idx: number) => (
               <span key={idx}>
                 {idx !== 0 ? ' | ' : ''}
-                {item.gradeCn}，¥{item.amount}
+                {item.gradeCn}，¥ {item.amount.toFixed(2)}
               </span>
             ))}
           </span>
