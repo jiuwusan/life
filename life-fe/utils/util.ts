@@ -14,7 +14,7 @@ export const isColor = (colorStr: string) => {
  * 获取背景图片
  * @returns
  */
-export const getBackgroundImage = () => `/ui/bg/${Math.floor(Math.random() * 4)}.jpg`;
+export const getBackgroundImage = () => `/bg/${Math.floor(Math.random() * 4)}.jpg`;
 
 /**
  * 拼接url参数
