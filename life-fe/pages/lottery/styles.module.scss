@@ -52,7 +52,8 @@
       border: 2px solid var(--primary-color);
       border-radius: 50%;
       color: var(--primary-color);
-
+      font-weight: 700;
+      
       &:nth-child(1) {
         margin: 4px 0 4px 0;
       }
@@ -63,7 +64,6 @@
       }
 
       &.active {
-        font-weight: 700;
         border-color: var(--success-color);
         color: var(--success-color);
         line-height: 22px;
