@@ -27,4 +27,9 @@ export class LotteryController {
   async history() {
     return await this.lotteryService.queryWinHistory();
   }
+
+  @Get('statistics')
+  async statistics() {
+    return await this.lotteryService.statistics();
+  }
 }

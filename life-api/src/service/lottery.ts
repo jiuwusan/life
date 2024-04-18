@@ -88,14 +88,14 @@ export class LotteryService {
    *
    * @returns
    */
-  async queryWinHistory(): Promise<Array<WinLottery>> {
+  async queryWinHistory(pageNo = 1, pageSize = 100): Promise<Array<WinLottery>> {
     // 查询历史
     const result = await lotteryApi.queryLotteryHistory({
       gameNo: 85,
       provinceId: 0,
       isVerify: 1,
-      pageNo: 1,
-      pageSize: 100
+      pageNo,
+      pageSize
     });
     return result?.list || [];
   }
@@ -116,5 +116,44 @@ export class LotteryService {
       return betTime < saleEndTime && betTime > new Date(list[index + 1].lotterySaleEndtime);
     });
     return result;
+  }
+
+  /**
+   * 统计情况
+   */
+  async statistics() {
+    const list = await this.queryWinHistory();
+    const result: {
+      frontStat: Record<string, { total: number; vanish: number }>;
+      backStat: Record<string, { total: number; vanish: number }>;
+    } = { frontStat: {}, backStat: {} };
+    let vanish = 0;
+    list.forEach(item => {
+      const drawBalls = item.lotteryDrawResult.split(' ');
+      drawBalls.forEach((ball, idx) => {
+        const current = idx > 4 ? 'backStat' : 'frontStat';
+        !result[current][ball] && (result[current][ball] = { total: 0, vanish });
+        result[current][ball].total = result[current][ball].total + 1;
+      });
+      vanish++;
+    });
+    return {
+      frontStat: Object.keys(result.frontStat)
+        .map(ball => {
+          return {
+            ball,
+            ...result.frontStat[ball]
+          };
+        })
+        .sort((a, b) => b.vanish - a.vanish),
+      backStat: Object.keys(result.backStat)
+        .map(ball => {
+          return {
+            ball,
+            ...result.backStat[ball]
+          };
+        })
+        .sort((a, b) => b.vanish - a.vanish)
+    };
   }
 }
