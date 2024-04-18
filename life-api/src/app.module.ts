@@ -3,13 +3,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { LotteryController } from '@/controller';
 import { LotteryService } from '@/service';
-import mysql from '@/module/mysql';
+import { MYSQL57, REDIS, REDIS_INJECT } from '@/module';
 import { EntityFeature } from '@/entity';
 import { AllExceptionsFilter, ResponseInterceptor } from '@/middleware';
 
 @Module({
   imports: [
-    mysql,
+    MYSQL57,
     EntityFeature,
     ServeStaticModule.forRoot({
       rootPath: __dirname + '/public'
@@ -17,6 +17,7 @@ import { AllExceptionsFilter, ResponseInterceptor } from '@/middleware';
   ],
   controllers: [LotteryController],
   providers: [
+    REDIS,
     LotteryService,
     {
       provide: APP_INTERCEPTOR,
@@ -26,6 +27,7 @@ import { AllExceptionsFilter, ResponseInterceptor } from '@/middleware';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter
     }
-  ]
+  ],
+  exports: [REDIS_INJECT]
 })
 export class AppModule {}

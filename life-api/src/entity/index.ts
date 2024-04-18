@@ -32,6 +32,10 @@ export class Lottery {
   //开奖结果
   @Column({ name: 'win_results', type: 'json', nullable: true })
   winResults: Array<WinResult>;
+
+  //是否删除
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
 }
 
 @Entity()

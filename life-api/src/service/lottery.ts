@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
@@ -16,13 +16,13 @@ export class LotteryService {
   async bet(type: string, count: number, uid: string) {
     const betBall = createLottery(count);
     const lottery = new Lottery();
-    lottery.uid = uid;
     lottery.type = type;
     lottery.betBall = betBall;
     lottery.betTime = new Date();
-    const result = await this.lotteryRepository.save(lottery);
-
-    return result;
+    if (uid) {
+      return await this.lotteryRepository.update(uid, lottery);
+    }
+    return await this.lotteryRepository.save(lottery);
   }
 
   /**
@@ -68,11 +68,19 @@ export class LotteryService {
    */
   async querylist() {
     const list = await this.lotteryRepository.find({
-      order: {
-        betTime: 'DESC'
-      }
+      order: { betTime: 'DESC' },
+      where: { deleted: Not('1') }
     });
     return this.batchVerify(list);
+  }
+
+  /**
+   * 查询列表
+   *
+   * @returns
+   */
+  async remove(uid: string) {
+    return await this.lotteryRepository.update(uid, { deleted: '1' });
   }
 
   /**

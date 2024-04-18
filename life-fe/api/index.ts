@@ -8,7 +8,8 @@ export type ResponseResult = {
 };
 
 const APIV1 = new ApiGenerator({
-  baseUrl: isServer() ? 'https://jiuwusan.cn/life-api' : '/life-api',
+  // baseUrl: isServer() ? 'https://jiuwusan.cn/life-api' : '/life-api',
+  baseUrl: isServer() ? 'http://localhost:9000' : '/life-api',
   formatResponse: res => {
     if ([200].includes(res.code)) {
       return res.data;

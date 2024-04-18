@@ -46,6 +46,10 @@ export function LotteryItem(props: ItemProps) {
   return (
     <div className={styles.itemWrap}>
       <div className={styles.itemRow}>
+        <span className={styles.title}>超级大乐透</span>
+        <span className={styles.title}>删除</span>
+      </div>
+      <div className={styles.itemRow}>
         <span className={styles.title}>投注时间：</span>
         {data.betTime}
       </div>
@@ -106,7 +110,7 @@ export default function Page(props: PageProps) {
   return (
     <RoutePage bg={bgImage} padding="8px">
       <div className={styles.toolWrap}>
-        <Button block onClick={() => createBet('1')}>
+        <Button block onClick={() => createBet()}>
           投注
         </Button>
       </div>

@@ -11,6 +11,12 @@ export class LotteryController {
     return result;
   }
 
+  @Post('remove')
+  async remove(@Body() { uid }) {
+    const result = await this.lotteryService.remove(uid);
+    return result;
+  }
+
   @Get('query/list')
   async querylist() {
     const result = await this.lotteryService.querylist();
