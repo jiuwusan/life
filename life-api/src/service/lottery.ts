@@ -142,18 +142,22 @@ export class LotteryService {
         .map(ball => {
           return {
             ball,
+            diff: result.frontStat[ball].total - result.frontStat[ball].vanish,
+            sum: result.frontStat[ball].total + result.frontStat[ball].vanish,
             ...result.frontStat[ball]
           };
         })
-        .sort((a, b) => b.vanish - a.vanish),
+        .sort((a, b) => a.diff - b.diff),
       backStat: Object.keys(result.backStat)
         .map(ball => {
           return {
             ball,
+            diff: result.backStat[ball].total - result.backStat[ball].vanish,
+            sum: result.backStat[ball].total + result.backStat[ball].vanish,
             ...result.backStat[ball]
           };
         })
-        .sort((a, b) => b.vanish - a.vanish)
+        .sort((a, b) => a.diff - b.diff)
     };
   }
 }
