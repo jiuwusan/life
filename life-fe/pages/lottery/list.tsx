@@ -45,9 +45,12 @@ export function LotteryItem(props: ItemProps) {
 
   return (
     <div className={styles.itemWrap}>
-      <div className={styles.itemRow}>
-        <span className={styles.title}>超级大乐透</span>
-        <span className={styles.title}>删除</span>
+      <div className={classNames([styles.itemRow, styles.type])}>
+        <div className={styles.title}>超级大乐透</div>
+        <div className={styles.toolBtn}>
+          <span className={styles.tagBtn}>追注</span>
+          <span className={classNames([styles.tagBtn, styles.remove])}>删除</span>
+        </div>
       </div>
       <div className={styles.itemRow}>
         <span className={styles.title}>投注时间：</span>
