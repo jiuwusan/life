@@ -122,11 +122,9 @@ export class LotteryService {
    * 统计情况
    */
   async statistics() {
+    type Stats = Record<string, { total: number; vanish: number }>;
     const list = await this.queryWinHistory();
-    const result: {
-      frontStat: Record<string, { total: number; vanish: number }>;
-      backStat: Record<string, { total: number; vanish: number }>;
-    } = { frontStat: {}, backStat: {} };
+    const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
     let vanish = 0;
     list.forEach(item => {
       const drawBalls = item.lotteryDrawResult.split(' ');
@@ -137,27 +135,22 @@ export class LotteryService {
       });
       vanish++;
     });
+
+    const formatStat = (stats: Stats) =>
+      Object.keys(stats).map(ball => {
+        const diff = stats[ball].total - stats[ball].vanish;
+        return {
+          ball,
+          diff,
+          gran: Math.abs(diff),
+          sum: stats[ball].total + stats[ball].vanish,
+          ...stats[ball]
+        };
+      });
+
     return {
-      frontStat: Object.keys(result.frontStat)
-        .map(ball => {
-          return {
-            ball,
-            diff: result.frontStat[ball].total - result.frontStat[ball].vanish,
-            sum: result.frontStat[ball].total + result.frontStat[ball].vanish,
-            ...result.frontStat[ball]
-          };
-        })
-        .sort((a, b) => a.diff - b.diff),
-      backStat: Object.keys(result.backStat)
-        .map(ball => {
-          return {
-            ball,
-            diff: result.backStat[ball].total - result.backStat[ball].vanish,
-            sum: result.backStat[ball].total + result.backStat[ball].vanish,
-            ...result.backStat[ball]
-          };
-        })
-        .sort((a, b) => a.diff - b.diff)
+      frontStat: formatStat(result.frontStat),
+      backStat: formatStat(result.backStat)
     };
   }
 }
