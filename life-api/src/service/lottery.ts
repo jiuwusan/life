@@ -5,12 +5,16 @@ import { Repository, Not } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
+import { RedisService } from '@/service/redis';
 
 @Injectable()
 export class LotteryService {
+  // private readonly redisService = new RedisService();
+
   constructor(
     @InjectRepository(Lottery)
-    private lotteryRepository: Repository<Lottery>
+    private lotteryRepository: Repository<Lottery>,
+    private readonly redisService: RedisService
   ) {}
 
   async bet(type: string, count: number, uid: string) {
@@ -88,16 +92,17 @@ export class LotteryService {
    *
    * @returns
    */
-  async queryWinHistory(pageNo = 1, pageSize = 100): Promise<Array<WinLottery>> {
+  async queryWinHistory(pageNo = 1, pageSize = 100, refresh?: boolean): Promise<Array<WinLottery>> {
+    const cacheKey = `lottery:history-${pageSize}-${pageNo}`;
+    let list = await this.redisService.get<Array<WinLottery>>(cacheKey);
+    // 参数
+    const query = { gameNo: 85, provinceId: 0, isVerify: 1, pageNo, pageSize };
     // 查询历史
-    const result = await lotteryApi.queryLotteryHistory({
-      gameNo: 85,
-      provinceId: 0,
-      isVerify: 1,
-      pageNo,
-      pageSize
-    });
-    return result?.list || [];
+    if (!list || list.length === 0 || refresh) {
+      list = (await lotteryApi.queryLotteryHistory(query))?.list || [];
+      list && list.length > 0 && this.redisService.set(cacheKey, list);
+    }
+    return list;
   }
 
   /**
@@ -152,5 +157,17 @@ export class LotteryService {
       frontStat: formatStat(result.frontStat),
       backStat: formatStat(result.backStat)
     };
+  }
+
+  /**
+   * 推荐
+   */
+  async recommend() {
+    const { frontStat, backStat } = await this.statistics();
+    const result: Array<Array<string>> = [];
+    frontStat.sort((a, b) => a.gran - b.gran);
+    backStat.sort((a, b) => a.gran - b.gran);
+    result.push([...frontStat.slice(0, 5).map(item => item.ball), ...backStat.slice(0, 2).map(item => item.ball)]);
+    return result;
   }
 }

@@ -32,4 +32,9 @@ export class LotteryController {
   async statistics() {
     return await this.lotteryService.statistics();
   }
+
+  @Get('recommend')
+  async recommend() {
+    return await this.lotteryService.recommend();
+  }
 }
