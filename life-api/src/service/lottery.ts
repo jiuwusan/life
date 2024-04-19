@@ -163,11 +163,33 @@ export class LotteryService {
    * 推荐
    */
   async recommend() {
+    const ballSort = (list: Array<string>) => {
+      list.sort((a, b) => parseInt(a) - parseInt(b));
+      return list;
+    };
     const { frontStat, backStat } = await this.statistics();
     const result: Array<Array<string>> = [];
+    // 差值绝对值最小
     frontStat.sort((a, b) => a.gran - b.gran);
     backStat.sort((a, b) => a.gran - b.gran);
-    result.push([...frontStat.slice(0, 5).map(item => item.ball), ...backStat.slice(0, 2).map(item => item.ball)]);
+    result.push([
+      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
+      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
+    ]);
+    // 和值最大
+    frontStat.sort((a, b) => b.sum - a.sum);
+    backStat.sort((a, b) => b.sum - a.sum);
+    result.push([
+      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
+      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
+    ]);
+    // 连续遗失最多
+    frontStat.sort((a, b) => b.vanish - a.vanish);
+    backStat.sort((a, b) => b.vanish - a.vanish);
+    result.push([
+      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
+      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
+    ]);
     return result;
   }
 }
