@@ -7,10 +7,10 @@ import { LotteryService } from '@/service/lottery';
 export class TasksService {
   constructor(private readonly lotteryService: LotteryService) {}
 
-  @Cron('45 * * * * *')
-  handleCron() {
-    console.log('Called every 45 seconds');
-  }
+  // @Cron('45 * * * * *')
+  // handleCron() {
+  //   console.log('Called every 45 seconds');
+  // }
 
   /**
    * 每周1、3、6 21:30 执行
@@ -23,7 +23,7 @@ export class TasksService {
     while (currentDate !== lastdDate) {
       const list = await this.lotteryService.queryWinHistory(1, 100, true);
       list?.length > 0 && (lastdDate = list[0].lotteryDrawTime);
-      // 等待2分钟
+      // 等待1分钟
       await nextSleep(1000 * 60 * 1);
     }
   }

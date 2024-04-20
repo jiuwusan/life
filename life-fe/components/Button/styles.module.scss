@@ -1,14 +1,27 @@
 .button {
-  border: none;
+    border: none;
+    border-radius: 4px;
 
-  &.block {
-    width: 100%;
-    display: block;
-  }
+    &.block {
+        width: 100%;
+        display: block;
+    }
 
-  &.primary {
-    height: 44px;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-  }
+    &.primary {
+        height: 44px;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+    }
+
+    &.success {
+        height: 44px;
+        background-color: var(--success-color);
+        color: var(--white-color);
+    }
+
+    &.danger {
+        height: 44px;
+        background-color: var(--danger-color);
+        color: var(--white-color);
+    }
 }

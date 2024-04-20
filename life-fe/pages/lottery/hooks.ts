@@ -1,6 +1,7 @@
 import { lotteryApi } from '@/api';
 import { formatDateToStr } from '@/utils/util';
 
+// 列表
 export const queryLotteryList = async (query?: { pageNo: number }) => {
   const list = (await lotteryApi.querylist(query)) || [];
   return list.map((item: any) => ({
@@ -8,6 +9,12 @@ export const queryLotteryList = async (query?: { pageNo: number }) => {
     betTime: formatDateToStr(item.betTime),
     winTime: item.winTime && formatDateToStr(item.winTime)
   }));
+};
+
+// 统计数据
+export const getStatistics = async () => {
+  const result = await lotteryApi.statistics();
+  return result || { frontStat: [], backStat: [] };
 };
 
 export const betLottery = async (type?: string, uid?: string) => {

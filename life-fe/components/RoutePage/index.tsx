@@ -1,12 +1,8 @@
+import Head from 'next/head';
 import { HTMLAttributes, useMemo } from 'react';
 import { isColor } from '@/utils/util';
 import styles from './styles.module.scss';
-
-type Props = {
-  children: React.ReactNode;
-  bg?: string;
-  padding?: string | number;
-} & HTMLAttributes<HTMLDivElement>;
+import classNames from 'classnames';
 
 /**
  * 获取页面背景样式
@@ -30,13 +26,25 @@ const getPageStyle = (bg?: string, padding?: string | number) => {
   return pageStyle;
 };
 
+type Props = {
+  children: React.ReactNode;
+  bg?: string;
+  padding?: string | number;
+  title?: string;
+} & HTMLAttributes<HTMLDivElement>;
+
 export function RoutePage(props: Props) {
-  const { children, bg, padding, ...rest } = props;
+  const { children, title = 'jiuwusan-life', bg, padding, className, ...rest } = props;
   const pageStyle = useMemo(() => getPageStyle(bg, padding), [bg, padding]);
 
   return (
-    <div className={styles.routePageWrap} style={pageStyle} {...rest}>
-      {children}
-    </div>
+    <>
+      <Head>
+        <title>{title}</title>
+      </Head>
+      <div className={classNames(styles.routePageWrap, className)} style={pageStyle} {...rest}>
+        {children}
+      </div>
+    </>
   );
 }

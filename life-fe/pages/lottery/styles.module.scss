@@ -1,5 +1,14 @@
 .toolWrap {
-  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #FFFFFF;
+  width: 100%;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+
+  .toolBtnItem {
+    width: calc((100% - 32px) / 2);
+  }
 }
 
 .listWrap {
@@ -44,13 +53,16 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       .title {
         font-size: 18px;
       }
-      .toolBtn{
+
+      .toolBtn {
         display: inline-flex;
         align-items: center;
       }
+
       .tagBtn {
         font-size: 12px;
         line-height: 1;
@@ -60,43 +72,15 @@
         color: var(--primary-color);
         margin-left: 8px;
         border-radius: 4px;
-        &:nth-child(1){
+
+        &:nth-child(1) {
           margin-left: 0px;
         }
+
         &.remove {
           border-color: var(--danger-color);
           color: var(--danger-color);
         }
-      }
-    }
-
-    .ball {
-      font-size: 14px;
-      line-height: 24px;
-      text-align: center;
-      width: 26px;
-      height: 26px;
-      display: inline-block;
-      position: relative;
-      margin: 4px 0 4px 8px;
-      border: 2px solid var(--primary-color);
-      border-radius: 50%;
-      color: var(--primary-color);
-      font-weight: 700;
-
-      &:nth-child(1) {
-        margin: 4px 0 4px 0;
-      }
-
-      &.red {
-        color: var(--danger-color);
-        border-color: var(--danger-color);
-      }
-
-      &.active {
-        border-color: var(--success-color);
-        color: var(--success-color);
-        line-height: 22px;
       }
     }
 
@@ -111,6 +95,64 @@
     .win {
       color: var(--danger-color);
       font-weight: 700;
+    }
+  }
+}
+
+.ballItem {
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  position: relative;
+  margin: 4px 0 4px 8px;
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  color: var(--primary-color);
+  font-weight: 700;
+
+  &:nth-child(1) {
+    margin: 4px 0 4px 0;
+  }
+
+  &.red {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+  }
+
+  &.active {
+    border-color: var(--success-color);
+    color: var(--success-color);
+    line-height: 22px;
+  }
+}
+
+.statWrap {
+  width: 100%;
+
+  .statTitle {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    width: 100%;
+    text-align: center;
+  }
+
+  .statTable {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: rgba(var(--white-rgb), 0.9);
+    color: var(--desc-color);
+    border-color: rgba(var(--desc-rgb), .3);;
+    th{
+      color: var(--primary-color);
+      padding: 6px 4px;
+    }
+    td{
+      text-align: center;
+      min-height: 40px;
     }
   }
 }

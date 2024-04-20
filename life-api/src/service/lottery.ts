@@ -141,8 +141,8 @@ export class LotteryService {
       vanish++;
     });
 
-    const formatStat = (stats: Stats) =>
-      Object.keys(stats).map(ball => {
+    const formatStat = (stats: Stats) => {
+      const list = Object.keys(stats).map(ball => {
         const diff = stats[ball].total - stats[ball].vanish;
         return {
           ball,
@@ -152,6 +152,10 @@ export class LotteryService {
           ...stats[ball]
         };
       });
+      // 倒叙
+      list.sort((a, b) => b.vanish - a.vanish);
+      return list;
+    };
 
     return {
       frontStat: formatStat(result.frontStat),

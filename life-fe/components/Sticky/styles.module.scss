@@ -1,0 +1,13 @@
+.stickyWrap {
+    position: sticky;
+    z-index: 998;
+
+    &.bottom {
+        left: 0;
+        bottom: 0;
+    }
+
+    &.fixed {
+        position: fixed;
+    }
+}
