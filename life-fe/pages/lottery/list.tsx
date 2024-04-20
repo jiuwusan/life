@@ -29,7 +29,9 @@ export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
   return (
     <div style={{ whiteSpace: 'nowrap' }}>
       {formatData.map((ball, idx) => (
-        <span key={idx} className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
+        <span
+          key={idx}
+          className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
           {ball.value}
         </span>
       ))}
@@ -114,7 +116,7 @@ export default function Page(props: PageProps) {
 
   return (
     <>
-      <RoutePage bg={bgImage} padding="8px" title='超级大乐透-投注列表'>
+      <RoutePage bg={bgImage} padding="8px" title="超级大乐透-投注列表">
         <div>
           {historyList.map(item => (
             <LotteryItem key={item.uid} data={item} />

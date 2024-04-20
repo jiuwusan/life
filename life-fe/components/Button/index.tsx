@@ -2,19 +2,19 @@ import { ButtonHTMLAttributes } from 'react';
 import styles from './styles.module.scss';
 import classNames from 'classnames';
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = {
   // 是否开启节流
   throttle?: boolean;
   block?: boolean;
-  nativeType?: 'button' | 'submit' | 'reset';
-  type?: 'primary' | 'success' | 'danger' | '';
-};
+  htmlType?: 'button' | 'submit' | 'reset';
+  type?: 'primary' | 'success' | 'danger' | 'default' | 'warning' | 'info' | 'text' | 'link';
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'>;
 
 export function Button(props: ButtonProps) {
-  const { nativeType = 'button', type = 'primary', block, className, ...rest } = props;
+  const { htmlType = 'button', type = 'primary', block, className, ...rest } = props;
   return (
     <button
-      type={nativeType}
+      type={htmlType}
       className={classNames([styles.button, styles[type], block && styles.block, className])}
       {...rest}
     />
