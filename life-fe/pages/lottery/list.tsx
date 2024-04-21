@@ -127,8 +127,11 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
           查看统计
         </Button>
+        <Button className={styles.toolBtnItem} type='danger' onClick={() => createBet()}>
+          推荐选号
+        </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet()}>
-          投注
+          选号
         </Button>
       </Sticky>
     </>
