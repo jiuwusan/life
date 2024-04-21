@@ -29,7 +29,7 @@ export interface RequestOptions extends RequestInit {
  */
 export const request = (url: RequestInfo, options?: RequestOptions) => {
   let ACIDCount = 0;
-  console.log('发送请求---->', url);
+  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`);
   const ACIDREQ = async (url: RequestInfo, options?: RequestOptions): Promise<Response> => {
     ACIDCount++;
     try {
