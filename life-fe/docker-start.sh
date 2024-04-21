@@ -25,4 +25,5 @@ for ((idx = 0; idx < $slbCount; idx++)); do
         --name=$webServer \
         --restart=always $dockerImage
 done
-
+#删除无关镜像
+docker builder prune
