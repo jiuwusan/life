@@ -29,7 +29,7 @@ export function Sticky(props: StickyProps) {
         {...rest}>
         {children}
       </div>
-      <div style={fillStyle} />
+      {fixed && <div style={fillStyle} />}
     </>
   );
 }
