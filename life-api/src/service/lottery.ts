@@ -119,13 +119,14 @@ export class LotteryService {
    * @returns
    */
   findWinLottery(list: Array<WinLottery>, betTime: string | Date): WinLottery {
-    betTime = new Date(betTime);
+    const betTimestamp = new Date(betTime).getTime();
     const result = list.find((item, index) => {
-      const saleEndTime = new Date(item.lotterySaleEndtime);
+      const saleEndTimestamp = new Date(item.lotterySaleEndtime).getTime();
       if (index + 1 === list.length) {
-        return betTime < saleEndTime;
+        // 最后一期
+        return betTimestamp < saleEndTimestamp;
       }
-      return betTime < saleEndTime && betTime > new Date(list[index + 1].lotterySaleEndtime);
+      return betTimestamp < saleEndTimestamp && betTimestamp > new Date(list[index + 1].lotterySaleEndtime).getTime();
     });
     return result;
   }

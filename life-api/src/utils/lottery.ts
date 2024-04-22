@@ -106,7 +106,7 @@ export const shuffleArray = (array, depth = 1) => {
     [sliceArray[i], sliceArray[j]] = [sliceArray[j], sliceArray[i]];
   }
 
-  if (depth == 1) {
+  if (depth <= 1) {
     return sliceArray;
   }
 

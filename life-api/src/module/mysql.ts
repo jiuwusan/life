@@ -8,5 +8,6 @@ export const MYSQL57 = TypeOrmModule.forRoot({
   password: 'ZkD953HzR497',
   database: 'life-prod',
   entities: [__dirname + '/../entity/*{.ts,.js}'],
+  timezone: '+08:00', // 设置时区为东八区
   synchronize: true
 });
