@@ -6,8 +6,9 @@ export class LotteryController {
   constructor(private readonly lotteryService: LotteryService) {}
 
   @Post('bet')
-  async bet(@Body() { type = '1', uid, count = 5 }) {
-    const result = await this.lotteryService.bet(type, count, uid);
+  async bet(@Body() data) {
+    // { type = '1', uid, recommend, count = 5 }
+    const result = await this.lotteryService.bet(data);
     return result;
   }
 

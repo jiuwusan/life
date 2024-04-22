@@ -79,11 +79,14 @@ export const checkLottery = (lotteryNumbers: Array<string>, userNumbers: Array<s
 /**
  * 创建池
  */
-const createLottterys = (max = 0, min = 1) => {
+export const createBallsPool = (max = 0, min = 1, exclude?: Array<string>) => {
   const value = [];
 
   for (let index = min; index <= max; index++) {
-    value.push(index);
+    if (exclude && exclude.includes(index.toString())) {
+      continue;
+    }
+    value.push(index < 10 ? `0${index}` : index.toString());
   }
 
   return value;
@@ -95,7 +98,7 @@ const createLottterys = (max = 0, min = 1) => {
  * @param {*} array
  * @returns
  */
-const shuffleArray = (array, depth = 1) => {
+export const shuffleArray = (array, depth = 1) => {
   // 防止浅克隆
   const sliceArray = array.slice();
   for (let i = sliceArray.length - 1; i > 0; i--) {
@@ -116,15 +119,12 @@ const shuffleArray = (array, depth = 1) => {
  * @param {*} max
  * @param {*} num
  */
-const getRandomNumbers = (bets, count) => {
-  const shuffled = shuffleArray(bets, 1996); // 洗牌
-  // jws.log('shuffled-->', shuffled)
+export const getRandomNumbers = (bets, count) => {
+  const shuffled = shuffleArray(bets, 1997); // 洗牌
   const result = shuffled.slice(0, count); // 取前 count 个数
   // 正序排列
-  result.sort((a, b) => a - b);
-  return result.map(item => {
-    return (item < 10 ? '0' : '') + String(item);
-  });
+  result.sort((a, b) => parseInt(a) - parseInt(b));
+  return result;
 };
 
 /**
@@ -153,13 +153,13 @@ export const batchCheckLottery = (
  * 生成
  * @param {*} count
  */
-export const createLottery = (count: number) => {
+export const createLottery = (count: number, exclude?: Array<string>) => {
   const result = [];
   // 继续 投注
   while ((count || 1) > result.length) {
     const currentLottery = []
-      .concat(getRandomNumbers(createLottterys(35), 5))
-      .concat(getRandomNumbers(createLottterys(12), 2));
+      .concat(getRandomNumbers(createBallsPool(35, 1, exclude), 5))
+      .concat(getRandomNumbers(createBallsPool(12, 1, exclude), 2));
     result.push(currentLottery);
   }
 

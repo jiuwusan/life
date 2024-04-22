@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
-import { createLottery, batchCheckLottery } from '@/utils/lottery';
+import { createLottery, batchCheckLottery, getRandomNumbers, createBallsPool } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
@@ -17,8 +17,15 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
-  async bet(type: string, count: number, uid: string) {
-    const betBall = createLottery(count);
+  async bet(data: { type: string; count: number; uid: string; recommend: boolean }) {
+    const { type = '1', count = 5, uid, recommend } = data;
+    let betBall = [];
+    if (recommend) {
+      // 添加推荐
+      betBall.push(await this.recommend());
+      betBall.push(await this.recommend());
+    }
+    betBall = betBall.concat(createLottery(count - betBall.length));
     const lottery = new Lottery();
     lottery.type = type;
     lottery.betBall = betBall;
@@ -167,33 +174,35 @@ export class LotteryService {
    * 推荐
    */
   async recommend() {
-    const ballSort = (list: Array<string>) => {
-      list.sort((a, b) => parseInt(a) - parseInt(b));
-      return list;
-    };
     const { frontStat, backStat } = await this.statistics();
-    const result: Array<Array<string>> = [];
+    const bestBall = { frontBall: [], backBall: [] };
     // 差值绝对值最小
     frontStat.sort((a, b) => a.gran - b.gran);
     backStat.sort((a, b) => a.gran - b.gran);
-    result.push([
-      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
-      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
-    ]);
-    // 和值最大
+    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
+    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
+    // 和值越大，概率越高
     frontStat.sort((a, b) => b.sum - a.sum);
     backStat.sort((a, b) => b.sum - a.sum);
-    result.push([
-      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
-      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
-    ]);
-    // 连续遗失最多
+    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
+    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
+    // 连续漏期最多
     frontStat.sort((a, b) => b.vanish - a.vanish);
     backStat.sort((a, b) => b.vanish - a.vanish);
-    result.push([
-      ...ballSort(frontStat.slice(0, 5).map(item => item.ball)),
-      ...ballSort(backStat.slice(0, 2).map(item => item.ball))
-    ]);
+    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
+    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
+    bestBall.frontBall = [...new Set(bestBall.frontBall)];
+    bestBall.backBall = [...new Set(bestBall.backBall)];
+    const rf = getRandomNumbers(bestBall.frontBall, 2);
+    const rb = getRandomNumbers(bestBall.backBall, 1);
+    const result = [
+      ...getRandomNumbers(createBallsPool(35, 1, rf), 3)
+        .concat(rf)
+        .sort((a, b) => parseInt(a) - parseInt(b)),
+      ...getRandomNumbers(createBallsPool(12, 1, rb), 1)
+        .concat(rb)
+        .sort((a, b) => parseInt(a) - parseInt(b))
+    ];
     return result;
   }
 }
