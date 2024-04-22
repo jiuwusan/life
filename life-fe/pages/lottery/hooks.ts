@@ -17,8 +17,15 @@ export const getStatistics = async () => {
   return result || { frontStat: [], backStat: [] };
 };
 
+// 选号
 export const betLottery = async (formData?: { type?: string; uid?: string }) => {
   const result = await lotteryApi.bet(formData);
+  return result;
+};
+
+// 移除
+export const removeLottery = async (uid: string) => {
+  const result = await lotteryApi.remove({ uid });
   return result;
 };
 

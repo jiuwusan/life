@@ -3,7 +3,7 @@ import { RoutePage, Button, Sticky } from '@/components';
 import { getBackgroundImage } from '@/utils/util';
 import { useMemo } from 'react';
 import { useFetchState, useFetchClient } from '@/hooks/extend';
-import { queryLotteryList, betLottery, matchLottery } from './hooks';
+import { queryLotteryList, betLottery, matchLottery, removeLottery } from './hooks';
 import styles from './styles.module.scss';
 import { useRouter } from 'next/router';
 
@@ -41,18 +41,21 @@ export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
 
 type ItemProps = {
   data: Record<string, any>;
+  remove?: Function;
 };
 // 每一项
 export function LotteryItem(props: ItemProps) {
-  const { data } = props;
+  const { data, remove } = props;
 
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>超级大乐透</div>
         <div className={styles.toolBtn}>
-          <span className={styles.tagBtn}>追注</span>
-          <span className={classNames([styles.tagBtn, styles.remove])}>删除</span>
+          {/* <span className={styles.tagBtn}>追投</span> */}
+          <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
+            删除
+          </span>
         </div>
       </div>
       <div className={styles.itemRow}>
@@ -109,8 +112,14 @@ export default function Page(props: PageProps) {
   const router = useRouter();
   const { bgImage, list = [] } = props;
   const [historyList, { fetchData }] = useFetchState(list, queryLotteryList);
+  //选号
   const [, createBet] = useFetchClient(async formData => {
     await betLottery(formData);
+    fetchData();
+  });
+  // 删除
+  const [, handleRemove] = useFetchClient(async uid => {
+    await removeLottery(uid);
     fetchData();
   });
 
@@ -119,7 +128,7 @@ export default function Page(props: PageProps) {
       <RoutePage bg={bgImage} padding="8px" title="超级大乐透-投注列表">
         <div>
           {historyList.map(item => (
-            <LotteryItem key={item.uid} data={item} />
+            <LotteryItem key={item.uid} data={item} remove={handleRemove} />
           ))}
         </div>
       </RoutePage>
