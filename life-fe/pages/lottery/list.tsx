@@ -109,8 +109,8 @@ export default function Page(props: PageProps) {
   const router = useRouter();
   const { bgImage, list = [] } = props;
   const [historyList, { fetchData }] = useFetchState(list, queryLotteryList);
-  const [pending, createBet] = useFetchClient(async () => {
-    await betLottery();
+  const [, createBet] = useFetchClient(async formData => {
+    await betLottery(formData);
     fetchData();
   });
 
@@ -127,7 +127,7 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
           查看统计
         </Button>
-        <Button className={styles.toolBtnItem} type='danger' onClick={() => createBet()}>
+        <Button className={styles.toolBtnItem} type="danger" onClick={() => createBet({ recommend: true })}>
           推荐选号
         </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet()}>

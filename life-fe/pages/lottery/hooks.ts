@@ -17,8 +17,8 @@ export const getStatistics = async () => {
   return result || { frontStat: [], backStat: [] };
 };
 
-export const betLottery = async (type?: string, uid?: string) => {
-  const result = await lotteryApi.bet({ uid, type });
+export const betLottery = async (formData?: { type?: string; uid?: string }) => {
+  const result = await lotteryApi.bet(formData);
   return result;
 };
 

@@ -26,7 +26,7 @@ export const lotteryApi = {
   // 推荐号码
   recommend: (query?: { pageNo?: number; pageSize?: number }) => APIV1.fetch('lottery/query/recommend', { query }),
   // 投注
-  bet: (data: { uid?: string; type?: string }) => APIV1.fetch('lottery/bet', { method: 'POST', data }),
+  bet: (data?: { uid?: string; type?: string }) => APIV1.fetch('lottery/bet', { method: 'POST', data }),
   // 投注
   remove: (data: { uid?: string }) => APIV1.fetch('lottery/remove', { method: 'POST', data })
 };
