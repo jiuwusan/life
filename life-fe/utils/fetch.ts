@@ -82,6 +82,7 @@ export class ApiGenerator {
     !options && (options = 'GET');
     // 表示请求方法
     typeof options === 'string' && (options = { method: options.toUpperCase() });
+    options.headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
     // 处理请求参数
     this.options.formatFetchOptions && (options = this.options.formatFetchOptions(options));
     // 发送请求
