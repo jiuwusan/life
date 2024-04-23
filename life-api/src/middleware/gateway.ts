@@ -7,7 +7,7 @@ export class Gateway implements NestMiddleware {
     const start = Date.now();
     res.on('finish', () => {
       const elapsed = Date.now() - start;
-      console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.originalUrl} - ${elapsed}ms`);
+      console.log(`${new Date().toLocaleString()} : ${req.method} ${req.originalUrl} - ${elapsed}ms`);
     });
     next();
   }

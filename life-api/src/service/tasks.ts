@@ -17,14 +17,19 @@ export class TasksService {
    */
   @Cron('35 21 * * 1,3,6')
   async updateLotteryHistory() {
-    const currentDate = formatDateToStr(Date.now(), 'yyyy-MM-dd');
-    console.log(`${currentDate} --> 开始更新历史记录`);
+    console.log(`${new Date().toLocaleString()} : 开始更新历史记录`);
+    // 今天
+    const currentDate = formatDateToStr(new Date(), 'yyyy-MM-dd');
     let lastdDate = '';
-    while (currentDate !== lastdDate) {
+    let queryCount = 0;
+    // 最多查询30次
+    while (currentDate !== lastdDate && queryCount < 30) {
+      queryCount++;
       const list = await this.lotteryService.queryWinHistory(1, 100, true);
-      list?.length > 0 && (lastdDate = list[0].lotteryDrawTime);
-      // 等待1分钟
-      await nextSleep(1000 * 60 * 1);
+      list && list?.length > 0 && (lastdDate = list[0].lotteryDrawTime);
+      // 等待2分钟
+      await nextSleep(1000 * 60 * 2);
     }
+    console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
   }
 }
