@@ -15,14 +15,14 @@ export class Lottery {
 
   // 下注时间
   @Column({ name: 'bet_time', type: 'datetime' })
-  betTime: Date | string;
+  betTime: string;
 
   //下注号码
   @Column({ name: 'bet_ball', type: 'json' })
   betBall: Array<Array<string>>;
 
   // 开奖时间
-  @Column({ name: 'win_time', nullable: true })
+  @Column({ name: 'win_time', type: 'datetime', nullable: true })
   winTime: string;
 
   //开奖号码

@@ -29,7 +29,8 @@ export class LotteryService {
     const lottery = new Lottery();
     lottery.type = type;
     lottery.betBall = betBall;
-    lottery.betTime = new Date();
+    // 使用 UTC时间
+    lottery.betTime = new Date().toUTCString();
     if (uid) {
       return await this.lotteryRepository.update(uid, lottery);
     }
@@ -57,17 +58,17 @@ export class LotteryService {
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
       if (!!lottery.winTime) {
-        break;
+        continue;
       }
       const winLottery = this.findWinLottery(winHistory, lottery.betTime);
       if (!winLottery) {
-        break;
+        continue;
       }
       const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult.split(' '), lottery.betBall, true);
       lottery.winBall = winLottery.lotteryDrawResult.split(' ');
-      lottery.winTime = `${winLottery.lotteryDrawTime} 21:25:00`;
+      lottery.winTime = new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toUTCString();
       lotteryResult.length > 0 && (lottery.winResults = lotteryResult);
-      this.lotteryRepository.save(lottery);
+      this.lotteryRepository.update(lottery.uid, lottery);
     }
     return lotterys;
   }

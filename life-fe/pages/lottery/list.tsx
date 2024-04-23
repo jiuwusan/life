@@ -88,7 +88,7 @@ export function LotteryItem(props: ItemProps) {
         <span className={styles.title}>开奖结果：</span>
         {!data.winTime && <span className={styles.notDrawn}>待开奖</span>}
         {data.winTime && !data.winResults && <span className={styles.notWin}>未中奖</span>}
-        {data.winResults && (
+        {data.winTime && data.winResults && (
           <span className={styles.win}>
             {data.winResults.map((item: any, idx: number) => (
               <span key={idx}>
