@@ -66,7 +66,7 @@ export class LotteryService {
       }
       const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult.split(' '), lottery.betBall, true);
       lottery.winBall = winLottery.lotteryDrawResult.split(' ');
-      lottery.winTime = new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toUTCString();
+      lottery.winTime = `${winLottery.lotteryDrawTime} 21:25:00`;
       lotteryResult.length > 0 && (lottery.winResults = lotteryResult);
       this.lotteryRepository.update(lottery.uid, lottery);
     }
