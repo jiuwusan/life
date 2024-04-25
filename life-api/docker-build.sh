@@ -9,14 +9,14 @@ remoteBranch=${2:-dev}
 webAppName=${3:-life-api-$remoteBranch}
 
 # 获取最新分支情况
-git fetch --all
+# git fetch --all
 
 # 切换分支
-git checkout $remoteBranch
+# git checkout $remoteBranch
 
-#git fetch origin 分支名称
+# git fetch origin 分支名称
 
-#git reset --hard origin/分支名称
+# git reset --hard origin/分支名称
 
 # 获取最新代码
 git pull
