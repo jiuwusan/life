@@ -65,10 +65,14 @@ export class LotteryService {
         continue;
       }
       const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult.split(' '), lottery.betBall, true);
-      lottery.winBall = winLottery.lotteryDrawResult.split(' ');
-      lottery.winTime = `${winLottery.lotteryDrawTime} 21:25:00`;
-      lotteryResult.length > 0 && (lottery.winResults = lotteryResult);
-      this.lotteryRepository.update(lottery.uid, lottery);
+      const updateValues = {
+        winBall: winLottery.lotteryDrawResult.split(' '),
+        winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toUTCString(),
+        winResults: lotteryResult.length > 0 ? lotteryResult : null
+      };
+      // 还原数据
+      Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
+      this.lotteryRepository.update(lottery.uid, updateValues);
     }
     return lotterys;
   }
