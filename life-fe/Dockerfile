@@ -14,7 +14,7 @@ RUN yarn config set "strict-ssl" false -g
 RUN yarn config set registry https://registry.npm.taobao.org
 RUN yarn install --mutex network
 # 构建
-RUN yarn build --parallel
+RUN yarn build
 
 # 第二阶段：将构建好的文件复制到最终镜像
 # 运行环境
