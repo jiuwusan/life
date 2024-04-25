@@ -10,9 +10,11 @@ COPY . .
 # 安装 Yarn
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
-RUN yarn install
+RUN yarn config set "strict-ssl" false -g
+RUN yarn config set registry https://registry.npm.taobao.org
+RUN yarn install --mutex network
 # 构建
-RUN yarn build
+RUN yarn build --parallel
 
 # 第二阶段：将构建好的文件复制到最终镜像
 # 运行环境
@@ -31,7 +33,9 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
 # 生产环境安装依赖
-RUN yarn install --production
+RUN yarn config set "strict-ssl" false -g
+RUN yarn config set registry https://registry.npm.taobao.org
+RUN yarn install --production --mutex network
 # 容器对外暴露的端口号
 EXPOSE 3000
 # 容器启动时执行的命令，类似npm run start
