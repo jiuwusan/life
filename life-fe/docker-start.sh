@@ -28,4 +28,4 @@ for ((idx = 0; idx < $slbCount; idx++)); do
         --restart=always $dockerImage
 done
 #删除无关镜像
-docker builder prune
+docker builder prune -f

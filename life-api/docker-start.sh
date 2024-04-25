@@ -29,4 +29,4 @@ for ((idx = 0; idx < $slbCount; idx++)); do
 done
 
 #删除无关镜像
-docker builder prune
+docker builder prune -f
