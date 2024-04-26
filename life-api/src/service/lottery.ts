@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
-import { createLottery, batchCheckLottery, getRandomNumbers, createBallsPool } from '@/utils/lottery';
+import { createLottery, batchCheckLottery, getRandomNumbers, createBallsPool, computeStatVariance } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
@@ -143,9 +143,12 @@ export class LotteryService {
     type Stats = Record<string, { total: number; vanish: number }>;
     const list = await this.queryWinHistory();
     const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
+    const varianceList: { frontHistory: string[][]; backHistory: string[][] } = { frontHistory: [], backHistory: [] };
     let vanish = 0;
     list.forEach(item => {
       const drawBalls = item.lotteryDrawResult.split(' ');
+      varianceList.frontHistory.push(drawBalls.slice(0, 5));
+      varianceList.backHistory.push(drawBalls.slice(-1));
       drawBalls.forEach((ball, idx) => {
         const current = idx > 4 ? 'backStat' : 'frontStat';
         !result[current][ball] && (result[current][ball] = { total: 0, vanish });
@@ -169,10 +172,13 @@ export class LotteryService {
       list.sort((a, b) => b.vanish - a.vanish);
       return list;
     };
-
     return {
       frontStat: formatStat(result.frontStat),
-      backStat: formatStat(result.backStat)
+      backStat: formatStat(result.backStat),
+      variance: {
+        frontStat: computeStatVariance(varianceList.frontHistory),
+        backStat: computeStatVariance(varianceList.backHistory)
+      }
     };
   }
 

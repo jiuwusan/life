@@ -165,3 +165,35 @@ export const createLottery = (count: number, exclude?: Array<string>) => {
 
   return result;
 };
+
+export const computeStatVariance = (list: Array<Array<string>>) => {
+  const itemCount = list[0].length;
+  // 计算每个号码的期望和方差
+  const expectationMap = {};
+  const varianceMap = {};
+  for (let i = 0; i < list.length; i++) {
+    for (let j = 0; j < list[i].length; j++) {
+      const ball = list[i][j];
+      expectationMap[ball] = expectationMap[ball] ? expectationMap[ball] + 1 : 1;
+    }
+  }
+  const total = list.length * itemCount;
+  Object.keys(expectationMap).forEach(ball => {
+    expectationMap[ball] = expectationMap[ball] / total;
+  });
+
+  for (let i = 0; i < list.length; i++) {
+    for (let j = 0; j < list[i].length; j++) {
+      const ball = list[i][j];
+      const diff = expectationMap[ball] - 1 / 35;
+      varianceMap[ball] = varianceMap[ball] ? varianceMap[ball] + diff * diff : diff * diff;
+    }
+  }
+
+  Object.keys(varianceMap).forEach(ball => {
+    varianceMap[ball] = varianceMap[ball] / total;
+  });
+
+  // 期望方差
+  return varianceMap;
+};
