@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { LotteryService } from '@/service';
 
 @Controller('lottery')
@@ -25,13 +25,13 @@ export class LotteryController {
   }
 
   @Get('query/history')
-  async history() {
-    return await this.lotteryService.queryWinHistory();
+  async history(@Query() { pageNo = 1, pageSize = 100 }) {
+    return await this.lotteryService.queryWinHistory(pageNo, pageSize);
   }
 
   @Get('statistics')
-  async statistics() {
-    return await this.lotteryService.statistics();
+  async statistics(@Query() { numbers = 100 }) {
+    return await this.lotteryService.statistics(numbers);
   }
 
   @Get('recommend')

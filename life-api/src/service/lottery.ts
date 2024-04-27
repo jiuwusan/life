@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
-import { createLottery, batchCheckLottery, getRandomNumbers, createBallsPool, computeStatVariance } from '@/utils/lottery';
+import {
+  createLottery,
+  batchCheckLottery,
+  getRandomNumbers,
+  createBallsPool,
+  computeStatVariance
+} from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
@@ -139,9 +145,13 @@ export class LotteryService {
   /**
    * 统计情况
    */
-  async statistics() {
+  async statistics(numbers = 100) {
     type Stats = Record<string, { total: number; vanish: number }>;
-    const list = await this.queryWinHistory();
+    const list = [];
+    while (list.length < numbers) {
+      list.push(...(await this.queryWinHistory(list.length / 100 + 1)));
+    }
+    await this.queryWinHistory();
     const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
     const varianceList: { frontHistory: string[][]; backHistory: string[][] } = { frontHistory: [], backHistory: [] };
     let vanish = 0;
