@@ -8,9 +8,14 @@ export class RedisService {
     private readonly redis: Redis
   ) {}
 
-  set(key: string, value: any) {
+  set(key: string, value: any, durationType?: 'EX' | 'PX', duration?: number | string) {
     typeof value === 'object' && (value = JSON.stringify(value));
-    return this.redis.set(key, value);
+    if (!durationType) {
+      return this.redis.set(key, value);
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    return this.redis.set(key, value, durationType, duration);
   }
 
   async get<T>(key: string): Promise<T> {
@@ -22,5 +27,9 @@ export class RedisService {
       // 格式化出错
     }
     return result as T;
+  }
+
+  async del(key: string) {
+    return this.redis.del(key);
   }
 }
