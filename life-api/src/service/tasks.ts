@@ -22,14 +22,21 @@ export class TasksService {
     const currentDate = formatDateToStr(new Date(), 'yyyy-MM-dd');
     let lastdDate = '';
     let queryCount = 0;
+    let pageNo = 1;
     // 最多查询30次
     while (currentDate !== lastdDate && queryCount < 30) {
       queryCount++;
-      const list = await this.lotteryService.queryWinHistory(1, 100, true);
+      const list = await this.lotteryService.queryWinHistory(pageNo, 100, true);
       list && list?.length > 0 && (lastdDate = list[0].lotteryDrawTime);
       // 等待2分钟
       await nextSleep(1000 * 60 * 2);
     }
     console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
+    console.log(`${new Date().toLocaleString()} : 开始更新后续24次历史记录`);
+    while (++pageNo && pageNo < 26) {
+      await this.lotteryService.queryWinHistory(pageNo, 100, true);
+      // 等待1分钟
+      await nextSleep(1000 * 60 * 1);
+    }
   }
 }

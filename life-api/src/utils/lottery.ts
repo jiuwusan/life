@@ -133,11 +133,7 @@ export const getRandomNumbers = (bets, count) => {
  * @param multiUserNumbers
  * @returns
  */
-export const batchCheckLottery = (
-  lotteryNumbers: Array<string>,
-  multiUserNumbers: Array<Array<string>>,
-  onlyWin?: boolean
-) => {
+export const batchCheckLottery = (lotteryNumbers: Array<string>, multiUserNumbers: Array<Array<string>>, onlyWin?: boolean) => {
   const result = [];
   multiUserNumbers.forEach(userNumbers => {
     const currentResult = checkLottery(lotteryNumbers, userNumbers);
@@ -157,9 +153,7 @@ export const createLottery = (count: number, exclude?: Array<string>) => {
   const result = [];
   // 继续 投注
   while ((count || 1) > result.length) {
-    const currentLottery = []
-      .concat(getRandomNumbers(createBallsPool(35, 1, exclude), 5))
-      .concat(getRandomNumbers(createBallsPool(12, 1, exclude), 2));
+    const currentLottery = [].concat(getRandomNumbers(createBallsPool(35, 1, exclude), 5)).concat(getRandomNumbers(createBallsPool(12, 1, exclude), 2));
     result.push(currentLottery);
   }
 
@@ -191,9 +185,102 @@ export const computeStatVariance = (list: Array<Array<string>>) => {
   }
 
   Object.keys(varianceMap).forEach(ball => {
-    varianceMap[ball] = varianceMap[ball] / total;
+    varianceMap[ball] = {
+      variance: varianceMap[ball],
+      expectation: expectationMap[ball]
+    };
   });
 
-  // 期望方差
   return varianceMap;
+};
+
+/**
+ * 根据统计获取最佳号码
+ * @param frontStat
+ * @param backStat
+ * @returns
+ */
+export const getRandomNumbersByStat = (frontStat: any, backStat: any) => {
+  const rf: Array<string> = [];
+  const rb: Array<string> = [];
+  // 差值绝对值最小
+  frontStat.sort((a: any, b: any) => a.gran - b.gran);
+  rf.push(
+    ...getRandomNumbers(
+      frontStat.slice(0, 4).map(item => item.ball),
+      2
+    )
+  );
+  // 连续漏期最多
+  frontStat.sort((a: any, b: any) => b.vanish - a.vanish);
+  rf.push(
+    ...getRandomNumbers(
+      frontStat
+        .filter(item => !rf.includes(item.ball))
+        .slice(0, 4)
+        .map(item => item.ball),
+      2
+    )
+  );
+  // 和值越大，概率越高
+  frontStat.sort((a: any, b: any) => b.sum - a.sum);
+  rf.push(
+    ...getRandomNumbers(
+      frontStat
+        .filter(item => !rf.includes(item.ball))
+        .slice(0, 2)
+        .map(item => item.ball),
+      1
+    )
+  );
+  backStat.sort((a: any, b: any) => b.vanish - a.vanish);
+  rb.push(
+    ...getRandomNumbers(
+      backStat.slice(0, 2).map(item => item.ball),
+      1
+    )
+  );
+  backStat.sort((a: any, b: any) => a.sum - b.sum);
+  rb.push(
+    ...getRandomNumbers(
+      backStat
+        .filter(item => !rb.includes(item.ball))
+        .slice(0, 2)
+        .map(item => item.ball),
+      1
+    )
+  );
+  rf.sort((a, b) => parseInt(a) - parseInt(b));
+  rb.sort((a, b) => parseInt(a) - parseInt(b));
+  return [...rf, ...rb];
+};
+
+/**
+ * 通过期望方差获取最佳号码
+ * @returns
+ */
+export const getRandomNumbersByVariance = (frontStat: any, backStat: any) => {
+  const vf: Array<string> = [];
+  const vb: Array<string> = [];
+  frontStat.sort((a: any, b: any) => b.expectation - a.expectation);
+  vf.push(...frontStat.slice(0, 2).map((item: any) => item.ball));
+  frontStat.sort((a: any, b: any) => a.variance - b.variance);
+  vf.push(
+    ...frontStat
+      .filter((item: any) => !vf.includes(item.ball))
+      .slice(0, 3)
+      .map((item: any) => item.ball)
+  );
+  backStat.sort((a: any, b: any) => b.expectation - a.expectation);
+  vb.push(...backStat.slice(0, 1).map((item: any) => item.ball));
+  backStat.sort((a: any, b: any) => a.variance - b.variance);
+  vb.push(
+    ...backStat
+      .filter((item: any) => !vb.includes(item.ball))
+      .slice(0, 1)
+      .map((item: any) => item.ball)
+  );
+  vf.sort((a, b) => parseInt(a) - parseInt(b));
+  vb.sort((a, b) => parseInt(a) - parseInt(b));
+  return [...vf, ...vb];
 };

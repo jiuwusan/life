@@ -5,9 +5,9 @@ import { Repository, Not } from 'typeorm';
 import {
   createLottery,
   batchCheckLottery,
-  getRandomNumbers,
-  createBallsPool,
-  computeStatVariance
+  computeStatVariance,
+  getRandomNumbersByStat,
+  getRandomNumbersByVariance
 } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
@@ -28,8 +28,7 @@ export class LotteryService {
     let betBall = [];
     if (recommend) {
       // 添加推荐
-      betBall.push(await this.recommend());
-      betBall.push(await this.recommend());
+      betBall = betBall.concat(await this.recommend());
     }
     betBall = betBall.concat(createLottery(count - betBall.length));
     const lottery = new Lottery();
@@ -151,14 +150,14 @@ export class LotteryService {
     while (list.length < numbers) {
       list.push(...(await this.queryWinHistory(list.length / 100 + 1)));
     }
-    await this.queryWinHistory();
+
     const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
     const varianceList: { frontHistory: string[][]; backHistory: string[][] } = { frontHistory: [], backHistory: [] };
     let vanish = 0;
     list.forEach(item => {
       const drawBalls = item.lotteryDrawResult.split(' ');
       varianceList.frontHistory.push(drawBalls.slice(0, 5));
-      varianceList.backHistory.push(drawBalls.slice(-1));
+      varianceList.backHistory.push(drawBalls.slice(-2));
       drawBalls.forEach((ball, idx) => {
         const current = idx > 4 ? 'backStat' : 'frontStat';
         !result[current][ball] && (result[current][ball] = { total: 0, vanish });
@@ -167,7 +166,7 @@ export class LotteryService {
       vanish++;
     });
 
-    const formatStat = (stats: Stats) => {
+    const formatStat = (stats: Stats, varianceStat: any) => {
       const list = Object.keys(stats).map(ball => {
         const diff = stats[ball].total - stats[ball].vanish;
         return {
@@ -175,7 +174,8 @@ export class LotteryService {
           diff,
           gran: Math.abs(diff),
           sum: stats[ball].total + stats[ball].vanish,
-          ...stats[ball]
+          ...stats[ball],
+          ...varianceStat[ball]
         };
       });
       // 倒叙
@@ -183,12 +183,8 @@ export class LotteryService {
       return list;
     };
     return {
-      frontStat: formatStat(result.frontStat),
-      backStat: formatStat(result.backStat),
-      variance: {
-        frontStat: computeStatVariance(varianceList.frontHistory),
-        backStat: computeStatVariance(varianceList.backHistory)
-      }
+      frontStat: formatStat(result.frontStat, computeStatVariance(varianceList.frontHistory)),
+      backStat: formatStat(result.backStat, computeStatVariance(varianceList.backHistory))
     };
   }
 
@@ -196,35 +192,14 @@ export class LotteryService {
    * 推荐
    */
   async recommend() {
-    const { frontStat, backStat } = await this.statistics();
-    const bestBall = { frontBall: [], backBall: [] };
-    // 差值绝对值最小
-    frontStat.sort((a, b) => a.gran - b.gran);
-    backStat.sort((a, b) => a.gran - b.gran);
-    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
-    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
-    // 和值越大，概率越高
-    frontStat.sort((a, b) => b.sum - a.sum);
-    backStat.sort((a, b) => b.sum - a.sum);
-    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
-    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
-    // 连续漏期最多
-    frontStat.sort((a, b) => b.vanish - a.vanish);
-    backStat.sort((a, b) => b.vanish - a.vanish);
-    bestBall.frontBall = bestBall.frontBall.concat(frontStat.slice(0, 4).map(item => item.ball));
-    bestBall.backBall = bestBall.backBall.concat(backStat.slice(0, 2).map(item => item.ball));
-    bestBall.frontBall = [...new Set(bestBall.frontBall)];
-    bestBall.backBall = [...new Set(bestBall.backBall)];
-    const rf = getRandomNumbers(bestBall.frontBall, 2);
-    const rb = getRandomNumbers(bestBall.backBall, 1);
-    const result = [
-      ...getRandomNumbers(createBallsPool(35, 1, rf), 3)
-        .concat(rf)
-        .sort((a, b) => parseInt(a) - parseInt(b)),
-      ...getRandomNumbers(createBallsPool(12, 1, rb), 1)
-        .concat(rb)
-        .sort((a, b) => parseInt(a) - parseInt(b))
-    ];
+    const rangs = [500, 1500, 2500];
+    const result = [];
+    const { frontStat, backStat } = await this.statistics(100);
+    result.push(getRandomNumbersByStat(frontStat, backStat));
+    for (let i = 0; i < rangs.length; i++) {
+      const stat = await this.statistics(rangs[i]);
+      result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
+    }
     return result;
   }
 }
