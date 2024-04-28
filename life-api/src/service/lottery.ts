@@ -9,27 +9,22 @@ import { RedisService } from '@/service/redis';
 
 @Injectable()
 export class LotteryService {
-  // private readonly redisService = new RedisService();
-
   constructor(
     @InjectRepository(Lottery)
     private lotteryRepository: Repository<Lottery>,
     private readonly redisService: RedisService
   ) {}
 
-  async bet(data: { type: string; count: number; uid: string; recommend: boolean }) {
-    const { type = '1', count = 5, uid, recommend } = data;
-    let betBall = [];
-    if (recommend) {
+  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string }) {
+    const { type = '1', count = 5, uid, recommend, betTime = new Date() } = data;
+    let { betBall = [] } = data;
+    if (recommend && betBall.length < count) {
       // 添加推荐
       betBall = betBall.concat(await this.recommend());
     }
     betBall = betBall.concat(createLottery(count - betBall.length));
-    const lottery = new Lottery();
-    lottery.type = type;
-    lottery.betBall = betBall;
     // 使用 UTC时间
-    lottery.betTime = new Date().toUTCString();
+    const lottery = { type, betBall, betTime: new Date(betTime).toUTCString() };
     if (uid) {
       return await this.lotteryRepository.update(uid, lottery);
     }

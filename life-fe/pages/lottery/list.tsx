@@ -42,17 +42,20 @@ export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
 type ItemProps = {
   data: Record<string, any>;
   remove?: Function;
+  reprint?: Function;
 };
 // 每一项
 export function LotteryItem(props: ItemProps) {
-  const { data, remove } = props;
+  const { data, remove, reprint } = props;
 
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>超级大乐透</div>
         <div className={styles.toolBtn}>
-          {/* <span className={styles.tagBtn}>追投</span> */}
+          <span className={styles.tagBtn} onClick={() => reprint && reprint(data.betBall)}>
+            追投
+          </span>
           <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
             删除
           </span>
@@ -128,7 +131,12 @@ export default function Page(props: PageProps) {
       <RoutePage bg={bgImage} padding="8px" title="超级大乐透-投注列表">
         <div>
           {historyList.map(item => (
-            <LotteryItem key={item.uid} data={item} remove={handleRemove} />
+            <LotteryItem
+              key={item.uid}
+              data={item}
+              remove={handleRemove}
+              reprint={(betBall: Array<Array<string>>) => createBet({ betBall })}
+            />
           ))}
         </div>
       </RoutePage>
