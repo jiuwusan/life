@@ -200,6 +200,7 @@ export class LotteryService {
       const stat = await this.statistics(rangs[i]);
       result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
     }
+    console.log('推荐选号结果--->', result);
     return result;
   }
 }
