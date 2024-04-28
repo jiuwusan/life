@@ -263,22 +263,43 @@ export const getRandomNumbersByVariance = (frontStat: any, backStat: any) => {
   const vf: Array<string> = [];
   const vb: Array<string> = [];
   frontStat.sort((a: any, b: any) => b.expectation - a.expectation);
-  vf.push(...frontStat.slice(0, 2).map((item: any) => item.ball));
-  frontStat.sort((a: any, b: any) => a.variance - b.variance);
+  // 4选2
   vf.push(
-    ...frontStat
-      .filter((item: any) => !vf.includes(item.ball))
-      .slice(0, 3)
-      .map((item: any) => item.ball)
+    ...getRandomNumbers(
+      frontStat.slice(0, 4).map((item: any) => item.ball),
+      2
+    )
   );
+  frontStat.sort((a: any, b: any) => a.variance - b.variance);
+  // 6选3
+  vf.push(
+    ...getRandomNumbers(
+      frontStat
+        .filter((item: any) => !vf.includes(item.ball))
+        .slice(0, 6)
+        .map((item: any) => item.ball),
+      3
+    )
+  );
+
   backStat.sort((a: any, b: any) => b.expectation - a.expectation);
-  vb.push(...backStat.slice(0, 1).map((item: any) => item.ball));
-  backStat.sort((a: any, b: any) => a.variance - b.variance);
+  // 2选1
   vb.push(
-    ...backStat
-      .filter((item: any) => !vb.includes(item.ball))
-      .slice(0, 1)
-      .map((item: any) => item.ball)
+    ...getRandomNumbers(
+      backStat.slice(0, 2).map((item: any) => item.ball),
+      1
+    )
+  );
+  backStat.sort((a: any, b: any) => a.variance - b.variance);
+  // 2选1
+  vb.push(
+    ...getRandomNumbers(
+      backStat
+        .filter((item: any) => !vb.includes(item.ball))
+        .slice(0, 2)
+        .map((item: any) => item.ball),
+      1
+    )
   );
   vf.sort((a, b) => parseInt(a) - parseInt(b));
   vb.sort((a, b) => parseInt(a) - parseInt(b));
