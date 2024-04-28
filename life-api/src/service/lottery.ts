@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
-import {
-  createLottery,
-  batchCheckLottery,
-  computeStatVariance,
-  getRandomNumbersByStat,
-  getRandomNumbersByVariance
-} from '@/utils/lottery';
+import { createLottery, batchCheckLottery, computeStatVariance, getRandomNumbersByStat, getRandomNumbersByVariance } from '@/utils/lottery';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
@@ -152,7 +146,10 @@ export class LotteryService {
     }
 
     const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
-    const varianceList: { frontHistory: string[][]; backHistory: string[][] } = { frontHistory: [], backHistory: [] };
+    const varianceList: { frontHistory: string[][]; backHistory: string[][] } = {
+      frontHistory: [],
+      backHistory: []
+    };
     let vanish = 0;
     list.forEach(item => {
       const drawBalls = item.lotteryDrawResult.split(' ');
@@ -200,7 +197,7 @@ export class LotteryService {
       const stat = await this.statistics(rangs[i]);
       result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
     }
-    console.log('推荐选号结果--->', result);
+    console.log('推荐选号结果--->', JSON.stringify(result));
     return result;
   }
 }

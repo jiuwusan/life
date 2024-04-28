@@ -26,7 +26,7 @@ module.exports = {
         // 单引号
         singleQuote: true,
         // 单行长度
-        printWidth: 119,
+        printWidth: 300,
         // 缩进
         tabWidth: 2,
         // 行末逗号
