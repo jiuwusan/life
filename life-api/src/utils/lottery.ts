@@ -150,8 +150,9 @@ export const batchCheckLottery = (lotteryNumbers: Array<string>, multiUserNumber
  */
 export const createLottery = (count: number, exclude?: Array<string>) => {
   const result = [];
+  typeof count !== 'number' && (count = 1);
   // 继续 投注
-  while ((count || 1) > result.length) {
+  while (count > result.length) {
     const currentLottery = [].concat(getRandomNumbers(createBallsPool(35, 1, exclude), 5)).concat(getRandomNumbers(createBallsPool(12, 1, exclude), 2));
     result.push(currentLottery);
   }
