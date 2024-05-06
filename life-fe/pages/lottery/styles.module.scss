@@ -1,6 +1,6 @@
 .toolWrap {
   padding: 12px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   width: 100%;
   width: 100vw;
   display: flex;
@@ -81,6 +81,11 @@
           border-color: var(--danger-color);
           color: var(--danger-color);
         }
+        
+        &.warning {
+          border-color: var(--warning-color);
+          color: var(--warning-color);
+        }
       }
     }
 
@@ -145,12 +150,12 @@
     width: 100%;
     background-color: rgba(var(--white-rgb), 0.9);
     color: var(--desc-color);
-    border-color: rgba(var(--desc-rgb), .3);;
-    th{
+    border-color: rgba(var(--desc-rgb), 0.3);
+    th {
       color: var(--primary-color);
       padding: 6px 4px;
     }
-    td{
+    td {
       text-align: center;
       min-height: 40px;
     }

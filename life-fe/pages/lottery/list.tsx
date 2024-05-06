@@ -43,17 +43,23 @@ type ItemProps = {
   data: Record<string, any>;
   remove?: Function;
   reprint?: Function;
+  adding?: Function;
 };
 // 每一项
 export function LotteryItem(props: ItemProps) {
-  const { data, remove, reprint } = props;
+  const { data, remove, reprint, adding } = props;
 
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>超级大乐透</div>
         <div className={styles.toolBtn}>
-          <span className={styles.tagBtn} onClick={() => reprint && reprint(data.betBall)}>
+          <span
+            className={classNames([styles.tagBtn, styles.warning])}
+            onClick={() => adding && adding({ betBall: data.betBall, count: data.betBall.length + 1, uid: data.uid })}>
+            加一注
+          </span>
+          <span className={styles.tagBtn} onClick={() => reprint && reprint({ betBall: data.betBall })}>
             追投
           </span>
           <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
@@ -135,7 +141,8 @@ export default function Page(props: PageProps) {
               key={item.uid}
               data={item}
               remove={handleRemove}
-              reprint={(betBall: Array<Array<string>>) => createBet({ betBall })}
+              reprint={(param: any) => createBet(param)}
+              adding={(param: any) => createBet(param)}
             />
           ))}
         </div>
@@ -147,7 +154,7 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} type="danger" onClick={() => createBet({ recommend: true })}>
           推荐选号
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet()}>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1 })}>
           选号
         </Button>
       </Sticky>
