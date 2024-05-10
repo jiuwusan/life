@@ -80,12 +80,14 @@ export const checkLottery = (lotteryNumbers: Array<string>, userNumbers: Array<s
  */
 export const createBallsPool = (max = 0, min = 1, exclude?: Array<string>) => {
   const value = [];
+  const excludeSet = exclude ? new Set(exclude) : null;
 
   for (let index = min; index <= max; index++) {
-    if (exclude && exclude.includes(index.toString())) {
+    const ball = index < 10 ? `0${index}` : `${index}`;
+    if (excludeSet && excludeSet.has(ball)) {
       continue;
     }
-    value.push(index < 10 ? `0${index}` : index.toString());
+    value.push(ball);
   }
 
   return value;
@@ -97,19 +99,21 @@ export const createBallsPool = (max = 0, min = 1, exclude?: Array<string>) => {
  * @param {*} array
  * @returns
  */
-export const shuffleArray = (array, depth = 1) => {
-  // 防止浅克隆
-  const sliceArray = array.slice();
-  for (let i = sliceArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [sliceArray[i], sliceArray[j]] = [sliceArray[j], sliceArray[i]];
+export const shuffleArray = (array, iterations = 1) => {
+  if (array?.length < 1) {
+    return array;
+  }
+  const result = array.slice();
+  const len = result.length;
+
+  for (let i = 0; i < iterations; i++) {
+    for (let j = len - 1; j > 0; j--) {
+      const k = Math.floor(Math.random() * (j + 1));
+      [result[j], result[k]] = [result[k], result[j]];
+    }
   }
 
-  if (depth <= 1) {
-    return sliceArray;
-  }
-
-  return shuffleArray(sliceArray, --depth);
+  return result;
 };
 
 /**
