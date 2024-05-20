@@ -1,13 +1,14 @@
 .toolWrap {
-  padding: 12px;
+  padding: 0px 12px 12px 12px;
   background-color: #ffffff;
   width: 100%;
   width: 100vw;
   display: flex;
   justify-content: space-between;
-
+  flex-wrap: wrap;
   .toolBtnItem {
     width: calc((100% - 32px) / 3);
+    margin: 16px 0 0 0;
   }
 }
 
@@ -81,7 +82,7 @@
           border-color: var(--danger-color);
           color: var(--danger-color);
         }
-        
+
         &.warning {
           border-color: var(--warning-color);
           color: var(--warning-color);
