@@ -38,4 +38,9 @@ export class LotteryController {
   async recommend() {
     return await this.lotteryService.recommend();
   }
+
+  @Get('persist')
+  async persist(@Query() { refresh = false }) {
+    return await this.lotteryService.persist(refresh);
+  }
 }

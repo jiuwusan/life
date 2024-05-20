@@ -15,16 +15,33 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
-  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string }) {
-    const { type = '1', count = 5, uid, recommend, betTime = new Date() } = data;
-    let { betBall = [] } = data;
-    if (recommend && betBall.length < count) {
-      // 添加推荐
-      betBall = betBall.concat(await this.recommend());
+  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string; persist?: boolean; reprint?: boolean }) {
+    const { type = '1', recommend, betTime = new Date(), persist = false, reprint = false } = data;
+    let { count = 1, uid } = data;
+
+    const betBall = [];
+    if (!uid && persist) {
+      // 守号
+      betBall.push(await this.persist());
+      count--;
     }
-    betBall = betBall.concat(createLottery(count - betBall.length));
+
+    if (!uid && recommend && betBall.length < count) {
+      // 推荐
+      betBall.push(await this.recommend());
+      count--;
+    }
+
+    if (uid) {
+      const lasted = await this.lotteryRepository.findOne({ where: { uid } });
+      lasted && betBall.push(...lasted.betBall);
+    }
+
+    betBall.push(...createLottery(count));
     // 使用 UTC时间
     const lottery = { type, betBall, betTime: new Date(betTime).toUTCString() };
+    // 追投
+    reprint && (uid = '');
     if (uid) {
       return await this.lotteryRepository.update(uid, lottery);
     }
@@ -192,7 +209,22 @@ export class LotteryService {
       const stat = await this.statistics(rangs[i]);
       result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
     }
-    console.log('推荐选号结果--->', JSON.stringify(result));
-    return result;
+    // 只取一项
+    const randomIndex = Math.floor(Math.random() * result.length);
+    return result[randomIndex];
+  }
+
+  /**
+   * 守号
+   */
+  async persist(refresh?: boolean) {
+    const userId = 'jiuwusan';
+    const cacheKey = `lottery:persist-${userId}`;
+    let bets = await this.redisService.get<string[]>(cacheKey);
+    if (!bets || refresh) {
+      bets = createLottery(1)[0];
+      this.redisService.set(cacheKey, bets);
+    }
+    return bets;
   }
 }

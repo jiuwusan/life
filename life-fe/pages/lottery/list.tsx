@@ -29,9 +29,7 @@ export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
   return (
     <div style={{ whiteSpace: 'nowrap' }}>
       {formatData.map((ball, idx) => (
-        <span
-          key={idx}
-          className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
+        <span key={idx} className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
           {ball.value}
         </span>
       ))}
@@ -54,12 +52,10 @@ export function LotteryItem(props: ItemProps) {
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>超级大乐透</div>
         <div className={styles.toolBtn}>
-          <span
-            className={classNames([styles.tagBtn, styles.warning])}
-            onClick={() => adding && adding({ betBall: data.betBall, count: data.betBall.length + 1, uid: data.uid })}>
+          <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid })}>
             加一注
           </span>
-          <span className={styles.tagBtn} onClick={() => reprint && reprint({ betBall: data.betBall })}>
+          <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
             追投
           </span>
           <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
@@ -137,25 +133,25 @@ export default function Page(props: PageProps) {
       <RoutePage bg={bgImage} padding="8px" title="超级大乐透-投注列表">
         <div>
           {historyList.map(item => (
-            <LotteryItem
-              key={item.uid}
-              data={item}
-              remove={handleRemove}
-              reprint={(param: any) => createBet(param)}
-              adding={(param: any) => createBet(param)}
-            />
+            <LotteryItem key={item.uid} data={item} remove={handleRemove} reprint={(param: any) => createBet(param)} adding={(param: any) => createBet(param)} />
           ))}
         </div>
       </RoutePage>
       <Sticky fixed type="bottom" className={styles.toolWrap}>
         <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
-          查看统计
+          统计
         </Button>
-        <Button className={styles.toolBtnItem} type="danger" onClick={() => createBet({ recommend: true })}>
-          推荐选号
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, persist: true })}>
+          守号
         </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1 })}>
-          选号
+          选1注
+        </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 5, persist: true, recommend: true })}>
+          选5注
+        </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7, persist: true, recommend: true })}>
+          选7注
         </Button>
       </Sticky>
     </>
