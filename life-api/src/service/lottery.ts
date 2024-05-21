@@ -15,8 +15,8 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
-  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string; persist?: boolean; reprint?: boolean }) {
-    const { type = '1', recommend, betTime = new Date(), persist = false, reprint = false } = data;
+  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string; persist?: boolean; reprint?: boolean; }) {
+    const { type = 'random', recommend, betTime = new Date(), persist = false, reprint = false } = data;
     let { count = 1, uid } = data;
 
     const betBall = [];
@@ -37,7 +37,7 @@ export class LotteryService {
       lasted && betBall.push(...lasted.betBall);
     }
 
-    betBall.push(...createLottery(count));
+    betBall.push(...createLottery(count, type));
     // 使用 UTC时间
     const lottery = { type, betBall, betTime: new Date(betTime).toUTCString() };
     // 追投

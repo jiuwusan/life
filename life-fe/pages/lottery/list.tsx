@@ -141,20 +141,29 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
           统计
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, persist: true })}>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ persist: true })}>
           守号
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, recommend: true })}>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ recommend: true })}>
           推荐
         </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1 })}>
-          选1注
+          机选1注
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 5, persist: true, recommend: true })}>
-          选5注
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 5 })}>
+          机选5注
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7, persist: true, recommend: true })}>
-          选7注
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7 })}>
+          机选7注
+        </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 3, sequence: true })}>
+          顺序3注
+        </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 5, sequence: true })}>
+          顺序5注
+        </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7, sequence: true })}>
+          顺序7注
         </Button>
       </Sticky>
     </>

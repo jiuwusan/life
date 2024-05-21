@@ -99,7 +99,7 @@ export const createBallsPool = (max = 0, min = 1, exclude?: Array<string>) => {
  * @param {*} array
  * @returns
  */
-export const shuffleArray = (array, iterations = 1) => {
+export const shuffleArray = (array, iterations = 1997) => {
   if (array?.length < 1) {
     return array;
   }
@@ -122,9 +122,9 @@ export const shuffleArray = (array, iterations = 1) => {
  * @param {*} max
  * @param {*} num
  */
-export const getRandomNumbers = (bets, count) => {
-  const shuffled = shuffleArray(bets, 1997); // 洗牌
-  const result = shuffled.slice(0, count); // 取前 count 个数
+export const getRandomNumbers = (bets, count, sequence?: boolean) => {
+  const shuffled = sequence ? bets : shuffleArray(bets); // 洗牌
+  const result = shuffled[sequence ? 'splice' : 'slice'](0, count); // 取前 count 个数
   // 正序排列
   result.sort((a, b) => parseInt(a) - parseInt(b));
   return result;
@@ -152,13 +152,16 @@ export const batchCheckLottery = (lotteryNumbers: Array<string>, multiUserNumber
  * 生成
  * @param {*} count
  */
-export const createLottery = (count: number, exclude?: Array<string>) => {
+export const createLottery = (count: number, type?: string) => {
   const result = [];
   typeof count !== 'number' && (count = 1);
+  const frontBalls = [];
+  const backBalls = [];
   // 继续 投注
   while (count > result.length) {
-    const currentLottery = [].concat(getRandomNumbers(createBallsPool(35, 1, exclude), 5)).concat(getRandomNumbers(createBallsPool(12, 1, exclude), 2));
-    result.push(currentLottery);
+    frontBalls.length < 5 && frontBalls.push(...shuffleArray(createBallsPool(35, 1)));
+    backBalls.length < 2 && backBalls.push(...shuffleArray(createBallsPool(12, 1)));
+    result.push([...getRandomNumbers(frontBalls, 5, type === 'sequence'), ...getRandomNumbers(backBalls, 2, type === 'sequence')]);
   }
 
   return result;
