@@ -144,6 +144,9 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, persist: true })}>
           守号
         </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, recommend: true })}>
+          推荐
+        </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1 })}>
           选1注
         </Button>

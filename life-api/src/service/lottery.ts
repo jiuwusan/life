@@ -22,8 +22,8 @@ export class LotteryService {
     const betBall = [];
     if (!uid && persist) {
       // 守号
-      betBall.push(await this.persist());
-      count--;
+      betBall.push(...(await this.persist()));
+      count -= 2;
     }
 
     if (!uid && recommend && betBall.length < count) {
@@ -42,10 +42,8 @@ export class LotteryService {
     const lottery = { type, betBall, betTime: new Date(betTime).toUTCString() };
     // 追投
     reprint && (uid = '');
-    if (uid) {
-      return await this.lotteryRepository.update(uid, lottery);
-    }
-    return await this.lotteryRepository.save(lottery);
+    // 保存
+    return uid ? await this.lotteryRepository.update(uid, lottery) : await this.lotteryRepository.save(lottery);
   }
 
   /**
@@ -220,9 +218,9 @@ export class LotteryService {
   async persist(refresh?: boolean) {
     const userId = 'jiuwusan';
     const cacheKey = `lottery:persist-${userId}`;
-    let bets = await this.redisService.get<string[]>(cacheKey);
+    let bets = await this.redisService.get<string[][]>(cacheKey);
     if (!bets || refresh) {
-      bets = createLottery(1)[0];
+      bets = createLottery(2);
       this.redisService.set(cacheKey, bets);
     }
     return bets;
