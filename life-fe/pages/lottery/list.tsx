@@ -156,14 +156,14 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7 })}>
           机选7注
         </Button>
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, sequence: true })}>
+          顺序1注
+        </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 3, sequence: true })}>
           顺序3注
         </Button>
         <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 5, sequence: true })}>
           顺序5注
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 7, sequence: true })}>
-          顺序7注
         </Button>
       </Sticky>
     </>

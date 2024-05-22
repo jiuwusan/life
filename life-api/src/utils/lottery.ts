@@ -149,19 +149,37 @@ export const batchCheckLottery = (lotteryNumbers: Array<string>, multiUserNumber
 };
 
 /**
+ * 顺序生成
+ * @param {*} count
+ */
+export const createSequenceLottery = (() => {
+  const frontBalls = [];
+  const backBalls = [];
+  return () => {
+    frontBalls.length < 5 && frontBalls.push(...shuffleArray(createBallsPool(35, 1)));
+    backBalls.length < 2 && backBalls.push(...shuffleArray(createBallsPool(12, 1)));
+    return [...getRandomNumbers(frontBalls, 5, true), ...getRandomNumbers(backBalls, 2, true)];
+  };
+})();
+
+/**
+ * 随机
+ * @param {*} count
+ */
+export const createRandomLottery = () => {
+  return [...getRandomNumbers(createBallsPool(35, 1), 5), ...getRandomNumbers(createBallsPool(12, 1), 2)];
+};
+
+/**
  * 生成
  * @param {*} count
  */
-export const createLottery = (count: number, type?: string) => {
+export const createLottery = (count: number, sequence?: boolean) => {
   const result = [];
   typeof count !== 'number' && (count = 1);
-  const frontBalls = [];
-  const backBalls = [];
   // 继续 投注
   while (count > result.length) {
-    frontBalls.length < 5 && frontBalls.push(...shuffleArray(createBallsPool(35, 1)));
-    backBalls.length < 2 && backBalls.push(...shuffleArray(createBallsPool(12, 1)));
-    result.push([...getRandomNumbers(frontBalls, 5, type === 'sequence'), ...getRandomNumbers(backBalls, 2, type === 'sequence')]);
+    result.push(sequence ? createSequenceLottery() : createRandomLottery());
   }
 
   return result;
