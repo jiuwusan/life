@@ -25,8 +25,8 @@ export class LotteryController {
   }
 
   @Get('query/history')
-  async history(@Query() { pageNo = 1, pageSize = 100 }) {
-    return await this.lotteryService.queryWinHistory(pageNo, pageSize);
+  async history(@Query() { pageNo = 1, pageSize = 100, refresh = false }) {
+    return await this.lotteryService.queryWinHistory(pageNo, pageSize, refresh);
   }
 
   @Get('statistics')

@@ -52,15 +52,26 @@ export function LotteryItem(props: ItemProps) {
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>超级大乐透</div>
         <div className={styles.toolBtn}>
-          <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid })}>
-            加一注
-          </span>
-          <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
-            追投
-          </span>
-          <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
-            删除
-          </span>
+          {!data.winTime && (
+            <>
+              <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid })}>
+                随机
+              </span>
+              <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid, sequence: true })}>
+                顺序
+              </span>
+            </>
+          )}
+          {data.winTime && (
+            <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
+              追投
+            </span>
+          )}
+          {!data.winTime && (
+            <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
+              删除
+            </span>
+          )}
         </div>
       </div>
       <div className={styles.itemRow}>
