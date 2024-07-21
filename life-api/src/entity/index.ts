@@ -33,6 +33,14 @@ export class Lottery {
   @Column({ name: 'win_results', type: 'json', nullable: true })
   winResults: Array<WinResult>;
 
+  //追加uid
+  @Column({ name: 'add_uid', type: 'varchar', nullable: true })
+  addUid: Array<WinResult>;
+
+  //追加期数
+  @Column({ name: 'add_count', type: 'varchar', nullable: true })
+  addCount: Array<WinResult>;
+
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
   deleted: string;
