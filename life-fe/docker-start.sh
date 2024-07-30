@@ -10,7 +10,7 @@ slbCount=${3:-1}
 # dockerImage=localhost/jiuwusan-life/$appVersion
 dockerImage=$appVersion
 # 映射本机地址
-apiHost=jiuwusan.cn:172.17.0.1
+# apiHost=jiuwusan.cn:172.17.0.1
 # 拉取
 # docker pull $dockerImage
 # 负载均衡
@@ -22,8 +22,8 @@ for ((idx = 0; idx < $slbCount; idx++)); do
     docker run -itd \
         -e TZ=Asia/Shanghai \
         -e DELUGE_LOGLEVEL=error \
-        --network=jiuwusan-network \
-        --add-host=$apiHost \
+        -p 30001:3000 \
+        --network=network-jiuwusan \
         --name=$webServer \
         --restart=always $dockerImage
 done
