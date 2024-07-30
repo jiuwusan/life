@@ -11,7 +11,7 @@ COPY . .
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npm.taobao.org
+# RUN yarn config set registry https://registry.npm.taobao.org
 RUN yarn install --mutex network
 # 构建
 RUN yarn build
@@ -19,8 +19,6 @@ RUN yarn build
 # 第二阶段：将构建好的文件复制到最终镜像
 # 运行环境
 FROM node:20.11.1
-# 作者
-MAINTAINER JiuWuSan
 # Node 为生产环境
 ENV NODE_ENV=production
 # 指定 ip
@@ -34,7 +32,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npm.taobao.org
+# RUN yarn config set registry https://registry.npm.taobao.org
 RUN yarn install --production --mutex network
 # 容器对外暴露的端口号
 EXPOSE 3000
