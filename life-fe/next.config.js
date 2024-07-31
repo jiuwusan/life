@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  basePath: '/life-web', 
-  assetPrefix: '/life-web',
+  // basePath: '/life-web', 
+  // assetPrefix: '/life-web',
   // 仅 tsx 文件作为页面
   pageExtensions: ['tsx','jsx'],
   async rewrites() {
