@@ -15,3 +15,27 @@ export const lotteryApi = {
   // 查询列表
   queryLotteryHistory: (query?: Params) => STAPI.fetch('gateway/lottery/getHistoryPageListV1.qry', { query })
 };
+
+// QBittorrent API
+const QBitAPI = new ApiGenerator({
+  baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
+  formatResponse: res => {
+    return res;
+  },
+  formatFetchOptions: options => {
+    if (options.data) {
+      const formData = new URLSearchParams();
+      Object.keys(options.data).forEach((keyStr: string) => formData.append(keyStr, options.data[keyStr]));
+      options.body = formData;
+      delete options.data;
+    }
+    return options;
+  }
+});
+
+export const qbApi = {
+  // 登录
+  login: (data?: Params) => QBitAPI.fetch('/auth/login', { method: 'POST', data }),
+  // 查询列表
+  queryTorrentsInfo: (option?: Params) => QBitAPI.fetch('/api/v2/torrents/info', option)
+};

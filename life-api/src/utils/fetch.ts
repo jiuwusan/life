@@ -29,8 +29,8 @@ export interface RequestOptions extends RequestInit {
  */
 export const request = (url: RequestInfo, options?: RequestOptions) => {
   let ACIDCount = 0;
-  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`);
-  const ACIDREQ = async (url: RequestInfo, options?: RequestOptions): Promise<Response> => {
+  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`, options);
+  const ACIDREQ = async (url: RequestInfo, options?: RequestOptions): Promise<any> => {
     ACIDCount++;
     try {
       if (options && typeof options === 'object') {
@@ -41,12 +41,15 @@ export const request = (url: RequestInfo, options?: RequestOptions) => {
       }
 
       const response = await fetch(url, options);
-
       if (!response.ok) {
         throw new Error('Failed to fetch data from API');
       }
-
-      return await response.json();
+      try {
+        return await response.json();
+      } catch (error) {
+        // 格式化 json 出错，说明返回的不是 json
+      }
+      return response;
     } catch (error) {
       console.error('Failed to fetch data:', error);
       if (ACIDCount < 3) {

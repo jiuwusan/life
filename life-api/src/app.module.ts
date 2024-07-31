@@ -1,8 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { LotteryController } from '@/controller';
-import { LotteryService, RedisService, TasksService } from '@/service';
+import { LotteryController, QbController } from '@/controller';
+import { LotteryService, QbService, RedisService, TasksService } from '@/service';
 import { MYSQL57, REDIS, REDIS_INJECT } from '@/module';
 import { EntityFeature } from '@/entity';
 import { AllExceptionsFilter, ResponseInterceptor, Gateway } from '@/middleware';
@@ -17,11 +17,12 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     ScheduleModule.forRoot()
   ],
-  controllers: [LotteryController],
+  controllers: [LotteryController, QbController],
   providers: [
     REDIS,
     RedisService,
     LotteryService,
+    QbService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor
