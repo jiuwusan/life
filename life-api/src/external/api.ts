@@ -37,5 +37,9 @@ export const qbApi = {
   // 登录
   login: (data?: Params) => QBitAPI.fetch('/auth/login', { method: 'POST', data }),
   // 查询列表
-  queryTorrentsInfo: (option?: Params) => QBitAPI.fetch('/api/v2/torrents/info', option)
+  queryTorrentsInfo: (option?: Params) => QBitAPI.fetch('/torrents/info', option),
+  // 查询种子文件列表
+  queryTorrentFiles: (option?: Params) => QBitAPI.fetch('/torrents/files', option),
+  // 重命名文件名称
+  updateTorrentFileName: (option?: Params) => QBitAPI.fetch('/torrents/renameFile', { method: 'POST', ...(option || {}) })
 };

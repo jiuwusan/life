@@ -42,7 +42,7 @@ export const request = (url: RequestInfo, options?: RequestOptions) => {
 
       const response = await fetch(url, options);
       if (!response.ok) {
-        throw new Error('Failed to fetch data from API');
+        throw response;
       }
       try {
         return await response.json();
