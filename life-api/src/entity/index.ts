@@ -35,11 +35,11 @@ export class Lottery {
 
   //追加uid
   @Column({ name: 'add_uid', type: 'varchar', nullable: true })
-  addUid: Array<WinResult>;
+  addUid: string;
 
   //追加期数
   @Column({ name: 'add_count', type: 'varchar', nullable: true })
-  addCount: Array<WinResult>;
+  addCount: string;
 
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
