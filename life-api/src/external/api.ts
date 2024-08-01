@@ -18,7 +18,8 @@ export const lotteryApi = {
 
 // QBittorrent API
 const QBitAPI = new ApiGenerator({
-  baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
+  baseUrl: 'http://10.43.88.145:8080/api/v2',
+  // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
   formatResponse: res => {
     return res;
   },
