@@ -15,7 +15,7 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
-  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string[][]; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
+  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
     const { type = 'sp', recommend, betTime = new Date(), persist = false, reprint = false, sequence = false } = data;
     let { count = 1, uid } = data;
 
@@ -34,12 +34,12 @@ export class LotteryService {
 
     if (uid) {
       const lasted = await this.lotteryRepository.findOne({ where: { uid } });
-      lasted && betBall.push(...lasted.betBall);
+      lasted && lasted.betBall && betBall.push(...lasted.betBall.split(';'));
     }
 
     betBall.push(...createLottery(count, sequence));
     // 使用 UTC时间
-    const lottery = { type, betBall, betTime: new Date(betTime).toUTCString() };
+    const lottery = { type, betBall: betBall.join(';'), betTime: new Date(betTime).toISOString() };
     // 追投
     reprint && (uid = '');
     // 保存
@@ -73,11 +73,12 @@ export class LotteryService {
       if (!winLottery) {
         continue;
       }
-      const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult.split(' '), lottery.betBall, true);
+      const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult, lottery.betBall, true);
       const updateValues = {
-        winBall: winLottery.lotteryDrawResult.split(' '),
-        winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toUTCString(),
-        winResults: lotteryResult.length > 0 ? lotteryResult : null
+        winBall: winLottery.lotteryDrawResult,
+        winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
+        winResult: lotteryResult.length > 0 ? lotteryResult.map(item => `${item.gradeCn}：￥${item.amount}.00`).join('；') : null,
+        winPdf: winLottery.drawPdfUrl
       };
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));

@@ -47,6 +47,7 @@ export class QbService {
         return result;
       } catch (error) {
         if (error.status === 403 && ACIDCount < 3) {
+          console.log(`qBittorrent cookie 过期，重新登录`);
           ACIDCount++;
           return await sendFetch(true);
         }

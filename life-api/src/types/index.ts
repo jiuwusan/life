@@ -5,9 +5,10 @@ export type ResponseResult = {
 };
 
 export type WinResult = {
-  front: Array<string>;
-  back: Array<string>;
-  prize: string;
+  front: string;
+  back: string;
+  grade: string;
+  gradeCn: string;
   amount: number;
 };
 
@@ -16,4 +17,5 @@ export type WinLottery = {
   lotteryDrawNum: string;
   lotteryDrawTime: string;
   lotterySaleEndtime: string;
+  drawPdfUrl: string;
 };

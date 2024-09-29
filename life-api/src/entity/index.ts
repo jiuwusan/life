@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { WinResult } from '@/types';
 
 @Entity()
 export class Lottery {
@@ -18,20 +17,24 @@ export class Lottery {
   betTime: string;
 
   //下注号码
-  @Column({ name: 'bet_ball', type: 'json' })
-  betBall: Array<Array<string>>;
+  @Column({ name: 'bet_ball', type: 'varchar' })
+  betBall: string;
 
   // 开奖时间
   @Column({ name: 'win_time', type: 'datetime', nullable: true })
   winTime: string;
 
   //开奖号码
-  @Column({ name: 'win_ball', type: 'simple-array', nullable: true })
-  winBall: Array<string>;
+  @Column({ name: 'win_ball', type: 'varchar', nullable: true })
+  winBall: string;
 
   //开奖结果
-  @Column({ name: 'win_results', type: 'json', nullable: true })
-  winResults: Array<WinResult>;
+  @Column({ name: 'win_result', type: 'varchar', nullable: true })
+  winResult: string;
+
+  //开奖结果
+  @Column({ name: 'win_pdf', type: 'varchar', nullable: true })
+  winPdf: string;
 
   //追加uid
   @Column({ name: 'add_uid', type: 'varchar', nullable: true })
