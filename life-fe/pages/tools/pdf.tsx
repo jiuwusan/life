@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { RoutePage, ClientOnly, PdfPreview } from '@/components';
+import { RoutePage, ClientOnly } from '@/components';
 import { useMemo } from 'react';
 
 export default function Page() {
@@ -7,8 +7,7 @@ export default function Page() {
   const pdfurl = useMemo(() => decodeURIComponent((router.query.pdfurl || '') as string), [router.query.pdfurl]);
   return (
     <RoutePage>
-      <ClientOnly>
-        <PdfPreview file={pdfurl} />
+      <ClientOnly>pdf
       </ClientOnly>
     </RoutePage>
   );
