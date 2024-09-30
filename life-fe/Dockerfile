@@ -7,7 +7,8 @@ RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 # 文件拷贝
-COPY package.json yarn.lock ./
+# COPY package.json yarn.lock ./
+COPY package.json ./
 # 安装 Yarn
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
