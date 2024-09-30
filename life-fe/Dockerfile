@@ -11,7 +11,7 @@ COPY package.json yarn.lock ./
 # 安装 Yarn
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
-# RUN yarn config set "strict-ssl" false -g
+RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npm.taobao.org
 RUN yarn install --frozen-lockfile
 
