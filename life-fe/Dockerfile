@@ -13,8 +13,8 @@ COPY package.json yarn.lock ./
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npm.taobao.org
-RUN yarn install --frozen-lockfile
-
+# RUN yarn install --frozen-lockfile
+RUN yarn install
 # 第三阶段：将构建好的文件复制到最终镜像
 FROM node:20.11.1 AS builder_dist
 # 创建工作目录
