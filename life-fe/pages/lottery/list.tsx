@@ -68,9 +68,11 @@ export function LotteryItem(props: ItemProps) {
               <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
                 追投
               </span>
-              <span className={classNames([styles.tagBtn, styles.success])} onClick={() => window.open(data.winPdf)}>
-                公告
-              </span>
+              {data.winPdf && (
+                <a className={classNames([styles.tagBtn, styles.success])} href={data.winPdf} target="_blank">
+                  公告
+                </a>
+              )}
             </>
           )}
         </div>
