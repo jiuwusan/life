@@ -34,10 +34,10 @@ export class LotteryService {
 
     if (uid) {
       const lasted = await this.lotteryRepository.findOne({ where: { uid } });
-      lasted && lasted.betBall && betBall.push(...lasted.betBall.split(';'));
+      lasted && lasted.betBall && betBall.push(...(lasted.betBall ? lasted.betBall.split(';') : []));
     }
 
-    betBall.push(...createLottery(count, sequence));
+    !reprint && betBall.push(...createLottery(count, sequence));
     // 使用 UTC时间
     const lottery = { type, betBall: betBall.join(';'), betTime: new Date(betTime).toISOString() };
     // 追投

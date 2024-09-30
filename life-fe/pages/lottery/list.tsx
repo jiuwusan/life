@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { RoutePage, Button, Sticky } from '@/components';
-import { getBackgroundImage } from '@/utils/util';
+import { getBackgroundImage, strToArray } from '@/utils/util';
 import { useMemo } from 'react';
 import { useFetchState, useFetchClient } from '@/hooks/extend';
 import { queryLotteryList, betLottery, matchLottery, removeLottery } from './hooks';
@@ -19,16 +19,14 @@ export async function getServerSideProps() {
 }
 
 // 每一项
-export function BallsRow(props: { data: Array<string>; win?: Array<string> }) {
+export function BallsRow(props: { data: string; win?: string }) {
   const { data, win } = props;
 
-  const formatData = useMemo(() => {
-    return matchLottery(data, win);
-  }, [data, win]);
+  const result = useMemo(() => matchLottery(data, win), [data, win]);
 
   return (
     <div style={{ whiteSpace: 'nowrap' }}>
-      {formatData.map((ball, idx) => (
+      {result.map((ball, idx) => (
         <span key={idx} className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
           {ball.value}
         </span>
@@ -45,8 +43,9 @@ type ItemProps = {
 };
 // 每一项
 export function LotteryItem(props: ItemProps) {
+  const router = useRouter();
   const { data, remove, reprint, adding } = props;
-
+  const betBallList = useMemo(() => strToArray(data.betBall, ';'), [data]);
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
@@ -60,17 +59,20 @@ export function LotteryItem(props: ItemProps) {
               <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid, sequence: true })}>
                 顺序
               </span>
+              <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
+                删除
+              </span>
             </>
           )}
           {data.winTime && (
-            <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
-              追投
-            </span>
-          )}
-          {!data.winTime && (
-            <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
-              删除
-            </span>
+            <>
+              <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
+                追投
+              </span>
+              <span className={classNames([styles.tagBtn, styles.success])} onClick={() => router.push(`/tools/pdf?pdfurl=${encodeURIComponent(data.winPdf)}`)}>
+                公告
+              </span>
+            </>
           )}
         </div>
       </div>
@@ -81,7 +83,7 @@ export function LotteryItem(props: ItemProps) {
       <div className={classNames([styles.itemRow, styles.row])}>
         <div className={styles.title}>投注号码：</div>
         <div>
-          {data.betBall.map((item: Array<string>, idx: number) => (
+          {betBallList.map((item: string, idx: number) => (
             <BallsRow key={idx} data={item} win={data.winBall} />
           ))}
         </div>
@@ -103,17 +105,7 @@ export function LotteryItem(props: ItemProps) {
       <div className={classNames([styles.itemRow])}>
         <span className={styles.title}>开奖结果：</span>
         {!data.winTime && <span className={styles.notDrawn}>待开奖</span>}
-        {data.winTime && !data.winResults && <span className={styles.notWin}>未中奖</span>}
-        {data.winTime && data.winResults && (
-          <span className={styles.win}>
-            {data.winResults.map((item: any, idx: number) => (
-              <span key={idx}>
-                {idx !== 0 ? ' | ' : ''}
-                {item.gradeCn}，¥ {item.amount.toFixed(2)}
-              </span>
-            ))}
-          </span>
-        )}
+        {data.winTime && <span className={data.winResult ? styles.win : styles.notWin}>{data.winResult || '未中奖'}</span>}
       </div>
     </div>
   );
@@ -152,20 +144,11 @@ export default function Page(props: PageProps) {
         <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
           统计
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ persist: true })}>
-          守号
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 2 })}>
+          机选2注
         </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ recommend: true })}>
-          推荐
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1 })}>
-          机选1注
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 1, sequence: true })}>
-          顺序1注
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 3, sequence: true })}>
-          顺序3注
+        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 4 })}>
+          机选4注
         </Button>
       </Sticky>
     </>

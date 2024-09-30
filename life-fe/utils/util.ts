@@ -5,8 +5,7 @@
  */
 export const isColor = (colorStr: string) => {
   // 使用正则表达式匹配颜色格式
-  const regex =
-    /^#([0-9A-Fa-f]{3}){1,2}$|^#([0-9A-Fa-f]{4}){1,2}$|^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*\d*\.?\d+\s*)?\)$/i;
+  const regex = /^#([0-9A-Fa-f]{3}){1,2}$|^#([0-9A-Fa-f]{4}){1,2}$|^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*\d*\.?\d+\s*)?\)$/i;
   return regex.test(colorStr);
 };
 
@@ -106,4 +105,19 @@ export const formatDateToStr = (date?: number | Date | string, format?: string) 
   return formattedDate;
 };
 
+/**
+ * 判断是否为服务端
+ *
+ * @returns
+ */
 export const isServer = () => typeof window === 'undefined';
+
+/**
+ * 数组转换为字符串
+ * @param str
+ * @param separator
+ * @returns
+ */
+export const strToArray = (str?: string, separator?: string) => {
+  return str ? str.split(separator || ' ') : [];
+};

@@ -1,5 +1,5 @@
 import { lotteryApi } from '@/api';
-import { formatDateToStr } from '@/utils/util';
+import { formatDateToStr, strToArray } from '@/utils/util';
 
 // 列表
 export const queryLotteryList = async (query?: { pageNo: number }) => {
@@ -29,17 +29,17 @@ export const removeLottery = async (uid: string) => {
   return result;
 };
 
-export const matchLottery = (userBalls: Array<string>, winBalls?: Array<string>) => {
+export const matchLottery = (userBalls: string, winBalls?: string) => {
+  const bets = strToArray(userBalls);
+  const wins = strToArray(winBalls);
   if (!winBalls) {
-    return userBalls.map(item => ({ value: item, isMatch: false }));
+    return bets.map(item => ({ value: item, isMatch: false }));
   }
-  const frontNumbers = winBalls.slice(0, 5);
-  const backNumbers = winBalls.slice(-2);
+  const frontNumbers = wins.slice(0, 5);
+  const backNumbers = wins.slice(-2);
 
-  return userBalls.map((item, index) => {
-    return {
-      value: item,
-      isMatch: index < 5 ? frontNumbers.includes(item) : backNumbers.includes(item)
-    };
-  });
+  return bets.map((item, index) => ({
+    value: item,
+    isMatch: index < 5 ? frontNumbers.includes(item) : backNumbers.includes(item)
+  }));
 };
