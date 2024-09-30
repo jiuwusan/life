@@ -19,6 +19,8 @@ RUN yarn install
 FROM node:20.11.1 AS builder_dist
 # 创建工作目录
 RUN mkdir -p /app
+# 移到工作目录
+WORKDIR /app
 COPY . .
 COPY --from=builder_node_modules /app/node_modules ./node_modules
 # 构建
@@ -41,7 +43,7 @@ COPY --from=builder_dist /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npm.taobao.org
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --production
 # 容器对外暴露的端口号
 EXPOSE 3000
 # 容器启动时执行的命令，类似npm run start
