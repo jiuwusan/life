@@ -19,8 +19,6 @@ RUN yarn build
 # 第二阶段：将构建好的文件复制到最终镜像
 # 运行环境
 FROM node:20.11.1
-# 作者
-MAINTAINER JiuWuSan
 # Node 为生产环境
 ENV NODE_ENV=production
 # 指定 ip
