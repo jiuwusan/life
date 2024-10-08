@@ -66,7 +66,7 @@ export class LotteryService {
     const winHistory = await this.queryWinHistory();
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
-      if (!!lottery.winTime) {
+      if (lottery.winTime && lottery.winPdf) {
         continue;
       }
       const winLottery = this.findWinLottery(winHistory, lottery.betTime);
@@ -92,12 +92,20 @@ export class LotteryService {
    *
    * @returns
    */
-  async querylist() {
-    const list = await this.lotteryRepository.find({
+  async querylist(pageNo = 1, pageSize = 10) {
+    const [list, total] = await this.lotteryRepository.findAndCount({
+      skip: (pageNo - 1) * pageSize,
+      take: pageSize,
       order: { betTime: 'DESC' },
       where: { deleted: Not('1') }
     });
-    return this.batchVerify(list);
+    return {
+      pageNo,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+      list: await this.batchVerify(list)
+    };
   }
 
   /**

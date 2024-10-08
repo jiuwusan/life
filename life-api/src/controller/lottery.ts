@@ -19,8 +19,8 @@ export class LotteryController {
   }
 
   @Get('query/list')
-  async querylist() {
-    const result = await this.lotteryService.querylist();
+  async querylist(@Query() { pageNo = 1, pageSize = 10 }) {
+    const result = await this.lotteryService.querylist(pageNo, pageSize);
     return result;
   }
 

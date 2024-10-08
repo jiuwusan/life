@@ -3,8 +3,8 @@ import { formatDateToStr, strToArray } from '@/utils/util';
 
 // 列表
 export const queryLotteryList = async (query?: { pageNo: number }) => {
-  const list = (await lotteryApi.querylist(query)) || [];
-  return list.map((item: any) => ({
+  const result = (await lotteryApi.querylist(query)) || { list: [] };
+  return (result.list || []).map((item: any) => ({
     ...item,
     betTime: formatDateToStr(item.betTime),
     winTime: item.winTime && formatDateToStr(item.winTime)
