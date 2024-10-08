@@ -44,6 +44,7 @@ type ItemProps = {
 // 每一项
 export function LotteryItem(props: ItemProps) {
   const { data, remove, reprint, adding } = props;
+  const router = useRouter();
   const betBallList = useMemo(() => strToArray(data.betBall, ';'), [data]);
   return (
     <div className={styles.itemWrap}>
@@ -69,9 +70,9 @@ export function LotteryItem(props: ItemProps) {
                 追投
               </span>
               {data.winPdf && (
-                <a className={classNames([styles.tagBtn, styles.success])} href={data.winPdf} target="_blank">
+                <span className={classNames([styles.tagBtn, styles.success])} onClick={() => router.push(`/tools/pdf?pdfurl=${encodeURIComponent(data.winPdf)}`)}>
                   公告
-                </a>
+                </span>
               )}
             </>
           )}

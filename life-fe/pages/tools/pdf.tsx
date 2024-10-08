@@ -7,8 +7,7 @@ export default function Page() {
   const pdfurl = useMemo(() => decodeURIComponent((router.query.pdfurl || '') as string), [router.query.pdfurl]);
   return (
     <RoutePage>
-      <ClientOnly>pdf
-      </ClientOnly>
+      <ClientOnly>{pdfurl && <iframe src={pdfurl} width="100%" height="100vh"></iframe>}</ClientOnly>
     </RoutePage>
   );
 }
