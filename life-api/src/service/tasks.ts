@@ -19,36 +19,41 @@ export class TasksService {
   /**
    * 每周1、3、6 21:30 执行
    */
-  @Cron('35 21 * * 1,3,6')
+  @Cron('15 21 * * *')
   async updateLotteryHistory() {
     const lockKey = `lottery:history-update-locked`;
     // 随机锁
     await nextSleep(Math.floor(1000 * 31 * Math.random()));
     if (await this.redisService.get(lockKey)) {
-      console.log(`${new Date().toLocaleString()} : 其他服务正在更新，直接退出`);
-      return;
+      return console.log(`${new Date().toLocaleString()} : 其他服务正在更新，直接退出`);
     }
     // 60s 后释放
     this.redisService.set(lockKey, 'locked', 'EX', 60);
     console.log(`${new Date().toLocaleString()} : 开始更新历史记录`);
     // 今天
-    const currentDate = formatDateToStr(new Date(), 'yyyy-MM-dd');
+    const currentDate = new Date();
+    const currentDateStr = formatDateToStr(currentDate, 'yyyy-MM-dd');
+    const currentDay = currentDate.getDay();
+    const type = ['wf', 'sp', 'wf', 'sp', 'wf', '', 'sp'][currentDay];
+    if (!type) {
+      return console.log(`${new Date().toLocaleString()} : 今日无开奖`);
+    }
     let queryCount = 0;
     let pageNo = 1;
     // 最多查询36次
     while (queryCount < 36) {
       queryCount++;
-      const list = await this.lotteryService.queryWinHistory({ type: 'sp', pageNo, pageSize: 100, refresh: true });
-      if (list && list?.length > 0 && currentDate === list[0].lotteryDrawTime && !!list[0].drawPdfUrl) {
+      const list = await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 100, refresh: true });
+      if (list && list?.length > 0 && currentDateStr === list[0].lotteryDrawTime) {
         break; // 已经查询到最新数据
       }
-      // 等待2分钟
+      // 等待5分钟
       await nextSleep(1000 * 60 * 5);
     }
     console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
     console.log(`${new Date().toLocaleString()} : 开始更新后续24次历史记录`);
     while (++pageNo && pageNo < 26) {
-      await this.lotteryService.queryWinHistory({ type: 'sp', pageNo, pageSize: 100, refresh: true });
+      await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 100, refresh: true });
       // 等待1分钟
       await nextSleep(1000 * 60 * 1);
     }
