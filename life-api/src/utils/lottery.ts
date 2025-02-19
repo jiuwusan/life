@@ -1,27 +1,47 @@
-type Prize = { grade: number; gradeCn?: string; amount: number };
+type CheckLotteryResult = {
+  type: string;
+  fronts: string[];
+  backs: string[];
+  prize: number;
+};
 
 /**
  * 获取等级
  */
-export const getPrize = (frontHits: number, backHits: number) => {
-  const nullPrize: Prize = { grade: 99, amount: 0 };
-  const prizes: Prize[][] = Array.from({ length: 6 }, () => Array(3).fill(nullPrize));
-  prizes[5][2] = { grade: 1, amount: 10000000 };
-  prizes[5][1] = { grade: 2, amount: 300000 };
-  prizes[5][0] = { grade: 3, amount: 10000 };
-  prizes[4][2] = { grade: 4, amount: 3000 };
-  prizes[4][1] = { grade: 5, amount: 300 };
-  prizes[3][2] = { grade: 6, amount: 200 };
-  prizes[4][0] = { grade: 7, amount: 100 };
-  prizes[2][2] = { grade: 8, amount: 10 };
-  prizes[3][1] = prizes[2][2];
-  prizes[0][2] = { grade: 9, amount: 5 };
-  prizes[1][2] = prizes[0][2];
-  prizes[2][1] = prizes[0][2];
-  const prize = prizes[frontHits][backHits] || nullPrize;
-  const numMaps = '零一二三四五六七八九'.split('');
-  prize.gradeCn = prize.grade < 99 ? `${numMaps[prize.grade]}等奖` : '未中奖';
-  return prize;
+export const getPrize = (type: string, frontHits: number, backHits: number) => {
+  const prizes: number[][] = Array.from({ length: 7 }, () => Array(3).fill(-1));
+  switch (type) {
+    case 'sp':
+      prizes[5][2] = 1;
+      prizes[5][1] = 2;
+      prizes[5][0] = 3;
+      prizes[4][2] = 4;
+      prizes[4][1] = 5;
+      prizes[3][2] = 6;
+      prizes[4][0] = 7;
+      prizes[2][2] = 8;
+      prizes[0][2] = 9;
+      prizes[3][1] = prizes[2][2];
+      prizes[1][2] = prizes[0][2];
+      prizes[2][1] = prizes[0][2];
+      break;
+    case 'wf':
+      prizes[6][1] = 1;
+      prizes[6][0] = 2;
+      prizes[5][1] = 3;
+      prizes[5][0] = 4;
+      prizes[4][1] = 4;
+      prizes[4][0] = 5;
+      prizes[3][1] = 5;
+      prizes[2][1] = 6;
+      prizes[1][1] = 6;
+      prizes[0][1] = 6;
+      break;
+    default:
+      throw new Error('Lottery Type 异常');
+  }
+
+  return prizes[frontHits][backHits];
 };
 
 /**
@@ -30,47 +50,28 @@ export const getPrize = (frontHits: number, backHits: number) => {
  * @param userNumbers
  * @returns
  */
-export const checkLottery = (lotteryNumbers: Array<string>, userNumbers: Array<string>) => {
-  if (!lotteryNumbers || !userNumbers) {
-    return {
-      grade: 99,
-      amount: 0,
-      frontHits: '无',
-      backHits: '无',
-      gradeCn: '未中奖'
-    };
-  }
-  const frontNumbers = lotteryNumbers.slice(0, 5);
-  const backNumbers = lotteryNumbers.slice(-2);
-  const userFrontNumbers = userNumbers.slice(0, 5);
-  const userBackNumbers = userNumbers.slice(-2);
-
-  const frontHits = [];
-  const backHits = [];
-
-  // 检查前区中奖号码
-  userFrontNumbers.forEach(function (num) {
-    const currNum = (String(num).length <= 1 ? '0' : '') + num;
-    if (frontNumbers.indexOf(currNum) != -1) {
-      frontHits.push(currNum);
+export const checkLottery = (type: string, lotteryNumbers: Array<string>, userNumbers: Array<string>): CheckLotteryResult => {
+  const current = {
+    sp: {
+      front: [0, 5],
+      back: -2
+    },
+    wf: {
+      front: [0, 6],
+      back: -1
     }
-  });
-
-  // 检查后区中奖号码
-  userBackNumbers.forEach(function (num) {
-    const currNum = (String(num).length <= 1 ? '0' : '') + num;
-    if (backNumbers.indexOf(currNum) != -1) {
-      backHits.push(currNum);
-    }
-  });
-  const winHits = [].concat(frontHits).concat(['+']).concat(backHits);
-  const prize = getPrize(frontHits.length, backHits.length);
-
+  }[type];
+  const frontNumbers = lotteryNumbers.slice(...current.front);
+  const backNumbers = lotteryNumbers.slice(current.back);
+  const userFrontNumbers = userNumbers.slice(...current.front);
+  const userBackNumbers = userNumbers.slice(current.back);
+  const fronts = userFrontNumbers.filter(item => frontNumbers.includes(item));
+  const backs = userBackNumbers.filter(item => backNumbers.includes(item));
   return {
-    ...prize,
-    front: frontHits.join(' '),
-    back: backHits.join(' '),
-    win: winHits.join(' ')
+    type,
+    fronts,
+    backs,
+    prize: getPrize(type, fronts.length, backs.length)
   };
 };
 
@@ -135,17 +136,14 @@ export const getRandomNumbers = (bets, count, sequence?: boolean) => {
  * @param multiUserNumbers
  * @returns
  */
-export const batchCheckLottery = (lotteryNumbers: Array<string> | string, multiUserNumbers: Array<Array<string>> | string, onlyWin?: boolean) => {
+export const batchCheckLottery = (type: string, lotteryNumbers: Array<string> | string, multiUserNumbers: Array<Array<string>> | string): CheckLotteryResult[] => {
   const result = [];
   // 将字符串转换为数组
   const lotteryList = Array.isArray(lotteryNumbers) ? lotteryNumbers : lotteryNumbers.split(' ');
   const multiUserList = Array.isArray(multiUserNumbers) ? multiUserNumbers : multiUserNumbers.split(';').map(item => item.split(' '));
   multiUserList.forEach(userNumbers => {
-    const currentResult = checkLottery(lotteryList, userNumbers);
-    if (!onlyWin) {
-      return result.push(currentResult);
-    }
-    currentResult.grade < 99 && result.push(currentResult);
+    const currentResult = checkLottery(type, lotteryList, userNumbers);
+    currentResult.prize > 0 && result.push(currentResult);
   });
   return result;
 };

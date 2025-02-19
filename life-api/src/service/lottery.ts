@@ -34,16 +34,6 @@ export class LotteryService {
   }
 
   /**
-   * 批量验奖
-   * @param lotteryNumbers
-   * @param multiUserNumbers
-   * @returns
-   */
-  verify(lotteryNumbers: Array<string>, multiUserNumbers: Array<Array<string>>) {
-    return batchCheckLottery(lotteryNumbers, multiUserNumbers);
-  }
-
-  /**
    * 批量验证
    * @param lotteryNumbers
    * @param multiUserNumbers
@@ -64,11 +54,17 @@ export class LotteryService {
       if (!winLottery) {
         continue;
       }
-      const lotteryResult = batchCheckLottery(winLottery.lotteryDrawResult, lottery.betBall, true);
+      const lotteryResult = batchCheckLottery(lottery.type, winLottery.lotteryDrawResult, lottery.betBall).map(item => {
+        const result = winLottery.prizeLevelList.find(res => res.prizeLevelNum === item.prize);
+        return {
+          ...item,
+          ...result
+        };
+      });
       const updateValues = {
         winBall: winLottery.lotteryDrawResult,
         winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
-        winResult: lotteryResult.length > 0 ? lotteryResult.map(item => `${item.gradeCn}：￥${item.amount}.00`).join('；') : null
+        winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；')
       };
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
