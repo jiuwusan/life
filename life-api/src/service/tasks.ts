@@ -38,7 +38,7 @@ export class TasksService {
     // 最多查询36次
     while (queryCount < 36) {
       queryCount++;
-      const list = await this.lotteryService.queryWinHistory(pageNo, 100, true);
+      const list = await this.lotteryService.queryWinHistory({ type: 'sp', pageNo, pageSize: 100, refresh: true });
       if (list && list?.length > 0 && currentDate === list[0].lotteryDrawTime && !!list[0].drawPdfUrl) {
         break; // 已经查询到最新数据
       }
@@ -48,7 +48,7 @@ export class TasksService {
     console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
     console.log(`${new Date().toLocaleString()} : 开始更新后续24次历史记录`);
     while (++pageNo && pageNo < 26) {
-      await this.lotteryService.queryWinHistory(pageNo, 100, true);
+      await this.lotteryService.queryWinHistory({ type: 'sp', pageNo, pageSize: 100, refresh: true });
       // 等待1分钟
       await nextSleep(1000 * 60 * 1);
     }

@@ -95,3 +95,68 @@ export const formatDateToStr = (date?: number | Date | string, format?: string) 
 
   return formattedDate;
 };
+
+/**
+ * 判断 数据是否为空
+ * @param value
+ * @returns
+ */
+export const isEmpty = (value: any) => {
+  if (typeof value === 'number') {
+    return false;
+  }
+
+  if (value === undefined || value === null) {
+    return true;
+  }
+
+  if (!value && value !== false) {
+    return true;
+  }
+
+  // 特殊 string
+  if (value === '' || value === 'undefined' || value === 'null' || value === '-' || value === '--') {
+    return true;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return true;
+  }
+
+  //数组
+  if (!value?.length) {
+    return true;
+  }
+
+  // 不对 object 进行特殊判断
+
+  return false;
+};
+
+export const validationParameter = (params: Record<string, any>, rules: string[] | Record<string, boolean | string | ((value: any) => void | string)>) => {
+  const defRules = Array.isArray(rules)
+    ? rules.reduce((result, current) => {
+        result[current] = true;
+        return result;
+      }, {})
+    : rules;
+  const keyStrs = Object.keys(defRules);
+
+  if (keyStrs.length === 0) {
+    return;
+  }
+
+  for (let index = 0; index < keyStrs.length; index++) {
+    const current = keyStrs[index];
+    switch (defRules[current]) {
+      case 'boolean':
+        if (isEmpty(params[current])) {
+          throw new Error(`${current}是必要参数`);
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+};

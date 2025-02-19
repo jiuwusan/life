@@ -155,12 +155,26 @@ export const batchCheckLottery = (lotteryNumbers: Array<string> | string, multiU
  * @param {*} count
  */
 export const createSequenceLottery = (() => {
-  const frontBalls = [];
-  const backBalls = [];
-  return () => {
-    frontBalls.length < 5 && frontBalls.push(...shuffleArray(createBallsPool(35, 1)));
-    backBalls.length < 2 && backBalls.push(...shuffleArray(createBallsPool(12, 1)));
-    return [...getRandomNumbers(frontBalls, 5, true), ...getRandomNumbers(backBalls, 2, true)];
+  const balls: Record<string, { frontBalls: string[]; backBalls: string[] }> = {};
+  return (type: string) => {
+    !balls[type] && (balls[type] = { frontBalls: [], backBalls: [] });
+    const { frontBalls, backBalls } = balls[type];
+    let result = [];
+    switch (type) {
+      case 'sp':
+        frontBalls.length < 5 && frontBalls.push(...shuffleArray(createBallsPool(35, 1)));
+        backBalls.length < 2 && backBalls.push(...shuffleArray(createBallsPool(12, 1)));
+        result = [...getRandomNumbers(frontBalls, 5, true), ...getRandomNumbers(backBalls, 2, true)];
+        break;
+      case 'wf':
+        frontBalls.length < 6 && frontBalls.splice(0, frontBalls.length) && frontBalls.push(...shuffleArray(createBallsPool(33, 1)));
+        backBalls.length < 1 && backBalls.push(...shuffleArray(createBallsPool(16, 1)));
+        result = [...getRandomNumbers(frontBalls, 6, true), ...getRandomNumbers(backBalls, 1, true)];
+        break;
+      default:
+        throw new Error('Lottery Type 异常');
+    }
+    return result;
   };
 })();
 
@@ -168,22 +182,32 @@ export const createSequenceLottery = (() => {
  * 随机
  * @param {*} count
  */
-export const createRandomLottery = () => {
-  return [...getRandomNumbers(createBallsPool(35, 1), 5), ...getRandomNumbers(createBallsPool(12, 1), 2)];
+export const createRandomLottery = (type: string) => {
+  let result = [];
+  switch (type) {
+    case 'sp':
+      result = [...getRandomNumbers(createBallsPool(35, 1), 5), ...getRandomNumbers(createBallsPool(12, 1), 2)];
+      break;
+    case 'wf':
+      result = [...getRandomNumbers(createBallsPool(33, 1), 6), ...getRandomNumbers(createBallsPool(16, 1), 1)];
+      break;
+    default:
+      throw new Error('Lottery Type 异常');
+  }
+  return result;
 };
 
 /**
  * 生成
  * @param {*} count
  */
-export const createLottery = (count: number, sequence?: boolean) => {
+export const createLottery = (option?: number | { count: number; type?: string; sequence?: boolean }) => {
+  const { count = 1, type = 'sp', sequence = false } = (typeof option === 'number' ? { count: option } : option) || {};
   const result = [];
-  typeof count !== 'number' && (count = 1);
   // 继续 投注
   while (count > result.length) {
-    result.push((sequence ? createSequenceLottery() : createRandomLottery()).join(' '));
+    result.push((sequence ? createSequenceLottery(type) : createRandomLottery(type)).join(' '));
   }
-
   return result;
 };
 

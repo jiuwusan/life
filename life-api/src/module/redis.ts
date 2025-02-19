@@ -11,7 +11,7 @@ export const REDIS = {
       port: 6379,
       // host: 'cloud.jiuwusan.cn',
       // port: 36379,
-      password: 'ZkD953HzR497'
+      password: ''
     });
   }
 };

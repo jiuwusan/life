@@ -15,35 +15,22 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
-  async bet(data: { type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
-    const { type = 'sp', recommend, betTime = new Date(), persist = false, reprint = false, sequence = false } = data;
-    let { count = 1, uid } = data;
-
+  async bet(data: { userId: string; type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
+    const { userId, type = 'sp', count = 1, betTime = new Date(), uid, reprint = false, sequence = false } = data;
     const betBall = [];
-    if (!uid && persist) {
-      // 守号
-      betBall.push(...(await this.persist()));
-      count -= 2;
-    }
-
-    if (!uid && recommend && betBall.length < count) {
-      // 推荐
-      betBall.push(await this.recommend());
-      count--;
-    }
-
     if (uid) {
       const lasted = await this.lotteryRepository.findOne({ where: { uid } });
       lasted && lasted.betBall && betBall.push(...(lasted.betBall ? lasted.betBall.split(';') : []));
     }
-
-    !reprint && betBall.push(...createLottery(count, sequence));
+    !reprint && betBall.push(...createLottery({ count, type, sequence }));
     // 使用 UTC时间
-    const lottery = { type, betBall: betBall.join(';'), betTime: new Date(betTime).toISOString() };
-    // 追投
-    reprint && (uid = '');
+    const lottery = new Lottery();
+    lottery.userId = userId;
+    lottery.type = type; // 例如 'sp' 或 'wf'
+    lottery.betBall = betBall.join(';');
+    lottery.betTime = new Date(betTime).toISOString();
     // 保存
-    return uid ? await this.lotteryRepository.update(uid, lottery) : await this.lotteryRepository.save(lottery);
+    return uid && !reprint ? await this.lotteryRepository.update(uid, lottery) : await this.lotteryRepository.save(lottery);
   }
 
   /**
@@ -63,13 +50,17 @@ export class LotteryService {
    * @returns
    */
   async batchVerify(lotterys: Array<Lottery>) {
-    const winHistory = await this.queryWinHistory();
+    const winHistory = {
+      sp: await this.queryWinHistory({ type: 'sp' }),
+      wf: await this.queryWinHistory({ type: 'wf' })
+    };
+
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
       if (lottery.winTime && lottery.winPdf) {
         continue;
       }
-      const winLottery = this.findWinLottery(winHistory, lottery.betTime);
+      const winLottery = this.findWinLottery(winHistory[lottery.type], lottery.betTime);
       if (!winLottery) {
         continue;
       }
@@ -77,8 +68,7 @@ export class LotteryService {
       const updateValues = {
         winBall: winLottery.lotteryDrawResult,
         winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
-        winResult: lotteryResult.length > 0 ? lotteryResult.map(item => `${item.gradeCn}：￥${item.amount}.00`).join('；') : null,
-        winPdf: winLottery.drawPdfUrl
+        winResult: lotteryResult.length > 0 ? lotteryResult.map(item => `${item.gradeCn}：￥${item.amount}.00`).join('；') : null
       };
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
@@ -92,13 +82,18 @@ export class LotteryService {
    *
    * @returns
    */
-  async querylist(pageNo = 1, pageSize = 10) {
+  async querylist(params: { type?: string; pageNo?: number; pageSize?: number }) {
+    const { type, pageNo = 1, pageSize = 10 } = params;
+    const whereQuery: Record<string, any> = { deleted: Not('1') };
+    type && (whereQuery.type = type);
+
     const [list, total] = await this.lotteryRepository.findAndCount({
       skip: (pageNo - 1) * pageSize,
       take: pageSize,
       order: { betTime: 'DESC' },
-      where: { deleted: Not('1') }
+      where: whereQuery
     });
+
     return {
       pageNo,
       pageSize,
@@ -122,17 +117,43 @@ export class LotteryService {
    *
    * @returns
    */
-  async queryWinHistory(pageNo = 1, pageSize = 100, refresh?: boolean): Promise<Array<WinLottery>> {
-    const cacheKey = `lottery:history-${pageSize}-${pageNo}`;
-    let list = await this.redisService.get<Array<WinLottery>>(cacheKey);
-    // 参数
-    const query = { gameNo: 85, provinceId: 0, isVerify: 1, pageNo, pageSize };
-    // 查询历史
-    if (!list || list.length === 0 || refresh) {
-      list = (await lotteryApi.queryLotteryHistory(query))?.list || [];
-      list && list.length > 0 && this.redisService.set(cacheKey, list);
+  async queryWinHistory(params: { type: string; pageNo?: number; pageSize?: number; refresh?: boolean }): Promise<Array<WinLottery>> {
+    const { type, pageNo = 1, pageSize = 100, refresh = false } = params;
+    const cacheKey = `${type}:lottery:history-${pageSize}-${pageNo}`;
+    const list = await this.redisService.get<Array<WinLottery>>(cacheKey);
+    if (list && list?.length > 0 && !refresh) {
+      return list;
     }
-    return list;
+    // 查询历史
+    const newList = [];
+    switch (type) {
+      case 'sp':
+        newList.push(...((await lotteryApi.querySpLotteryHistory({ gameNo: 85, provinceId: 0, isVerify: 1, pageNo, pageSize }))?.list || []));
+        break;
+      case 'wf':
+        newList.push(
+          ...((
+            await lotteryApi.queryWfLotteryHistory({
+              name: 'ssq',
+              issueCount: '',
+              issueStart: '',
+              issueEnd: '',
+              dayStart: '',
+              dayEnd: '',
+              pageNo,
+              pageSize,
+              week: '',
+              systemType: 'PC'
+            })
+          )?.result || [])
+        );
+        break;
+      default:
+        throw new Error('Lottery Type 异常');
+    }
+
+    newList && newList.length > 0 && this.redisService.set(cacheKey, newList);
+    return newList;
   }
 
   /**
@@ -141,27 +162,61 @@ export class LotteryService {
    * @param betTime
    * @returns
    */
-  findWinLottery(list: Array<WinLottery>, betTime: string | Date): WinLottery {
+  findWinLottery(list: Array<any>, betTime: string | Date): WinLottery {
     const betTimestamp = new Date(betTime).getTime();
     const result = list.find((item, index) => {
-      const saleEndTimestamp = new Date(item.lotterySaleEndtime).getTime();
+      const drawDate = item.lotteryDrawTime || item.date;
+      if (!drawDate) {
+        return false;
+      }
+      const saleTimestamp = new Date(`${drawDate.substring(0, 10)} 21:00:00`).getTime();
       if (index + 1 === list.length) {
         // 最后一期
-        return betTimestamp < saleEndTimestamp;
+        return betTimestamp < saleTimestamp;
       }
-      return betTimestamp < saleEndTimestamp && betTimestamp > new Date(list[index + 1].lotterySaleEndtime).getTime();
+      const preItem = list[index + 1].lotterySaleEndtime;
+      const preDrawDate = preItem.lotteryDrawTime || preItem.date;
+      const preSaleTimestamp = new Date(`${preDrawDate.substring(0, 10)} 21:00:00`).getTime();
+      return betTimestamp < saleTimestamp && betTimestamp > preSaleTimestamp;
     });
-    return result;
+    if (!result) {
+      return result;
+    }
+    const lotteryName = result?.lotteryGameName || result?.name;
+
+    return {
+      lotteryType: { 双色球: 'wf', 超级大乐透: 'sp' }[lotteryName],
+      lotteryName,
+      lotteryDrawResult: (result?.lotteryDrawResult || `${result?.red},${result?.blue}`).replace(/,/, ' '),
+      lotteryDrawNum: result?.lotteryDrawNum || result?.code,
+      lotteryDrawTime: (result?.lotteryDrawTime || result?.date).substring(0, 10),
+      lotterySaleEndtime: (result?.lotterySaleEndtime || result?.date).substring(0, 10),
+      prizeLevelList: (result?.prizeLevelList || result?.prizegrades)
+        .filter(item => ['201', '401'].includes(item.group))
+        .map((item, index) => {
+          const chineseNumerals = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+          const prizeLevelNum = index + 1;
+          const prizeLevel = chineseNumerals[prizeLevelNum];
+          const stakeAmount = item.stakeAmountFormat || item.typemoney;
+          const stakeCount = item.stakeCount || item.typenum;
+          return {
+            prizeLevelNum,
+            prizeLevel,
+            stakeAmount,
+            stakeCount
+          };
+        })
+    };
   }
 
   /**
    * 统计情况
    */
-  async statistics(numbers = 100) {
+  async statistics(type: string, numbers = 100) {
     type Stats = Record<string, { total: number; vanish: number }>;
     const list = [];
     while (list.length < numbers) {
-      list.push(...(await this.queryWinHistory(list.length / 100 + 1)));
+      list.push(...(await this.queryWinHistory({ type, pageNo: list.length / 100 + 1 })));
     }
 
     const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
@@ -207,13 +262,13 @@ export class LotteryService {
   /**
    * 推荐
    */
-  async recommend() {
+  async recommend(type: string) {
     const rangs = [500, 1500, 2500];
     const result = [];
-    const { frontStat, backStat } = await this.statistics(100);
+    const { frontStat, backStat } = await this.statistics(type, 100);
     result.push(getRandomNumbersByStat(frontStat, backStat));
     for (let i = 0; i < rangs.length; i++) {
-      const stat = await this.statistics(rangs[i]);
+      const stat = await this.statistics(type, rangs[i]);
       result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
     }
     // 只取一项
@@ -229,7 +284,7 @@ export class LotteryService {
     const cacheKey = `lottery:persist-${userId}`;
     let bets = await this.redisService.get<string[][]>(cacheKey);
     if (!bets || refresh) {
-      bets = createLottery(2, true);
+      bets = createLottery({ count: 2, sequence: true });
       this.redisService.set(cacheKey, bets);
     }
     return bets;

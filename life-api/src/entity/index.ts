@@ -9,7 +9,8 @@ export class Lottery {
   @Column({ name: 'user_id', nullable: true })
   userId: string;
 
-  @Column()
+  // 类型 sp | wf
+  @Column({ type: 'varchar', length: 20 })
   type: string;
 
   // 下注时间
@@ -60,6 +61,13 @@ export class User {
   // 下注时间
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  nickname: string;
+
+  //是否删除
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
 }
 
 export const EntityFeature = TypeOrmModule.forFeature([Lottery, User]);

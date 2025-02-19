@@ -6,7 +6,7 @@ import { type Params } from '@/utils/fetch';
 @Injectable()
 export class QbService {
   private authCacheKey = `qbittorrent:auth-cookies`;
-  private authFormInfo = { username: 'admin', password: 'xinshu527' };
+  private authFormInfo = { username: 'jiuwusan', password: 'ZkD953497' };
   constructor(private readonly redisService: RedisService) {}
 
   /**
