@@ -33,10 +33,6 @@ export class Lottery {
   @Column({ name: 'win_result', type: 'varchar', nullable: true })
   winResult: string;
 
-  //开奖结果
-  @Column({ name: 'win_pdf', type: 'varchar', nullable: true })
-  winPdf: string;
-
   //追加uid
   @Column({ name: 'add_uid', type: 'varchar', nullable: true })
   addUid: string;

@@ -20,10 +20,10 @@ export const getPrize = (type: string, frontHits: number, backHits: number) => {
       prizes[3][2] = 6;
       prizes[4][0] = 7;
       prizes[2][2] = 8;
+      prizes[3][1] = 8;
       prizes[0][2] = 9;
-      prizes[3][1] = prizes[2][2];
-      prizes[1][2] = prizes[0][2];
-      prizes[2][1] = prizes[0][2];
+      prizes[1][2] = 9;
+      prizes[2][1] = 9;
       break;
     case 'wf':
       prizes[6][1] = 1;

@@ -57,7 +57,9 @@
       justify-content: space-between;
 
       .title {
-        font-size: 18px;
+        color: var(--info-color);
+        font-size: 20px;
+        font-weight: 600;
       }
 
       .toolBtn {
@@ -133,6 +135,11 @@
   &.red {
     color: var(--danger-color);
     border-color: var(--danger-color);
+  }
+
+  &.yellow {
+    color: var(--warning-color);
+    border-color: var(--warning-color);
   }
 
   &.active {

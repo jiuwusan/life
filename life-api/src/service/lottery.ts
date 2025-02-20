@@ -61,6 +61,7 @@ export class LotteryService {
           ...result
         };
       });
+      console.log('lotteryResult---->', lotteryResult);
       const updateValues = {
         winBall: winLottery.lotteryDrawResult,
         winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
@@ -170,7 +171,7 @@ export class LotteryService {
         // 最后一期
         return betTimestamp < saleTimestamp;
       }
-      const preItem = list[index + 1].lotterySaleEndtime;
+      const preItem = list[index + 1];
       const preDrawDate = preItem.lotteryDrawTime || preItem.date;
       const preSaleTimestamp = new Date(`${preDrawDate.substring(0, 10)} 21:00:00`).getTime();
       return betTimestamp < saleTimestamp && betTimestamp > preSaleTimestamp;
@@ -183,16 +184,16 @@ export class LotteryService {
     return {
       lotteryType: { 双色球: 'wf', 超级大乐透: 'sp' }[lotteryName],
       lotteryName,
-      lotteryDrawResult: (result?.lotteryDrawResult || `${result?.red},${result?.blue}`).replace(/,/, ' '),
+      lotteryDrawResult: (result?.lotteryDrawResult || `${result?.red},${result?.blue}`).replace(/,/g, ' '),
       lotteryDrawNum: result?.lotteryDrawNum || result?.code,
       lotteryDrawTime: (result?.lotteryDrawTime || result?.date).substring(0, 10),
       lotterySaleEndtime: (result?.lotterySaleEndtime || result?.date).substring(0, 10),
       prizeLevelList: (result?.prizeLevelList || result?.prizegrades)
-        .filter(item => ['201', '401'].includes(item.group))
+        .filter(item => !['201', '401'].includes(item.group))
         .map((item, index) => {
           const chineseNumerals = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
           const prizeLevelNum = index + 1;
-          const prizeLevel = chineseNumerals[prizeLevelNum];
+          const prizeLevel = `${chineseNumerals[prizeLevelNum]}等奖`;
           const stakeAmount = item.stakeAmountFormat || item.typemoney;
           const stakeCount = item.stakeCount || item.typenum;
           return {

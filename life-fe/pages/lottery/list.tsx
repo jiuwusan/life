@@ -3,7 +3,7 @@ import { RoutePage, Button, Sticky } from '@/components';
 import { getBackgroundImage, strToArray } from '@/utils/util';
 import { useMemo } from 'react';
 import { useFetchState, useFetchClient } from '@/hooks/extend';
-import { queryLotteryList, betLottery, matchLottery, removeLottery } from './hooks';
+import { queryLotteryList, betLottery, matchLottery, removeLottery, LotteryMaps } from './hooks';
 import styles from './styles.module.scss';
 import { useRouter } from 'next/router';
 
@@ -19,15 +19,15 @@ export async function getServerSideProps() {
 }
 
 // 每一项
-export function BallsRow(props: { data: string; win?: string }) {
-  const { data, win } = props;
+export function BallsRow(props: { data: string; type: string; win?: string }) {
+  const { type, data, win } = props;
 
-  const result = useMemo(() => matchLottery(data, win), [data, win]);
+  const result = useMemo(() => matchLottery(type, data, win), [type, data, win]);
 
   return (
     <div style={{ whiteSpace: 'nowrap' }}>
       {result.map((ball, idx) => (
-        <span key={idx} className={classNames([styles.ballItem, idx > 4 && styles.red, ball.isMatch && styles.active])}>
+        <span key={idx} className={classNames([styles.ballItem, styles[ball.color], ball.matched && styles.active])}>
           {ball.value}
         </span>
       ))}
@@ -41,6 +41,7 @@ type ItemProps = {
   reprint?: Function;
   adding?: Function;
 };
+
 // 每一项
 export function LotteryItem(props: ItemProps) {
   const router = useRouter();
@@ -49,7 +50,7 @@ export function LotteryItem(props: ItemProps) {
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
-        <div className={styles.title}>超级大乐透</div>
+        <div className={styles.title}>{LotteryMaps[data.type]?.name}</div>
         <div className={styles.toolBtn}>
           {!data.winTime && (
             <>
@@ -84,7 +85,7 @@ export function LotteryItem(props: ItemProps) {
         <div className={styles.title}>投注号码：</div>
         <div>
           {betBallList.map((item: string, idx: number) => (
-            <BallsRow key={idx} data={item} win={data.winBall} />
+            <BallsRow key={idx} type={data.type} data={item} win={data.winBall} />
           ))}
         </div>
       </div>
@@ -98,7 +99,7 @@ export function LotteryItem(props: ItemProps) {
         <div className={classNames([styles.itemRow, styles.row])}>
           <div className={styles.title}>开奖号码：</div>
           <div>
-            <BallsRow data={data.winBall} />
+            <BallsRow type={data.type} data={data.winBall} />
           </div>
         </div>
       )}

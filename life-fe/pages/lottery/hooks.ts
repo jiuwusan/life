@@ -1,6 +1,21 @@
 import { lotteryApi } from '@/api';
 import { formatDateToStr, strToArray } from '@/utils/util';
 
+export const LotteryMaps: Record<string, { front: number[]; back: number; name: string; backColor: string }> = {
+  sp: {
+    front: [0, 5],
+    back: -2,
+    backColor: 'yellow',
+    name: '超级大乐透'
+  },
+  wf: {
+    front: [0, 6],
+    back: -1,
+    backColor: 'red',
+    name: '双色球'
+  }
+};
+
 // 列表
 export const queryLotteryList = async (query?: { pageNo: number }) => {
   const result = (await lotteryApi.querylist(query)) || { list: [] };
@@ -29,17 +44,24 @@ export const removeLottery = async (uid: string) => {
   return result;
 };
 
-export const matchLottery = (userBalls: string, winBalls?: string) => {
-  const bets = strToArray(userBalls);
-  const wins = strToArray(winBalls);
-  if (!winBalls) {
-    return bets.map(item => ({ value: item, isMatch: false }));
+export const matchLottery = (type: string, userBalls: string, winBalls?: string): { value: string; color: string; matched?: boolean }[] => {
+  const current = LotteryMaps[type];
+  const userNumbers = strToArray(userBalls).map(item => ({ value: item, color: '' }));
+  if (!current) {
+    return userNumbers;
   }
-  const frontNumbers = wins.slice(0, 5);
-  const backNumbers = wins.slice(-2);
 
-  return bets.map((item, index) => ({
-    value: item,
-    isMatch: index < 5 ? frontNumbers.includes(item) : backNumbers.includes(item)
-  }));
+  const userFrontNumbers = userNumbers.slice(...current.front);
+  const userBackNumbers = userNumbers.slice(current.back).map(item => ({ ...item, color: current.backColor }));
+  if (!winBalls) {
+    return [...userFrontNumbers, ...userBackNumbers];
+  }
+  const lotteryNumbers = strToArray(winBalls);
+  const frontNumbers = lotteryNumbers.slice(...current.front);
+  const backNumbers = lotteryNumbers.slice(current.back);
+
+  return [
+    ...userFrontNumbers.map(item => ({ ...item, matched: frontNumbers.includes(item.value) })),
+    ...userBackNumbers.map(item => ({ ...item, matched: backNumbers.includes(item.value) }))
+  ];
 };
