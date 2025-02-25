@@ -114,10 +114,10 @@ export class LotteryService {
    *
    * @returns
    */
-  async queryWinHistory(params: { type: string; pageNo?: number; pageSize?: number; refresh?: boolean }): Promise<Array<WinLottery>> {
+  async queryWinHistory(params: { type: string; pageNo?: number; pageSize?: number; refresh?: boolean }): Promise<Array<Record<string, any>>> {
     const { type, pageNo = 1, pageSize = 100, refresh = false } = params;
     const cacheKey = `${type}:lottery:history-${pageSize}-${pageNo}`;
-    const list = await this.redisService.get<Array<WinLottery>>(cacheKey);
+    const list = await this.redisService.get<Array<Record<string, any>>>(cacheKey);
     if (list && list?.length > 0 && !refresh) {
       return list;
     }

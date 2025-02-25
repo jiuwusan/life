@@ -44,7 +44,7 @@ export class TasksService {
     while (queryCount < 36) {
       queryCount++;
       const list = await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 100, refresh: true });
-      if (list && list?.length > 0 && currentDateStr === list[0].lotteryDrawTime) {
+      if (list && list?.length > 0 && currentDateStr === (list[0].lotteryDrawTime || list[0].date).substring(0, 10)) {
         break; // 已经查询到最新数据
       }
       // 等待5分钟
