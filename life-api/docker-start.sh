@@ -23,7 +23,7 @@ for ((idx = 0; idx < $slbCount; idx++)); do
         -e TZ=Asia/Shanghai \
         -e DELUGE_LOGLEVEL=error \
         -p 39000:9000 \
-        --network=network-jiuwusan \
+        --network=network-953 \
         --name=$webServer \
         --restart=always $dockerImage
 done
