@@ -21,6 +21,7 @@ export const getPrize = (type: string, frontHits: number, backHits: number) => {
       prizes[4][0] = 7;
       prizes[2][2] = 8;
       prizes[3][1] = 8;
+      prizes[3][0] = 8;
       prizes[0][2] = 9;
       prizes[1][2] = 9;
       prizes[2][1] = 9;
