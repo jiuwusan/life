@@ -1,27 +1,49 @@
-import { ApiGenerator, type Params } from '@/utils/fetch';
+import { ApiGenerator, type Params, type RequestOptions } from '@/utils/fetch';
 
 // 体彩 API
 const STAPI = new ApiGenerator({
   baseUrl: 'https://webapi.sporttery.cn',
-  formatResponse: res => {
-    if (['0'].includes(res.errorCode)) {
-      return res.value;
+  formatResponse: async (response: Response) => {
+    try {
+      const result = await response.json();
+      if (['0'].includes(result.errorCode)) {
+        return result.value;
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
     }
-    return void 0;
+    return response;
   }
 });
 
 // 福彩 API
-const WFAPI = new ApiGenerator({
-  baseUrl: 'https://www.cwl.gov.cn',
-  formatResponse: res => {
-    console.log('res--->', res);
-    if ([0].includes(res.state)) {
-      return res;
+const WFAPI = (() => {
+  let WFACookie = 'HMF_CI=74678a4235c1ee6b181231bf4390fe47df1756c6289a4eca8cd291250499cb387f8376e288be8dd4c1b5b8ef77d53bde38f0afe0227a4f18585dc4791875617eb3';
+  return new ApiGenerator({
+    baseUrl: 'https://www.cwl.gov.cn',
+    formatFetchOptions: async (options: RequestOptions) => {
+      console.log('formatFetchOptions：', options);
+      options.headers = {
+        ...(options.headers || {}),
+        cookie: WFACookie
+      };
+      return options;
+    },
+    formatResponse: async (response: Response) => {
+      try {
+        const cookies = response.headers.get('set-cookie');
+        cookies && (WFACookie = cookies);
+        const result = await response.json();
+        if ([0].includes(result.state)) {
+          return result;
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+      return response;
     }
-    return void 0;
-  }
-});
+  });
+})()
 
 export const lotteryApi = {
   // 查询列表
@@ -30,9 +52,13 @@ export const lotteryApi = {
   queryWfLotteryHistory: (query?: Params) =>
     WFAPI.fetch('cwl_admin/front/cwlkj/search/kjxx/findDrawNotice', {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
-        Accept: 'application/json',
-        Cookie: 'HMF_CI=45f2f101808a68eefbc54b4e4e436d3474870a16377adc58010a5225f74baa3081328c7be17de54f422c22bd370799bdd749ff6d7edb395fd8eceef4af2adc0c1c'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'zh-CN,zh;q=0.9,zh-TW;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        Connection: 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        Referer: 'https://www.cwl.gov.cn'
       },
       query
     })
@@ -42,10 +68,16 @@ export const lotteryApi = {
 const QBitAPI = new ApiGenerator({
   baseUrl: 'http://10.16.0.236:8080/api/v2',
   // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
-  formatResponse: res => {
-    return res;
+  formatResponse: async (response: Response) => {
+    try {
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+    return response;
   },
-  formatFetchOptions: options => {
+  formatFetchOptions: async (options: RequestOptions) => {
     if (options.data) {
       const formData = new URLSearchParams();
       Object.keys(options.data).forEach((keyStr: string) => formData.append(keyStr, options.data[keyStr]));

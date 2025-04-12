@@ -6,7 +6,7 @@ export type Params = Record<string, any>;
 export type FormatResponse = (response: Params, options?: RequestOptions) => any;
 
 // 格式化
-export type FormatFetchOptions = (options: RequestOptions) => RequestOptions;
+export type FormatFetchOptions = (options: RequestOptions) => Promise<RequestOptions>;
 
 export type ApiGeneratorOptions = {
   baseUrl?: string;
@@ -29,7 +29,7 @@ export interface RequestOptions extends RequestInit {
  */
 export const request = (url: RequestInfo, options?: RequestOptions) => {
   let ACIDCount = 0;
-  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`, options);
+  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`, JSON.stringify(options));
   const ACIDREQ = async (url: RequestInfo, options?: RequestOptions): Promise<any> => {
     ACIDCount++;
     try {
@@ -39,17 +39,7 @@ export const request = (url: RequestInfo, options?: RequestOptions) => {
         delete options.query;
         delete options.data;
       }
-
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw response;
-      }
-      try {
-        return await response.json();
-      } catch (error) {
-        // 格式化 json 出错，说明返回的不是 json
-      }
-      return response;
+      return await fetch(url, options);
     } catch (error) {
       console.error('Failed to fetch data:', error);
       if (ACIDCount < 3) {
@@ -87,7 +77,7 @@ export class ApiGenerator {
     // 表示请求方法
     typeof options === 'string' && (options = { method: options.toUpperCase() });
     // 处理请求参数
-    this.options.formatFetchOptions && (options = this.options.formatFetchOptions(options));
+    this.options.formatFetchOptions && (options = await this.options.formatFetchOptions(options));
     // 发送请求
     let responseResult = await request(url, options);
     // 处理结果

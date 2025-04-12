@@ -6,11 +6,12 @@ type CheckLotteryResult = {
 };
 
 /**
- * 获取等级
+ * 获取 中奖等级
  */
 export const getPrize = (type: string, frontHits: number, backHits: number) => {
   const prizes: number[][] = Array.from({ length: 7 }, () => Array(3).fill(-1));
   switch (type) {
+    // 超级大乐透
     case 'sp':
       prizes[5][2] = 1;
       prizes[5][1] = 2;
@@ -21,11 +22,12 @@ export const getPrize = (type: string, frontHits: number, backHits: number) => {
       prizes[4][0] = 7;
       prizes[2][2] = 8;
       prizes[3][1] = 8;
-      prizes[3][0] = 8;
+      prizes[3][0] = 9;
       prizes[0][2] = 9;
       prizes[1][2] = 9;
       prizes[2][1] = 9;
       break;
+    // 双色球
     case 'wf':
       prizes[6][1] = 1;
       prizes[6][0] = 2;
