@@ -16,20 +16,33 @@ export class LotteryService {
     private readonly redisService: RedisService
   ) {}
 
+  /**
+   * 投注
+   * @param data
+   * @returns
+   */
   async bet(data: { userId: string; type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
     const { userId, type = 'sp', count = 1, betTime = new Date(), uid, reprint = false, sequence = false } = data;
-    const betBall = [];
-    if (uid) {
-      const lasted = await this.lotteryRepository.findOne({ where: { uid } });
-      lasted && lasted.betBall && betBall.push(...(lasted.betBall ? lasted.betBall.split(';') : []));
-    }
-    !reprint && betBall.push(...createLottery({ count, type, sequence }));
-    // 使用 UTC时间
+    // 创建投注
     const lottery = new Lottery();
     lottery.userId = userId;
     lottery.type = type; // 例如 'sp' 或 'wf'
-    lottery.betBall = betBall.join(';');
     lottery.betTime = new Date(betTime).toISOString();
+    // 投注号码
+    const betBall = [];
+    if (uid) {
+      const currentLottery = await this.lotteryRepository.findOne({ where: { uid } });
+      if (currentLottery) {
+        betBall.push(...(currentLottery.betBall ? currentLottery.betBall.split(';') : []));
+        if (reprint) {
+          lottery.type = currentLottery.type;
+          lottery.reprintId = currentLottery.reprintId || currentLottery.uid;
+          lottery.reprintCount = (currentLottery.reprintCount || 0) + 1;
+        }
+      }
+    }
+    !reprint && betBall.push(...createLottery({ count, type, sequence }));
+    lottery.betBall = betBall.join(';');
     // 保存
     return uid && !reprint ? await this.lotteryRepository.update(uid, lottery) : await this.lotteryRepository.save(lottery);
   }

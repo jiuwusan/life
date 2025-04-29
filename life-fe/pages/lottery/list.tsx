@@ -87,6 +87,18 @@ export function LotteryItem(props: ItemProps) {
           ))}
         </div>
       </div>
+      {data.reprintCount > 0 && (
+        <div className={styles.itemRow}>
+          <span className={styles.title}>追投期数：</span>
+          {data.reprintCount}
+        </div>
+      )}
+      {data.winNum && (
+        <div className={styles.itemRow}>
+          <span className={styles.title}>开奖期数：</span>
+          {data.winNum}
+        </div>
+      )}
       {data.winTime && (
         <div className={styles.itemRow}>
           <span className={styles.title}>开奖时间：</span>

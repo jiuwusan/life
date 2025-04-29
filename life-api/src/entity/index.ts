@@ -37,13 +37,13 @@ export class Lottery {
   @Column({ name: 'win_result', type: 'varchar', nullable: true })
   winResult: string;
 
-  //追加uid
-  @Column({ name: 'add_uid', type: 'varchar', nullable: true })
-  addUid: string;
+  //追加的uid
+  @Column({ name: 'reprint_id', type: 'varchar', nullable: true })
+  reprintId: string;
 
   //追加期数
-  @Column({ name: 'add_count', type: 'varchar', nullable: true })
-  addCount: string;
+  @Column({ name: 'reprint_count', type: 'varchar', default: '0' })
+  reprintCount: number;
 
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
