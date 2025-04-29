@@ -1,0 +1,128 @@
+@font-face {
+  font-family: 'iconfont'; /* Project id 4904570 */
+  src: url('./iconfont.woff2?t=1745741027253') format('woff2'), url('./iconfont.woff?t=1745741027253') format('woff'), url('./iconfont.ttf?t=1745741027253') format('truetype');
+}
+
+.iconfont {
+  font-family: 'iconfont' !important;
+  /* font-size: 16px; */
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.jws-icon_add:before {
+  content: '\e664';
+}
+
+.jws-icon_add-circle:before {
+  content: '\e665';
+}
+
+.jws-icon_arrow-right:before {
+  content: '\e666';
+}
+
+.jws-icon_browse:before {
+  content: '\e667';
+}
+
+.jws-icon_close:before {
+  content: '\e668';
+}
+
+.jws-icon_discount:before {
+  content: '\e66d';
+}
+
+.jws-icon_edit:before {
+  content: '\e66e';
+}
+
+.jws-icon_eye-close:before {
+  content: '\e66f';
+}
+
+.jws-icon_email:before {
+  content: '\e670';
+}
+
+.jws-icon_error:before {
+  content: '\e671';
+}
+
+.jws-icon_favorite:before {
+  content: '\e672';
+}
+
+.jws-icon_link:before {
+  content: '\e676';
+}
+
+.jws-icon_map:before {
+  content: '\e677';
+}
+
+.jws-icon_loading:before {
+  content: '\e678';
+}
+
+.jws-icon_notification:before {
+  content: '\e679';
+}
+
+.jws-icon_prompt:before {
+  content: '\e67b';
+}
+
+.jws-icon_refresh:before {
+  content: '\e67c';
+}
+
+.jws-icon_search:before {
+  content: '\e67d';
+}
+
+.jws-icon_select:before {
+  content: '\e67e';
+}
+
+.jws-icon_success:before {
+  content: '\e67f';
+}
+
+.jws-icon_warning:before {
+  content: '\e682';
+}
+
+.jws-icon_close-bold:before {
+  content: '\e685';
+}
+
+.jws-icon_select-bold:before {
+  content: '\e687';
+}
+
+.jws-icon_arrow-up-filling:before {
+  content: '\e688';
+}
+
+.jws-icon_arrow-down-filling:before {
+  content: '\e689';
+}
+
+.jws-icon_check-item-filling:before {
+  content: '\e68a';
+}
+
+.jws-icon_intermediate-filling:before {
+  content: '\e68b';
+}
+
+.jws-icon_success-filling:before {
+  content: '\e68c';
+}
+
+.jws-icon_sorting:before {
+  content: '\e68d';
+}

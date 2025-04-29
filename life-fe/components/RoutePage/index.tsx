@@ -9,15 +9,16 @@ import classNames from 'classnames';
  * @param bg 背景色
  * @returns
  */
-const getPageStyle = (bg?: string, padding?: string | number) => {
+const getPageStyle = (bg = 'bg.jpg', padding?: string | number) => {
   const pageStyle: Record<string, string> = {};
+
   if (!bg) {
     pageStyle['--page-bg-display'] = 'none';
   } else {
     if (isColor(bg)) {
       pageStyle['--page-bg-color'] = bg;
     } else {
-      pageStyle['--page-bg-image'] = `url(/oss/images${bg})`;
+      pageStyle['--page-bg-image'] = `url(/oss/images/${bg})`;
     }
   }
   // 边距

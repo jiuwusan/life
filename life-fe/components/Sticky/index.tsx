@@ -2,7 +2,7 @@ import styles from './styles.module.scss';
 import classNames from 'classnames';
 import { HTMLAttributes, useRef, useEffect, useState, CSSProperties } from 'react';
 
-type StickyProps = {
+export type StickyProps = {
   children: React.ReactNode;
   type?: 'top' | 'bottom';
   fixed?: boolean;

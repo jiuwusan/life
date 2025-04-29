@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
 import { createLottery, batchCheckLottery, computeStatVariance, getRandomNumbersByStat, getRandomNumbersByVariance } from '@/utils/lottery';
+import { getWebCookiesStr } from '@/utils/puppeteer';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
@@ -63,6 +64,7 @@ export class LotteryService {
       });
       console.log('lotteryResult---->', lotteryResult);
       const updateValues = {
+        winNum: winLottery.lotteryDrawNum,
         winBall: winLottery.lotteryDrawResult,
         winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
         winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；')
@@ -110,6 +112,47 @@ export class LotteryService {
   }
 
   /**
+   * 查询双色球历史记录
+   */
+  async queryWfLotteryHistory(params: Record<string, any>) {
+    let refreshCount = 1;
+    const querySsqList = async (pms: Record<string, any>, url?: string) => {
+      const cacheKey = `wf:web-cookie-str`;
+      if (refreshCount > 3) {
+        return [];
+      }
+      if (url) {
+        refreshCount++;
+        const newCookie = await getWebCookiesStr(url);
+        newCookie && (await this.redisService.set(cacheKey, newCookie));
+        return await querySsqList(pms);
+      }
+      const headers: Record<string, string> = {};
+      const cookie = await this.redisService.get<string>(cacheKey);
+      cookie && (headers.cookie = cookie);
+
+      const result = await lotteryApi.queryWfLotteryHistory(pms, { headers });
+
+      if (result?.status === 403) {
+        return await querySsqList(pms, result?.url);
+      }
+
+      if (result?.status === 302) {
+        refreshCount++;
+        const newCookies = result.headers.get('set-cookie');
+        newCookies && this.redisService.set(cacheKey, newCookies.split('; ')[0]);
+        return await querySsqList(pms);
+      }
+
+      result?.newCookies && this.redisService.set(cacheKey, result?.newCookies);
+
+      return result?.result || [];
+    };
+
+    return await querySsqList(params);
+  }
+
+  /**
    * 查询列表
    *
    * @returns
@@ -129,20 +172,18 @@ export class LotteryService {
         break;
       case 'wf':
         newList.push(
-          ...((
-            await lotteryApi.queryWfLotteryHistory({
-              name: 'ssq',
-              issueCount: '',
-              issueStart: '',
-              issueEnd: '',
-              dayStart: '',
-              dayEnd: '',
-              pageNo,
-              pageSize,
-              week: '',
-              systemType: 'PC'
-            })
-          )?.result || [])
+          ...(await this.queryWfLotteryHistory({
+            name: 'ssq',
+            issueCount: '',
+            issueStart: '',
+            issueEnd: '',
+            dayStart: '',
+            dayEnd: '',
+            pageNo,
+            pageSize,
+            week: '',
+            systemType: 'PC'
+          }))
         );
         break;
       default:
@@ -190,12 +231,12 @@ export class LotteryService {
       lotterySaleEndtime: (result?.lotterySaleEndtime || result?.date).substring(0, 10),
       prizeLevelList: (result?.prizeLevelList || result?.prizegrades)
         .filter(item => !['201', '401'].includes(item.group))
-        .map((item, index) => {
+        .map(item => {
           const chineseNumerals = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
-          const prizeLevelNum = index + 1;
-          const prizeLevel = `${chineseNumerals[prizeLevelNum]}等奖`;
-          const stakeAmount = item.stakeAmountFormat || item.typemoney;
-          const stakeCount = item.stakeCount || item.typenum;
+          const prizeLevelNum = Number(item.type || chineseNumerals.findIndex((chineseNumeral: string) => !!item.prizeLevel && item.prizeLevel.startsWith(chineseNumeral)) || 0);
+          const prizeLevel = prizeLevelNum > 0 ? `${chineseNumerals[prizeLevelNum]}等奖` : '';
+          const stakeAmount = prizeLevelNum > 0 ? item.stakeAmountFormat || item.typemoney : '';
+          const stakeCount = prizeLevelNum > 0 ? item.stakeCount || item.typenum : '';
           return {
             prizeLevelNum,
             prizeLevel,

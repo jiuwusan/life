@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { RoutePage, Button, Sticky } from '@/components';
-import { getBackgroundImage, strToArray } from '@/utils/util';
+import { strToArray } from '@/utils/util';
 import { useMemo } from 'react';
 import { useFetchState, useFetchClient } from '@/hooks/extend';
 import { queryLotteryList, betLottery, matchLottery, removeLottery, LotteryMaps } from './hooks';
@@ -11,8 +11,6 @@ import { useRouter } from 'next/router';
 export async function getServerSideProps() {
   return {
     props: {
-      // 背景图
-      bgImage: getBackgroundImage(),
       list: await queryLotteryList()
     }
   };
@@ -113,13 +111,12 @@ export function LotteryItem(props: ItemProps) {
 }
 
 type PageProps = {
-  bgImage: string;
   list?: Array<any>;
 };
 // 页面
 export default function Page(props: PageProps) {
   const router = useRouter();
-  const { bgImage, list = [] } = props;
+  const { list = [] } = props;
   const [historyList, { fetchData }] = useFetchState(list, queryLotteryList);
   //选号
   const [, createBet] = useFetchClient(async formData => {
@@ -134,7 +131,7 @@ export default function Page(props: PageProps) {
 
   return (
     <>
-      <RoutePage bg={bgImage} padding="8px" title="超级大乐透-投注列表">
+      <RoutePage padding="8px" title="投注列表">
         <div>
           {historyList.map(item => (
             <LotteryItem key={item.uid} data={item} remove={handleRemove} reprint={(param: any) => createBet(param)} adding={(param: any) => createBet(param)} />

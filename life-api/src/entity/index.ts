@@ -21,6 +21,10 @@ export class Lottery {
   @Column({ name: 'bet_ball', type: 'varchar' })
   betBall: string;
 
+  //开奖期数
+  @Column({ name: 'win_num', type: 'varchar', nullable: true })
+  winNum: string;
+
   // 开奖时间
   @Column({ name: 'win_time', type: 'datetime', nullable: true })
   winTime: string;
