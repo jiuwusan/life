@@ -8,6 +8,7 @@ import { EntityFeature } from '@/entity';
 import { AllExceptionsFilter, ResponseInterceptor, Gateway } from '@/middleware';
 import { ScheduleModule } from '@nestjs/schedule';
 
+// 注入模块
 @Module({
   imports: [
     MYSQL57,
@@ -37,6 +38,8 @@ import { ScheduleModule } from '@nestjs/schedule';
   ],
   exports: [REDIS_INJECT]
 })
+
+//中间件
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(Gateway).forRoutes('*');

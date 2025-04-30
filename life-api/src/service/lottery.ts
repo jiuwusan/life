@@ -7,14 +7,17 @@ import { getWebCookiesStr } from '@/utils/puppeteer';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
+import { BaseService } from '@/service/base';
 
 @Injectable()
-export class LotteryService {
+export class LotteryService extends BaseService {
   constructor(
     @InjectRepository(Lottery)
     private lotteryRepository: Repository<Lottery>,
     private readonly redisService: RedisService
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * 投注
@@ -22,12 +25,12 @@ export class LotteryService {
    * @returns
    */
   async bet(data: { userId: string; type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
-    const { userId, type = 'sp', count = 1, betTime = new Date(), uid, reprint = false, sequence = false } = data;
+    const { userId, type = 'sp', count = 1, betTime, uid, reprint = false, sequence = false } = data;
     // 创建投注
     const lottery = new Lottery();
     lottery.userId = userId;
     lottery.type = type; // 例如 'sp' 或 'wf'
-    lottery.betTime = new Date(betTime).toISOString();
+    lottery.betTime = this.getDatabaseDateStr(betTime);
     // 投注号码
     const betBall = [];
     if (uid) {
@@ -36,12 +39,15 @@ export class LotteryService {
         betBall.push(...(currentLottery.betBall ? currentLottery.betBall.split(';') : []));
         if (reprint) {
           lottery.type = currentLottery.type;
-          lottery.reprintId = currentLottery.reprintId || currentLottery.uid;
-          lottery.reprintCount = (currentLottery.reprintCount || 0) + 1;
+          const reprintId = currentLottery.reprintId || currentLottery.uid;
+          lottery.reprintId = reprintId;
+          const reprintCount = await this.lotteryRepository.count({ where: { reprintId } });
+          lottery.reprintCount = reprintCount + 1;
         }
       }
     }
     !reprint && betBall.push(...createLottery({ count, type, sequence }));
+    // 转字符串
     lottery.betBall = betBall.join(';');
     // 保存
     return uid && !reprint ? await this.lotteryRepository.update(uid, lottery) : await this.lotteryRepository.save(lottery);
@@ -79,8 +85,9 @@ export class LotteryService {
       const updateValues = {
         winNum: winLottery.lotteryDrawNum,
         winBall: winLottery.lotteryDrawResult,
-        winTime: new Date(`${winLottery.lotteryDrawTime} 21:25:00`).toISOString(),
-        winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；')
+        winTime: this.getDatabaseDateStr(`${winLottery.lotteryDrawTime} 21:25:00`),
+        winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；'),
+        winRemark: winLottery.lotteryDrawRemark
       };
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
@@ -242,6 +249,7 @@ export class LotteryService {
       lotteryDrawNum: result?.lotteryDrawNum || result?.code,
       lotteryDrawTime: (result?.lotteryDrawTime || result?.date).substring(0, 10),
       lotterySaleEndtime: (result?.lotterySaleEndtime || result?.date).substring(0, 10),
+      lotteryDrawRemark: result?.drawPdfUrl || (result?.detailsLink ? `https://www.cwl.gov.cn/html5${result?.detailsLink}` : ''),
       prizeLevelList: (result?.prizeLevelList || result?.prizegrades)
         .filter(item => !['201', '401'].includes(item.group))
         .map(item => {

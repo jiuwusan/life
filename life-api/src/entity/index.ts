@@ -37,6 +37,10 @@ export class Lottery {
   @Column({ name: 'win_result', type: 'varchar', nullable: true })
   winResult: string;
 
+  //备注
+  @Column({ name: 'win_remark', type: 'varchar', nullable: true })
+  winRemark: string;
+
   //追加的uid
   @Column({ name: 'reprint_id', type: 'varchar', nullable: true })
   reprintId: string;

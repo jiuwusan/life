@@ -50,19 +50,6 @@ export function LotteryItem(props: ItemProps) {
       <div className={classNames([styles.itemRow, styles.type])}>
         <div className={styles.title}>{LotteryMaps[data.type]?.name}</div>
         <div className={styles.toolBtn}>
-          {!data.winTime && (
-            <>
-              <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid })}>
-                随机
-              </span>
-              <span className={classNames([styles.tagBtn, styles.warning])} onClick={() => adding && adding({ count: 1, uid: data.uid, sequence: true })}>
-                顺序
-              </span>
-              <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove(data.uid)}>
-                删除
-              </span>
-            </>
-          )}
           {data.winTime && (
             <span className={styles.tagBtn} onClick={() => reprint && reprint({ uid: data.uid, reprint: true })}>
               追投
@@ -87,16 +74,12 @@ export function LotteryItem(props: ItemProps) {
           ))}
         </div>
       </div>
-      {data.reprintCount > 0 && (
-        <div className={styles.itemRow}>
-          <span className={styles.title}>追投期数：</span>
-          {data.reprintCount}
-        </div>
-      )}
-      {data.winNum && (
-        <div className={styles.itemRow}>
-          <span className={styles.title}>开奖期数：</span>
-          {data.winNum}
+      {data.winBall && (
+        <div className={classNames([styles.itemRow, styles.row])}>
+          <div className={styles.title}>开奖号码：</div>
+          <div>
+            <BallsRow type={data.type} data={data.winBall} />
+          </div>
         </div>
       )}
       {data.winTime && (
@@ -105,12 +88,15 @@ export function LotteryItem(props: ItemProps) {
           {data.winTime}
         </div>
       )}
-      {data.winBall && (
-        <div className={classNames([styles.itemRow, styles.row])}>
-          <div className={styles.title}>开奖号码：</div>
-          <div>
-            <BallsRow type={data.type} data={data.winBall} />
-          </div>
+      {data.winNum && (
+        <div className={styles.itemRow}>
+          <span className={styles.title}>开奖期数：</span>
+          {data.winNum}
+        </div>
+      )}
+      {data.reprintCount > 0 && (
+        <div className={styles.itemRow}>
+          <span className={styles.title}>追投期数：</span>第{data.reprintCount * 1 + 1}期
         </div>
       )}
       <div className={classNames([styles.itemRow])}>

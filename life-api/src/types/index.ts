@@ -18,6 +18,7 @@ export type WinLottery = {
   lotteryDrawResult: string;
   lotteryDrawNum: string;
   lotteryDrawTime: string;
+  lotteryDrawRemark: string;
   lotterySaleEndtime: string;
   prizeLevelList: { prizeLevelNum: number; prizeLevel: string; stakeCount: number; stakeAmount: string }[];
 };

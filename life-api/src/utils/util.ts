@@ -160,3 +160,14 @@ export const validationParameter = (params: Record<string, any>, rules: string[]
     }
   }
 };
+
+/**
+ * 获取保存到数据库的时间，使用 UTC
+ *
+ * @param value
+ */
+export const getDatabaseDateStr = (value?: number | string | Date): string => {
+  const date = value instanceof Date ? value : new Date(value ?? Date.now());
+  // return date.toISOString().replace('T', ' ').slice(0, 19);
+  return date.toISOString();
+};
