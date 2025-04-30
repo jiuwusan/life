@@ -55,16 +55,12 @@ export function LotteryItem(props: ItemProps) {
               追投
             </span>
           )}
-          {data.winPdf && (
-            <span className={classNames([styles.tagBtn, styles.success])} onClick={() => router.push(`/tools/pdf?pdfurl=${encodeURIComponent(data.winPdf)}`)}>
+          {data.winRemark && (
+            <a className={classNames([styles.tagBtn, styles.success])} href={data.winRemark} target='_blank'>
               公告
-            </span>
+            </a>
           )}
         </div>
-      </div>
-      <div className={styles.itemRow}>
-        <span className={styles.title}>投注时间：</span>
-        {data.betTime}
       </div>
       <div className={classNames([styles.itemRow, styles.row])}>
         <div className={styles.title}>投注号码：</div>
@@ -73,6 +69,10 @@ export function LotteryItem(props: ItemProps) {
             <BallsRow key={idx} type={data.type} data={item} win={data.winBall} />
           ))}
         </div>
+      </div>
+      <div className={styles.itemRow}>
+        <span className={styles.title}>投注时间：</span>
+        {data.betTime}
       </div>
       {data.winBall && (
         <div className={classNames([styles.itemRow, styles.row])}>
