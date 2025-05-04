@@ -148,14 +148,20 @@ export const validationParameter = (params: Record<string, any>, rules: string[]
 
   for (let index = 0; index < keyStrs.length; index++) {
     const current = keyStrs[index];
-    switch (defRules[current]) {
+    switch (typeof defRules[current]) {
       case 'boolean':
         if (isEmpty(params[current])) {
           throw new Error(`${current}是必要参数`);
         }
         break;
-
-      default:
+      case 'function':
+        const message = defRules[current](params);
+        if (message) {
+          throw new Error(`${current}：${message}`);
+        }
+        break;
+      case 'string':
+        // 正则
         break;
     }
   }

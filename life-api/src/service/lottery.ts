@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
-import { createLottery, batchCheckLottery, computeStatVariance, getRandomNumbersByStat, getRandomNumbersByVariance } from '@/utils/lottery';
+import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { getWebCookiesStr } from '@/utils/puppeteer';
 import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
@@ -25,14 +25,14 @@ export class LotteryService extends BaseService {
    * @returns
    */
   async bet(data: { userId: string; type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
-    const { userId, type = 'sp', count = 1, betTime, uid, reprint = false, sequence = false } = data;
+    const { userId, type = 'sp', count = 0, betBall: betBallStr, betTime, uid, reprint = false, sequence = false } = data;
     // 创建投注
     const lottery = new Lottery();
     lottery.userId = userId;
     lottery.type = type; // 例如 'sp' 或 'wf'
     lottery.betTime = this.getDatabaseDateStr(betTime);
     // 投注号码
-    const betBall = [];
+    const betBall = betBallStr ? betBallStr.split(';') : [];
     if (uid) {
       const currentLottery = await this.lotteryRepository.findOne({ where: { uid } });
       if (currentLottery) {
@@ -46,7 +46,7 @@ export class LotteryService extends BaseService {
         }
       }
     }
-    !reprint && betBall.push(...createLottery({ count, type, sequence }));
+    count > 0 && !reprint && betBall.push(...createLottery({ count, type, sequence }));
     // 转字符串
     lottery.betBall = betBall.join(';');
     // 保存
@@ -178,7 +178,7 @@ export class LotteryService extends BaseService {
    * @returns
    */
   async queryWinHistory(params: { type: string; pageNo?: number; pageSize?: number; refresh?: boolean }): Promise<Array<Record<string, any>>> {
-    const { type, pageNo = 1, pageSize = 100, refresh = false } = params;
+    const { type, pageNo = 1, pageSize = 20, refresh = false } = params;
     const cacheKey = `${type}:lottery:history-${pageSize}-${pageNo}`;
     const list = await this.redisService.get<Array<Record<string, any>>>(cacheKey);
     if (list && list?.length > 0 && !refresh) {
@@ -266,73 +266,6 @@ export class LotteryService extends BaseService {
           };
         })
     };
-  }
-
-  /**
-   * 统计情况
-   */
-  async statistics(type: string, numbers = 100) {
-    type Stats = Record<string, { total: number; vanish: number }>;
-    const list = [];
-    while (list.length < numbers) {
-      list.push(...(await this.queryWinHistory({ type, pageNo: list.length / 100 + 1 })));
-    }
-
-    const result: { frontStat: Stats; backStat: Stats } = { frontStat: {}, backStat: {} };
-    const varianceList: { frontHistory: string[][]; backHistory: string[][] } = {
-      frontHistory: [],
-      backHistory: []
-    };
-    let vanish = 0;
-    list.forEach(item => {
-      const drawBalls = item.lotteryDrawResult.split(' ');
-      varianceList.frontHistory.push(drawBalls.slice(0, 5));
-      varianceList.backHistory.push(drawBalls.slice(-2));
-      drawBalls.forEach((ball, idx) => {
-        const current = idx > 4 ? 'backStat' : 'frontStat';
-        !result[current][ball] && (result[current][ball] = { total: 0, vanish });
-        result[current][ball].total = result[current][ball].total + 1;
-      });
-      vanish++;
-    });
-
-    const formatStat = (stats: Stats, varianceStat: any) => {
-      const list = Object.keys(stats).map(ball => {
-        const diff = stats[ball].total - stats[ball].vanish;
-        return {
-          ball,
-          diff,
-          gran: Math.abs(diff),
-          sum: stats[ball].total + stats[ball].vanish,
-          ...stats[ball],
-          ...varianceStat[ball]
-        };
-      });
-      // 倒叙
-      list.sort((a, b) => b.vanish - a.vanish);
-      return list;
-    };
-    return {
-      frontStat: formatStat(result.frontStat, computeStatVariance(varianceList.frontHistory)),
-      backStat: formatStat(result.backStat, computeStatVariance(varianceList.backHistory))
-    };
-  }
-
-  /**
-   * 推荐
-   */
-  async recommend(type: string) {
-    const rangs = [500, 1500, 2500];
-    const result = [];
-    const { frontStat, backStat } = await this.statistics(type, 100);
-    result.push(getRandomNumbersByStat(frontStat, backStat));
-    for (let i = 0; i < rangs.length; i++) {
-      const stat = await this.statistics(type, rangs[i]);
-      result.push(getRandomNumbersByVariance(stat.frontStat, stat.backStat));
-    }
-    // 只取一项
-    const randomIndex = Math.floor(Math.random() * result.length);
-    return result[randomIndex];
   }
 
   /**

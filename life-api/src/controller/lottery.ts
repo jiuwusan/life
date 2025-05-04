@@ -11,7 +11,26 @@ export class LotteryController {
 
   @Post('bet')
   async bet(@Body() data) {
-    await validationParameter(data, ['type']);
+    // 校验
+    await validationParameter(data, {
+      type: params => {
+        if (params.uid) {
+          return;
+        }
+        if (!params.type) {
+          return 'type 参数不能为空';
+        }
+      },
+      betBall: params => {
+        const regex = /^(\d{2}(?: \d{2}){6})(;(\d{2}(?: \d{2}){6}))*$/;
+        if (!params.betBall) {
+          return;
+        }
+        if (!regex.test(params.betBall)) {
+          return '投注球格式异常';
+        }
+      }
+    });
     const userId = await this.authService.getUserId();
     const result = await this.lotteryService.bet({ ...data, userId });
     return result;
@@ -30,18 +49,8 @@ export class LotteryController {
   }
 
   @Get('query/history')
-  async history(@Query() { pageNo = 1, pageSize = 100, type = 'sp', refresh = false }) {
+  async history(@Query() { pageNo = 1, pageSize = 20, type = 'sp', refresh = false }) {
     return await this.lotteryService.queryWinHistory({ type, pageNo, pageSize, refresh });
-  }
-
-  @Get('statistics')
-  async statistics(@Query() { type = 'sp', numbers = 100 }) {
-    return await this.lotteryService.statistics(type, numbers);
-  }
-
-  @Get('recommend')
-  async recommend(@Query() { type = 'sp' }) {
-    return await this.lotteryService.recommend(type);
   }
 
   @Get('persist')

@@ -38,22 +38,25 @@ export class TasksService {
     if (!type) {
       return console.log(`${new Date().toLocaleString()} : 今日无开奖`);
     }
-    let queryCount = 0;
+    let queryCount = 1;
     let pageNo = 1;
     // 最多查询36次
     while (queryCount < 36) {
-      queryCount++;
-      const list = await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 100, refresh: true });
-      if (list && list?.length > 0 && currentDateStr === (list[0].lotteryDrawTime || list[0].date).substring(0, 10)) {
+      console.log(`${new Date().toLocaleString()} : 尝试第${queryCount}次更新`);
+      const list = await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 20, refresh: true });
+      const lotteryDrawDate = list && list?.length > 0 && (list[0].lotteryDrawTime || list[0].date)?.substring(0, 10);
+      const lotteryDrawRemark = list && list?.length > 0 && (list[0].drawPdfUrl || list[0].detailsLink);
+      if (currentDateStr === lotteryDrawDate && !!lotteryDrawRemark) {
         break; // 已经查询到最新数据
       }
       // 等待5分钟
       await nextSleep(1000 * 60 * 5);
+      queryCount++;
     }
     console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
     console.log(`${new Date().toLocaleString()} : 开始更新后续24次历史记录`);
     while (++pageNo && pageNo < 26) {
-      await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 100, refresh: true });
+      await this.lotteryService.queryWinHistory({ type, pageNo, pageSize: 20, refresh: true });
       // 等待1分钟
       await nextSleep(1000 * 60 * 1);
     }
