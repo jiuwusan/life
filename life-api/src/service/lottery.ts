@@ -67,7 +67,7 @@ export class LotteryService extends BaseService {
 
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
-      if (lottery.winTime) {
+      if (lottery.winRemark) {
         continue;
       }
       const winLottery = this.findWinLottery(winHistory[lottery.type], lottery.betTime);
