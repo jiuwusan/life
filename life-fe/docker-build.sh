@@ -30,6 +30,7 @@ git checkout -- ./
 git pull
 # 可执行
 chmod a+x ./docker-build.sh
+chmod a+x ./docker-start.sh
 # 拷贝文件
 # mv -f ./config/config-api-$branch_name.ts ./config/config-api.ts
 
