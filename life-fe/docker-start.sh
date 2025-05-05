@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# 当前版本号
-appVersion=$1
+# 镜像
+appImageName=$1
 # 名称
 appName=$2
-# 
+# 负载
 slbCount=${3:-1}
 # 镜像
 # dockerImage=localhost/jiuwusan-life/$appVersion
-dockerImage=$appVersion
+dockerImage=$appImageName
 # 映射本机地址
 # apiHost=jiuwusan.cn:172.17.0.1
 # 拉取
@@ -23,7 +23,7 @@ for ((idx = 0; idx < $slbCount; idx++)); do
         -e TZ=Asia/Shanghai \
         -e DELUGE_LOGLEVEL=error \
         -p 30001:3000 \
-        --network=network-jiuwusan \
+        --network=network-953 \
         --name=$webServer \
         --restart=always $dockerImage
 done
