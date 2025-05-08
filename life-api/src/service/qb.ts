@@ -43,8 +43,7 @@ export class QbService {
       let cookies = await this.redisService.get(this.authCacheKey);
       (!cookies || refreshAuth) && (cookies = await this.auth());
       try {
-        const result = await APIFunciton({ ...options, headers: { Cookie: `SID=${cookies}` } });
-        return result;
+        return await APIFunciton({ ...options, headers: { Cookie: `SID=${cookies}` } });
       } catch (error) {
         if (error.status === 403 && ACIDCount < 3) {
           console.log(`qBittorrent cookie 过期，重新登录`);

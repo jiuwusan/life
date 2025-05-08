@@ -53,9 +53,11 @@ const QBitAPI = new ApiGenerator({
   baseUrl: 'http://10.16.0.236:8080/api/v2',
   // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
   formatResponse: async (response: Response) => {
+    if (response?.status !== 200) {
+      throw response;
+    }
     try {
-      const result = await response.json();
-      return result;
+      return await response.json();
     } catch (error) {
       console.error('QBitAPI Failed to fetch data:', error);
     }
