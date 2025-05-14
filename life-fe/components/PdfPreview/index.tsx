@@ -1,7 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export const PdfPreview = (props: { file: string }) => {
   const [numPages, setNumPages] = useState(0);
@@ -13,9 +16,7 @@ export const PdfPreview = (props: { file: string }) => {
 
   return (
     <Document file={props.file} onLoadSuccess={onDocumentLoadSuccess}>
-      {Array.from(new Array(numPages), (_, index) => (
-        <Page key={`page_${index + 1}`} pageNumber={index + 1} width={width} />
-      ))}
+      {numPages > 0 && Array.from(new Array(numPages), (_, index) => <Page key={`page_${index + 1}`} pageNumber={index + 1} width={width} />)}
     </Document>
   );
 };
