@@ -3,10 +3,10 @@ import { appendQueryParams, joinUrl } from '@/utils/util';
 export type Params = Record<string, any>;
 
 // 处理返回的数据
-export type FormatResponse = (response: Params, options?: RequestOptions) => any;
+export type FormatResponse = (response: Params, options?: RequestOptions) => Promise<any>;
 
 // 格式化
-export type FormatFetchOptions = (options: RequestOptions) => RequestOptions;
+export type FormatFetchOptions = (options: RequestOptions) => Promise<RequestOptions>;
 
 export type ApiGeneratorOptions = {
   baseUrl?: string;
@@ -84,7 +84,7 @@ export class ApiGenerator {
     typeof options === 'string' && (options = { method: options.toUpperCase() });
     options.headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
     // 处理请求参数
-    this.options.formatFetchOptions && (options = this.options.formatFetchOptions(options));
+    this.options.formatFetchOptions && (options = await this.options.formatFetchOptions(options));
     // 发送请求
     let responseResult = await request(url, options);
     // 处理结果
