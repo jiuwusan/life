@@ -3,7 +3,7 @@ import { appendQueryParams, joinUrl } from '@/utils/util';
 export type Params = Record<string, any>;
 
 // 处理返回的数据
-export type FormatResponse = (response: Params, options?: RequestOptions) => any;
+export type FormatResponse = (response: Params, options?: RequestOptions) => Promise<any>;
 
 // 格式化
 export type FormatFetchOptions = (options: RequestOptions) => Promise<RequestOptions>;

@@ -1,20 +1,20 @@
 import classNames from 'classnames';
-import { RoutePage, Button, Sticky } from '@/components';
+import { RoutePage, Loading, ClientOnly } from '@/components';
 import { strToArray } from '@/utils/util';
 import { useMemo } from 'react';
-import { useFetchState, useFetchClient } from '@/hooks/extend';
+import { useScrollPager, useClientFetch } from '@/hooks/extend';
 import { queryLotteryList, betLottery, matchLottery, removeLottery, LotteryMaps } from './hooks';
 import styles from './styles.module.scss';
 import { useRouter } from 'next/router';
 
 // 在服务端获取数据
-export async function getServerSideProps() {
-  return {
-    props: {
-      list: await queryLotteryList()
-    }
-  };
-}
+// export async function getServerSideProps() {
+//   return {
+//     props: {
+//       list: await queryLotteryList()
+//     }
+//   };
+// }
 
 // 每一项
 export function BallsRow(props: { data: string; type: string; win?: string }) {
@@ -112,45 +112,31 @@ export function LotteryItem(props: ItemProps) {
   );
 }
 
-type PageProps = {
-  list?: Array<any>;
-};
 // 页面
-export default function Page(props: PageProps) {
+export default function Page() {
   const router = useRouter();
-  const { list = [] } = props;
-  const [historyList, { fetchData }] = useFetchState(list, queryLotteryList);
+  const { datalist, pending, hasMore, loadMore } = useScrollPager<any>({ fetchData: queryLotteryList });
   //选号
-  const [, createBet] = useFetchClient(async formData => {
+  const [, createBet] = useClientFetch(async formData => {
     await betLottery(formData);
-    fetchData();
   });
   // 删除
-  const [, handleRemove] = useFetchClient(async uid => {
+  const [, handleRemove] = useClientFetch(async uid => {
     await removeLottery(uid);
-    fetchData();
   });
 
   return (
     <>
       <RoutePage padding="8px" title="投注列表">
         <div>
-          {historyList.map(item => (
+          {datalist.map(item => (
             <LotteryItem key={item.uid} data={item} remove={handleRemove} reprint={(param: any) => createBet(param)} adding={(param: any) => createBet(param)} />
           ))}
+          <ClientOnly>
+            <Loading pending={pending} hasMore={hasMore} loadMore={loadMore} />
+          </ClientOnly>
         </div>
       </RoutePage>
-      <Sticky fixed type="bottom" className={styles.toolWrap}>
-        <Button className={styles.toolBtnItem} type="success" onClick={() => router.push('/lottery/stat')}>
-          统计
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 2 })}>
-          机选2注
-        </Button>
-        <Button className={styles.toolBtnItem} onClick={() => createBet({ count: 4 })}>
-          机选4注
-        </Button>
-      </Sticky>
     </>
   );
 }

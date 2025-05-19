@@ -21,6 +21,14 @@ export class Lottery {
   @Column({ name: 'bet_ball', type: 'varchar' })
   betBall: string;
 
+  //下注倍数
+  @Column({ name: 'bet_times', type: 'varchar', default: '1' })
+  betTimes: string;
+
+  //下注是否追加
+  @Column({ name: 'bet_is_add', type: 'varchar', default: '0' })
+  betIsAdd: string;
+
   //开奖期数
   @Column({ name: 'win_num', type: 'varchar', nullable: true })
   winNum: string;

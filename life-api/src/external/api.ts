@@ -84,3 +84,14 @@ export const qbApi = {
   // 重命名文件名称
   updateTorrentFileName: (option?: Params) => QBitAPI.fetch('/torrents/renameFile', { method: 'POST', ...(option || {}) })
 };
+
+// DINGTALK_WEBHOOK="https://oapi.dingtalk.com/robot/send?access_token=f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997"
+// DingDing API
+const DingDingAPI = new ApiGenerator({
+  baseUrl: 'https://oapi.dingtalk.com'
+});
+
+export const webHookApi = {
+  // 登录
+  sendMessage: (data?: Params) => DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data })
+};

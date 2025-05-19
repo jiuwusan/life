@@ -17,13 +17,16 @@ export const LotteryMaps: Record<string, { front: number[]; back: number; name: 
 };
 
 // 列表
-export const queryLotteryList = async (query?: { pageNo: number }) => {
-  const result = (await lotteryApi.querylist(query)) || { list: [] };
-  return (result.list || []).map((item: any) => ({
-    ...item,
-    betTime: formatDateToStr(item.betTime),
-    winTime: item.winTime && formatDateToStr(item.winTime)
-  }));
+export const queryLotteryList = async (query?: { pageNo: number; pageSize?: number }) => {
+  const { list = [], total = 0 } = (await lotteryApi.querylist(query)) || { list: [], total: 0 };
+  return {
+    total,
+    list: list.map((item: any) => ({
+      ...item,
+      betTime: formatDateToStr(item.betTime),
+      winTime: item.winTime && formatDateToStr(item.winTime)
+    }))
+  };
 };
 
 // 统计数据

@@ -4,10 +4,11 @@ import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { getWebCookiesStr } from '@/utils/puppeteer';
-import { lotteryApi } from '@/external/api';
+import { lotteryApi, webHookApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
 import { BaseService } from '@/service/base';
+import { nextSleep, formatDateToStr } from '@/utils/util';
 
 @Injectable()
 export class LotteryService extends BaseService {
@@ -64,10 +65,10 @@ export class LotteryService extends BaseService {
       sp: await this.queryWinHistory({ type: 'sp' }),
       wf: await this.queryWinHistory({ type: 'wf' })
     };
-
+    const resultMessages = [];
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
-      if (lottery.winRemark) {
+      if (lottery.winRemark && typeof lottery.winResult === 'string' && !lottery.winResult.includes('_')) {
         continue;
       }
       const winLottery = this.findWinLottery(winHistory[lottery.type], lottery.betTime);
@@ -89,11 +90,34 @@ export class LotteryService extends BaseService {
         winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；'),
         winRemark: winLottery.lotteryDrawRemark
       };
+
+      if (lottery.winResult && !lottery.winResult.includes('_')) {
+        resultMessages.push({
+          msgtype: 'markdown',
+          markdown: {
+            title: '开奖结果',
+            text: `#### 开奖结果\n - 投注号码：\n - 投注时间：\n - 开奖号码：\n - 开奖时间：\n - 开奖期数：\n - 追投期数：\n - 开奖结果：`
+          }
+        });
+      }
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
       this.lotteryRepository.update(lottery.uid, updateValues);
     }
+    this.sendWinMessage(resultMessages);
     return lotterys;
+  }
+
+  /**
+   * 发送中奖消息
+   */
+  async sendWinMessage(messages: Array<{ msgtype: string; markdown: { title: string; text: string } }>) {
+    for (let index = 0; index < messages.length; index++) {
+      // 调用 webhook 通知
+      await webHookApi.sendMessage(messages[index]);
+      // 随机等待3-10秒
+      await nextSleep(1000 * (Math.floor(Math.random() * 7) + 3));
+    }
   }
 
   /**
@@ -280,5 +304,51 @@ export class LotteryService extends BaseService {
       this.redisService.set(cacheKey, bets);
     }
     return bets;
+  }
+
+  /**
+   * 轮询更新历史记录
+   * @returns
+   */
+  async pollingUpdateLotteryHistory() {
+    const lockKey = `lottery:history-update-locked`;
+    // 随机锁,防止被重复调用
+    await nextSleep(Math.floor(1000 * 31 * Math.random()));
+    if (await this.redisService.get(lockKey)) {
+      return console.log(`${new Date().toLocaleString()} : 其他服务正在更新，直接退出`);
+    }
+    // 60s后释放锁
+    this.redisService.set(lockKey, 'locked', 'EX', 60);
+    console.log(`${new Date().toLocaleString()} : 开始更新历史记录`);
+    // 今天
+    const currentDate = new Date();
+    const currentDateStr = formatDateToStr(currentDate, 'yyyy-MM-dd');
+    const currentDay = currentDate.getDay();
+
+    // 确定开奖的类型
+    const type = ['wf', 'sp', 'wf', 'sp', 'wf', '', 'sp'][currentDay];
+    if (!type) {
+      return console.log(`${new Date().toLocaleString()} : 今日无开奖`);
+    }
+    // 开始更新
+    let queryCount = 1;
+    // 最多轮询6小时
+    const nextDayTimestamp = currentDate.getTime() + 6 * 60 * 60 * 1000;
+    while (Date.now() < nextDayTimestamp) {
+      console.log(`${new Date().toLocaleString()} : 尝试第${queryCount}次更新`);
+      const list = await this.queryWinHistory({ type, pageNo: 1, pageSize: 20, refresh: true });
+      const currentLottery = this.findWinLottery(list, `${currentDateStr} 20:59:00`);
+      if (currentLottery && currentLottery.lotteryDrawRemark && !currentLottery.prizeLevelList.find(item => String(item.stakeAmount).includes('_'))) {
+        break; // 已经查询到最新数据
+      }
+      // 随机等待3-10分钟
+      await nextSleep(1000 * 60 * (Math.floor(Math.random() * 7) + 3));
+      queryCount++;
+    }
+
+    console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
+
+    // 验奖
+    this.querylist({ type });
   }
 }
