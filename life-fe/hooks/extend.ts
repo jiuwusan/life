@@ -30,7 +30,7 @@ export function useClientFetch<T extends CallbackFunction>(callback?: CallbackFu
  * @param callback
  * @returns
  */
-export function useFetchState<T>(callback?: T): { data?: T; pending: boolean; fetchData: Function } {
+export function useFetchState<T>(callback?: (...args: any[]) => Promise<T>): { data?: T; pending: boolean; fetchData: Function } {
   const [data, setData] = useState<T>();
   const [pending, fetchData] = useClientFetch(async (...args) => {
     callback && setData(await callback(...args));
@@ -38,6 +38,27 @@ export function useFetchState<T>(callback?: T): { data?: T; pending: boolean; fe
 
   return { data, pending, fetchData };
 }
+
+// export function useFetchState<T>(callback?: (...args: any[]) => Promise<T>): {
+//   data?: T;
+//   pending: boolean;
+//   fetchData: (...args: any[]) => Promise<void>;
+// } {
+//   const [data, setData] = useState<T>();
+//   // useClientFetch 应该返回 [pending:boolean, fetchData: function]
+//   const [pending, fetchDataBase] = useClientFetch(async (...args: any[]) => {
+//     if (!callback) return;
+//     const result = await callback(...args);
+//     setData(result);
+//   });
+
+//   // 包装一层，保证返回类型一致
+//   const fetchData = async (...args: any[]) => {
+//     await fetchDataBase(...args);
+//   };
+
+//   return { data, pending, fetchData };
+// }
 
 export type ScrollPagerProps<T> = {
   pageSize?: number;
