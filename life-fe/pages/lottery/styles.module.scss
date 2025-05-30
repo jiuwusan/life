@@ -114,38 +114,13 @@
   }
 }
 
-.ballItem {
-  font-size: 14px;
-  line-height: 24px;
-  text-align: center;
-  width: 26px;
-  height: 26px;
-  display: inline-block;
-  position: relative;
-  margin: 4px 0 4px 8px;
-  border: 2px solid var(--primary-color);
-  border-radius: 50%;
-  color: var(--primary-color);
-  font-weight: 700;
-
-  &:nth-child(1) {
-    margin: 4px 0 4px 0;
-  }
-
-  &.red {
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-  }
-
-  &.yellow {
-    color: var(--warning-color);
-    border-color: var(--warning-color);
-  }
-
-  &.active {
-    border-color: var(--success-color);
-    color: var(--success-color);
-    line-height: 22px;
+.ballsRow {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+  margin: 8px 0 0 0;
+  &:first-child {
+    margin: 0;
   }
 }
 
@@ -175,4 +150,24 @@
       min-height: 40px;
     }
   }
+}
+
+.betButtonFixed {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  z-index: 99;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 999;
+  overflow: hidden;
 }

@@ -63,7 +63,7 @@ export function Loading(props: LoadingProps) {
   }, [pending, hasMore]);
 
   return (
-    <div ref={observerRef} className={classNames(styles.list_loading_wrap, className)} {...rest}>
+    <div ref={observerRef} className={classNames(styles.listLoadingWrap, className)} {...rest}>
       {loadingText}
     </div>
   );

@@ -1,20 +1,30 @@
 import classNames from 'classnames';
-import { RoutePage, Loading, ClientOnly } from '@/components';
+import { RoutePage, Loading, ClientOnly, Popup, Iconfont, BetBall } from '@/components';
 import { strToArray } from '@/utils/util';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useScrollPager, useClientFetch } from '@/hooks/extend';
+import { useRouter } from 'next/router';
 import { queryLotteryList, betLottery, matchLottery, removeLottery, LotteryMaps } from './hooks';
 import styles from './styles.module.scss';
-import { useRouter } from 'next/router';
 
-// 在服务端获取数据
-// export async function getServerSideProps() {
-//   return {
-//     props: {
-//       list: await queryLotteryList()
-//     }
-//   };
-// }
+/**
+ * 添加组件
+ *
+ * @returns
+ */
+const BetButton = () => {
+  const [visible, setVisible] = useState(false);
+  return (
+    <>
+      <div className={styles.betButtonFixed} onClick={() => setVisible(true)}>
+        <Iconfont name="add" />
+      </div>
+      <Popup scroll {...{ title: '提示', visible }} onClose={() => setVisible(false)}>
+        <div style={{ minHeight: '80vh', padding: '12px' }}>这是弹窗</div>
+      </Popup>
+    </>
+  );
+};
 
 // 每一项
 export function BallsRow(props: { data: string; type: string; win?: string }) {
@@ -23,11 +33,9 @@ export function BallsRow(props: { data: string; type: string; win?: string }) {
   const result = useMemo(() => matchLottery(type, data, win), [type, data, win]);
 
   return (
-    <div style={{ whiteSpace: 'nowrap' }}>
+    <div className={styles.ballsRow}>
       {result.map((ball, idx) => (
-        <span key={idx} className={classNames([styles.ballItem, styles[ball.color], ball.matched && styles.active])}>
-          {ball.value}
-        </span>
+        <BetBall key={idx} number={ball.value} color={ball.color as any} active={ball.matched} />
       ))}
     </div>
   );
@@ -134,6 +142,7 @@ export default function Page() {
           ))}
           <ClientOnly>
             <Loading pending={pending} hasMore={hasMore} loadMore={loadMore} />
+            <BetButton />
           </ClientOnly>
         </div>
       </RoutePage>

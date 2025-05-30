@@ -49,7 +49,7 @@ export const removeLottery = async (uid: string) => {
 
 export const matchLottery = (type: string, userBalls: string, winBalls?: string): { value: string; color: string; matched?: boolean }[] => {
   const current = LotteryMaps[type];
-  const userNumbers = strToArray(userBalls).map(item => ({ value: item, color: '' }));
+  const userNumbers = strToArray(userBalls).map(item => ({ value: item, color: 'blue' }));
   if (!current) {
     return userNumbers;
   }
