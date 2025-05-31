@@ -12,10 +12,11 @@ COPY package.json yarn.lock ./
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
-# RUN yarn config set registry https://registry.npm.taobao.org
+RUN yarn config set registry https://registry.npmmirror.com
 # RUN yarn install --frozen-lockfile
 RUN yarn install
-# 第三阶段：将构建好的文件复制到最终镜像
+
+# 第二阶段：将构建好的文件复制到最终镜像
 FROM node:20.11.1 AS builder_dist
 # 创建工作目录
 RUN mkdir -p /app
@@ -42,7 +43,7 @@ COPY --from=builder_dist /app/.next ./.next
 COPY --from=builder_dist /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn config set "strict-ssl" false -g
-# RUN yarn config set registry https://registry.npm.taobao.org
+RUN yarn config set registry https://registry.npmmirror.com
 RUN yarn install --production
 # 容器对外暴露的端口号
 EXPOSE 3000
