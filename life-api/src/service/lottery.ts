@@ -130,12 +130,21 @@ export class LotteryService extends BaseService {
     const whereQuery: Record<string, any> = { deleted: Not('1') };
     type && (whereQuery.type = type);
 
-    const [list, total] = await this.lotteryRepository.findAndCount({
-      skip: (pageNo - 1) * pageSize,
-      take: pageSize,
-      order: { betTime: 'DESC' },
-      where: whereQuery
-    });
+    // const [list, total] = await this.lotteryRepository.findAndCount({
+    //   skip: (pageNo - 1) * pageSize,
+    //   take: pageSize,
+    //   order: { winTime: 'DESC', betTime: 'DESC' },
+    //   where: whereQuery
+    // });
+    const [list, total] = await this.lotteryRepository
+      .createQueryBuilder('lottery')
+      .where(whereQuery)
+      .orderBy('win_time IS NOT NULL', 'ASC') // NULL 在前
+      // .addOrderBy('win_time', 'DESC') // 非 NULL 倒序
+      .addOrderBy('bet_time', 'DESC') // 同时追加其他排序
+      .skip((pageNo - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
 
     return {
       pageNo,
