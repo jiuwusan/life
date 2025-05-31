@@ -74,6 +74,11 @@ export function LotteryItem(props: ItemProps) {
           )}
         </div>
       </div>
+      {data.reprintCount > 0 && (
+        <div className={styles.itemRow}>
+          <span className={styles.title}>追投期数：</span>第{data.reprintCount * 1 + 1}期
+        </div>
+      )}
       <div className={classNames([styles.itemRow, styles.row])}>
         <div className={styles.title}>投注号码：</div>
         <div>
@@ -104,11 +109,6 @@ export function LotteryItem(props: ItemProps) {
         <div className={styles.itemRow}>
           <span className={styles.title}>开奖期数：</span>
           {data.winNum}
-        </div>
-      )}
-      {data.reprintCount > 0 && (
-        <div className={styles.itemRow}>
-          <span className={styles.title}>追投期数：</span>第{data.reprintCount * 1 + 1}期
         </div>
       )}
       <div className={classNames([styles.itemRow])}>
