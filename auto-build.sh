@@ -53,7 +53,8 @@ cd "$REPO_DIR" || {
 
 # 获取本地和远程提交ID
 local_commit=$(git rev-parse HEAD)
-git fetch origin "$BRANCH" >> "$LOG_FILE" 2>&1
+# git fetch origin "$BRANCH" >> "$LOG_FILE" 2>&1
+git fetch origin >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then
     echo "$(date '+%F %T') - ERROR: git fetch 失败，退出。" >> "$LOG_FILE"
     exit 1
@@ -65,6 +66,7 @@ if [ "$local_commit" != "$remote_commit" ]; then
     echo "$(date '+%F %T') - 代码有更新，开始打包..." >> "$LOG_FILE"
 
     # 拉取最新代码
+    git reset --hard HEAD
     git pull origin "$BRANCH" >> "$LOG_FILE" 2>&1
     if [ $? -ne 0 ]; then
         echo "$(date '+%F %T') - ERROR: git pull 失败，退出。" >> "$LOG_FILE"
