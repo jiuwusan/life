@@ -104,6 +104,7 @@ export class LotteryService extends BaseService {
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
       this.lotteryRepository.update(lottery.uid, updateValues);
     }
+    // 异步发送开奖结果
     this.sendWinMessage(resultMessages);
     return lotterys;
   }
