@@ -114,7 +114,7 @@ export class LotteryService extends BaseService {
    */
   async sendWinMessage(messages: Array<{ msgtype: string; markdown: { title: string; text: string } }>) {
     for (let index = 0; index < messages.length; index++) {
-      // 调用 webhook 通知
+      // 调用 webhook 钉钉通知
       await webHookApi.sendMessage(messages[index]);
       // 随机等待3-10秒，防止被黑名单
       await nextSleep(1000 * (Math.floor(Math.random() * 7) + 3));
