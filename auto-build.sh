@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ========== 配置区 ==========
-REPO_DIR="/data/workspace/life"    # 主项目根目录
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"    # 自动获取 auto-build.sh 所在目录
 BRANCH="dev"                       # 分支名称
 
 # life-api 配置
@@ -21,7 +21,7 @@ FE_CONTAINER_NAME="life-web-dev"
 FE_SCALE=2
 
 LOG_FILE="$REPO_DIR/auto-build.log"
-LOCK_FILE="/tmp/auto-build.lock"
+LOCK_FILE="$REPO_DIR/auto-build.lock"
 LOCK_TIMEOUT=$((30 * 60)) # 30分钟 = 1800秒
 # ============================
 
