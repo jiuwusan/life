@@ -66,7 +66,7 @@ if [ "$local_commit" != "$remote_commit" ]; then
     echo "$(date '+%F %T') - 代码有更新，开始打包..." >> "$LOG_FILE"
 
     # 拉取最新代码
-    git reset --hard HEAD
+    git checkout -- ./
     git pull origin "$BRANCH" >> "$LOG_FILE" 2>&1
     if [ $? -ne 0 ]; then
         echo "$(date '+%F %T') - ERROR: git pull 失败，退出。" >> "$LOG_FILE"
