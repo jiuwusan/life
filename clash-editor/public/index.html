@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>YAML 编辑器</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+        background: #f9f9f9;
+        color: #333;
+      }
+      h2 {
+        text-align: center;
+        color: #4a90e2;
+      }
+      select,
+      input,
+      button {
+        padding: 0.5em;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      input[type='text'],
+      input#keyword,
+      input#content {
+        flex: 1;
+        min-width: 200px;
+        max-width: 100%;
+      }
+      button {
+        padding: 0.35em 0.5em;
+        background-color: #4a90e2;
+        color: white;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #357abd;
+      }
+      label {
+        font-weight: bold;
+        margin-right: 0.5em;
+      }
+      .form-row {
+        margin-bottom: 1em;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5em;
+        max-width: 800px;
+      }
+      textarea {
+        width: 100%;
+        height: calc(100vh - 300px);
+        padding: 1em;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fff;
+        font-family: monospace;
+        font-size: 0.9em;
+        line-height: 1.5em;
+        resize: vertical;
+      }
+
+      .message {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        min-width: 300px;
+        max-width: 90vw;
+        padding: 0.75em 1.5em;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: none;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        z-index: 10000;
+      }
+      .message.show {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+      .message.error {
+        background-color: #fce8e6;
+        color: #d93025;
+        border: 1px solid #d93025;
+      }
+      .message.success {
+        background-color: #d7f0e7;
+        color: #188038;
+        border: 1px solid #188038;
+      }
+
+      .page-box {
+        padding: 1rem 2rem;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部消息栏 -->
+    <div id="message" class="message"></div>
+    <div class="page-box">
+      <!-- 表单正文 -->
+      <h2>📝 YAML 编辑器</h2>
+
+      <div class="form-row">
+        <label for="file">选择文件</label>
+        <select id="file"></select>
+        <button onclick="load()">加载文件</button>
+      </div>
+
+      <div class="form-row" style="gap: 0.5em; align-items: center">
+        <label for="keyword" style="flex: none">关键词</label>
+        <input id="keyword" value="user rules" placeholder="关键字定位行" style="flex: 1; min-width: 250px" />
+      </div>
+
+      <div class="form-row" style="gap: 0.75em; align-items: center">
+        <label for="action" style="flex: none">操作</label>
+        <select id="action" style="flex: 1; min-width: 120px">
+          <option value="insert">插入</option>
+          <option value="replace">替换</option>
+          <option value="delete">删除</option>
+        </select>
+
+        <input id="content" placeholder="插入/替换内容（可选）" style="flex: 3; min-width: 250px" />
+
+        <button onclick="edit()" style="flex: none">提交修改</button>
+      </div>
+
+      <textarea id="view" readonly style="flex: 1"></textarea>
+    </div>
+  </body>
+  <script>
+    function showMessage(text, isError = false) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.classList.remove('error', 'success', 'show');
+      msg.classList.add(isError ? 'error' : 'success');
+
+      // 先显示
+      msg.classList.add('show');
+
+      // 4秒后隐藏
+      setTimeout(() => {
+        msg.classList.remove('show');
+      }, 4000);
+    }
+
+    async function load() {
+      const file = document.getElementById('file').value;
+      const res = await fetch(`/view?file=${encodeURIComponent(file)}`);
+      const data = await res.json();
+      document.getElementById('view').value = data.lines.join('\n');
+    }
+
+    async function edit() {
+      const file = document.getElementById('file').value;
+      const keyword = document.getElementById('keyword').value;
+      let content = document.getElementById('content').value || '';
+      const action = document.getElementById('action').value;
+      content.startsWith('- ') && (content = '  ' + content);
+      if (!keyword) return showMessage('请输入关键词', true);
+
+      const body = { file, keyword, action };
+      if (action !== 'delete') body.content = content;
+
+      const res = await fetch('/edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showMessage('修改成功');
+        document.getElementById('view').value = data.lines.join('\n');
+      } else {
+        showMessage('失败：' + (data.error || '未知错误'), true);
+      }
+    }
+
+    window.onload = async () => {
+      try {
+        const res = await fetch('/files');
+        const list = await res.json();
+        const select = document.getElementById('file');
+        select.innerHTML = '';
+
+        if (list.length === 0) {
+          showMessage('无可用文件', true);
+          return;
+        }
+
+        list.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f;
+          opt.textContent = f;
+          select.appendChild(opt);
+        });
+
+        await load(); // 默认加载第一个文件内容
+      } catch (e) {
+        showMessage('加载文件列表失败', true);
+      }
+    };
+  </script>
+</html>
