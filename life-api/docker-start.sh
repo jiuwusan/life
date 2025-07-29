@@ -22,7 +22,7 @@ for ((idx = 0; idx < $slbCount; idx++)); do
     docker run -itd \
         -e TZ=Asia/Shanghai \
         -e DELUGE_LOGLEVEL=error \
-        --network=network-953 \
+        --network=wk \
         --name=$webServer \
         --restart=always $dockerImage
 done
