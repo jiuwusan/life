@@ -7,10 +7,10 @@ export const REDIS = {
   useFactory: () => {
     return new Redis({
       // Redis服务器配置
-      host: '10.10.0.213',
+      host: 'redis-server',
       port: 6379,
       // host: 'cloud.jiuwusan.cn',
-      // port: 36379,
+      // port: 56379,
       password: ''
     });
   }

@@ -2,10 +2,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 export const MYSQL57 = TypeOrmModule.forRoot({
   type: 'mysql',
-  host: '10.10.0.213',
+  host: 'mysql-server',
   port: 3306,
   // host: 'cloud.jiuwusan.cn',
-  // port: 33306,
+  // port: 53306,
   username: 'root',
   password: 'ZkD953HzR497',
   database: 'life-prod',
