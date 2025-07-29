@@ -15,3 +15,9 @@ pip install -U uiautomator2
 
 # 安装 apscheduler
 pip install apscheduler
+
+# 获取 ui 布局
+python get-ui.py
+
+# 微店抢购
+python weidian.py
