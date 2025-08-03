@@ -12,7 +12,7 @@ COPY package.json ./
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npmmirror.com
+# RUN yarn config set registry https://registry.npmmirror.com
 # RUN yarn install --frozen-lockfile
 RUN yarn install
 
@@ -43,7 +43,7 @@ COPY --from=builder_dist /app/.next ./.next
 COPY --from=builder_dist /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npmmirror.com
+# RUN yarn config set registry https://registry.npmmirror.com
 RUN yarn install --production
 # 容器对外暴露的端口号
 EXPOSE 3000

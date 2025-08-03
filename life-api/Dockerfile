@@ -11,7 +11,7 @@ COPY . .
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npmmirror.com
+# RUN yarn config set registry https://registry.npmmirror.com
 RUN yarn install --mutex network
 # 构建
 RUN yarn build
@@ -32,7 +32,7 @@ COPY --from=life-api-builder /app/dist/ ./
 COPY --from=life-api-builder /app/package.json ./package.json
 # 安装依赖
 RUN yarn config set "strict-ssl" false -g
-RUN yarn config set registry https://registry.npmmirror.com
+# RUN yarn config set registry https://registry.npmmirror.com
 RUN yarn install --production --mutex network
 # 容器对外暴露的端口号
 EXPOSE 9000
