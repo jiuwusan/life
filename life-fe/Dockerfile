@@ -29,7 +29,8 @@ RUN yarn build
 
 # 第三阶段：将构建好的文件复制到最终镜像
 # 运行环境
-FROM node:20.11.1-alpine
+# FROM node:20.11.1-alpine
+FROM node:20.11.1
 # Node 为生产环境
 ENV NODE_ENV=production
 # 指定 ip
