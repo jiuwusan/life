@@ -29,8 +29,8 @@ web_app_name=${1:-life-api-dev}
 # 获取最新代码
 # git pull
 # 可执行
-chmod a+x ./docker-build.sh
-chmod a+x ./docker-start.sh
+chmod +x ./docker-build.sh
+chmod +x ./docker-start.sh
 # 拷贝文件
 # mv -f ./config/config-api-$branch_name.ts ./config/config-api.ts
 
