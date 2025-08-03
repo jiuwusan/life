@@ -22,12 +22,12 @@ web_app_name=${1:-life-web-dev}
 #git reset --hard origin/分支名称
 
 # 当前分支
-branch_name=$(git rev-parse --abbrev-ref HEAD)
+# branch_name=$(git rev-parse --abbrev-ref HEAD)
 # 还原文件
 # git checkout ./config/config-api-$branch_name.ts ./config/config-api.ts
-git checkout -- ./
+# git checkout -- ./
 # 获取最新代码
-git pull
+# git pull
 # 可执行
 chmod a+x ./docker-build.sh
 chmod a+x ./docker-start.sh
