@@ -69,3 +69,6 @@ docker build -t $image_tag_name .
 
 # 删除构建 builder 缓存
 # docker builder prune -f
+
+# 正常结束
+exit 0

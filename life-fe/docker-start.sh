@@ -28,3 +28,6 @@ for ((idx = 0; idx < $slbCount; idx++)); do
 done
 #删除无关镜像
 docker builder prune -f
+
+# 正常结束
+exit 0
