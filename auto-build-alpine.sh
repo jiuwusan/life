@@ -75,7 +75,7 @@ if [ "$local_commit" != "$remote_commit" ]; then
 
     # 自动给关键脚本赋可执行权限
     echo "$(date '+%F %T') - 设置可执行权限" >> "$LOG_FILE"
-    chmod +x "$REPO_DIR/auto-build.sh" >> "$LOG_FILE" 2>&1
+    chmod +x "$REPO_DIR/auto-build-alpine.sh" >> "$LOG_FILE" 2>&1
     chmod +x "$API_DIR/$API_BUILD_SCRIPT" >> "$LOG_FILE" 2>&1
     chmod +x "$API_DIR/$API_START_SCRIPT" >> "$LOG_FILE" 2>&1
     chmod +x "$FE_DIR/$FE_BUILD_SCRIPT" >> "$LOG_FILE" 2>&1
