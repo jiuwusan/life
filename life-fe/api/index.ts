@@ -8,7 +8,7 @@ export type ResponseResult = {
 };
 
 const APIV1 = new ApiGenerator({
-  baseUrl: isServer() ? 'http://nginx-gateway/life-api' : '/life-api',
+  baseUrl: isServer() ? 'http://nginx/life-api' : '/life-api',
   // baseUrl: isServer() ? 'http://localhost:9000' : '/life-api',
   formatResponse: res => {
     if ([200].includes(res.code)) {
