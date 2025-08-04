@@ -1,7 +1,7 @@
 # 第一阶段：安装依赖并构建应用程序
 
-# FROM node:20.11.1 AS builder_node_modules
-FROM node:20.11.1-alpine AS builder_node_modules
+# FROM node:20.11.1 AS life_fe_builder_node_modules
+FROM node:20.11.1-alpine AS life_fe_builder_node_modules
 # 创建工作目录
 RUN mkdir -p /app
 # 移到工作目录
@@ -18,13 +18,14 @@ RUN yarn config set "strict-ssl" false -g
 RUN yarn install
 
 # 第二阶段：将构建好的文件复制到最终镜像
-FROM node:20.11.1 AS builder_dist
+# FROM node:20.11.1 AS life_fe_builder_dist
+FROM node:20.11.1-alpine AS life_fe_builder_dist
 # 创建工作目录
 RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 COPY . .
-COPY --from=builder_node_modules /app/node_modules ./node_modules
+COPY --from=life_fe_builder_node_modules /app/node_modules ./node_modules
 # 构建
 RUN yarn build
 
@@ -41,8 +42,8 @@ RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 # 复制打包好的内容到容器内目录
-COPY --from=builder_dist /app/.next ./.next
-COPY --from=builder_dist /app/package.json ./package.json
+COPY --from=life_fe_builder_dist /app/.next ./.next
+COPY --from=life_fe_builder_dist /app/package.json ./package.json
 # 生产环境安装依赖
 RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npmmirror.com
