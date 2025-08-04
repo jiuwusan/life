@@ -14,7 +14,7 @@ DEVICE_IP_LIST = [
 ]
 
 CRON_HOUR = 13
-CRON_MINUTE = 25
+CRON_MINUTE = 29
 CRON_SECOND = 59
 
 # 每隔多久保持设备活跃（秒）
@@ -36,7 +36,7 @@ def get_center_from_bounds(bounds_str):
     return (x1 + x2) // 2, (y1 + y2) // 2
 
 # === 轮询点击 ===
-def wait_and_click(d, timeout=10, interval=0.1, **kwargs):
+def wait_and_click(d, timeout=10, interval=0.05, **kwargs):
     """
     等待某个元素出现并点击，支持 text / resourceId 等任意定位方式
     :param d: uiautomator2 设备对象
@@ -87,36 +87,39 @@ class RobDevice:
             if not self.d:
                 logging.error(f"🚫 设备 {self.ip} 无法连接，跳过任务")
                 return
+            
+            # 使用无限次点击 直到成功
+            # start_time = time.time()
+            # time.sleep(0.5)
+            while True:
+                self.d.click(*get_center_from_bounds("[874,2917][1363,3078]"))
+                time.sleep(0.05)
+                # if time.time() - start_time > 3:
+                    # break
 
-            if not wait_and_click(self.d,resourceId="com.koudai.weidian.buyer:id/pay"):
-                logging.warning(f"❌ {self.ip} 未找到“结算”按钮")
+            # resource-id="cn.damai:id/trade_project_detail_purchase_status_bar_container_fl", bounds="[495,2910][1404,3075]"
+            if not wait_and_click(self.d,resourceId="cn.damai:id/trade_project_detail_purchase_status_bar_container_fl"):
+                logging.warning(f"❌ {self.ip} 打开详情失败")
                 return
             
-            # if self.d(resourceId="com.koudai.weidian.buyer:id/checkbox").exists:
-            #     width, height = self.d.window_size()
-            #     x = width // 2
-            #     start_y = int(height * 0.8)
-            #     end_y = int(height * 0.3)
-            #     max_swipes = 3
-            #     swipe_count = 0
-            #     while not self.d(resourceId="com.koudai.weidian.buyer:id/checkbox").exists and swipe_count < max_swipes:
-            #         self.d.swipe(x, start_y, x, end_y, duration=0.1)
-            #         swipe_count += 1
-            #     self.d(resourceId="com.koudai.weidian.buyer:id/checkbox").click()
-
-            # self.d.click(*get_center_from_bounds("[1088,2954][1396,3075]"))
-
-            if not wait_and_click(self.d,text="提交订单"):
-                logging.warning(f"❌ {self.ip} 提交订单失败")
+            # resource-id="cn.damai:id/btn_buy_view", bounds="[874,2917][1363,3078]"
+            if not wait_and_click(self.d,resourceId="cn.damai:id/btn_buy_view"):
+                logging.warning(f"❌ {self.ip} 提交购票信息失败")
                 return
 
-            logging.info(f"✅ {self.ip} 抢购完成")
+            # text="立即提交", bounds="[886,2917][1363,3078]"
+            if not wait_and_click(self.d,text="立即提交"):
+                logging.warning(f"❌ {self.ip} 提交订单失败")
+                return
+            
+            logging.info(f"✅ {self.ip} 抢购结束")
 
         except Exception:
             logging.exception(f"💥 设备 {self.ip} 抢购失败")
 
 # === 主函数 ===
 def run():
+    logging.info(f"脚本启动中...")
     scheduler = BackgroundScheduler()
     devices = [RobDevice(ip) for ip in DEVICE_IP_LIST]
 
@@ -130,8 +133,8 @@ def run():
         scheduler.add_job(device.run, trigger=trigger)
 
     # 添加保活任务（每 KEEP_ALIVE_INTERVAL 秒执行一次）
-    for device in devices:
-        scheduler.add_job(device.keep_alive, "interval", seconds=KEEP_ALIVE_INTERVAL)
+    # for device in devices:
+    #     scheduler.add_job(device.keep_alive, "interval", seconds=KEEP_ALIVE_INTERVAL)
 
     scheduler.start()
     logging.info(f"📌 抢购调度器已启动，等待 {CRON_HOUR:02d}:{CRON_MINUTE:02d}:{CRON_SECOND:02d} 触发任务...")
