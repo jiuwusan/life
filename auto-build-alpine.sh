@@ -10,7 +10,7 @@ API_BUILD_SCRIPT="docker-build.sh"
 API_START_SCRIPT="docker-start.sh"
 API_IMAGE_TAG="life-api-dev:1.0.1"
 API_CONTAINER_NAME="life-api-dev"
-API_SCALE=2
+API_SCALE=1
 
 # life-fe 配置
 FE_DIR="$REPO_DIR/life-fe"
@@ -18,7 +18,7 @@ FE_BUILD_SCRIPT="docker-build.sh"
 FE_START_SCRIPT="docker-start.sh"
 FE_IMAGE_TAG="life-web-dev:1.0.1"
 FE_CONTAINER_NAME="life-web-dev"
-FE_SCALE=2
+FE_SCALE=1
 
 LOG_FILE="$REPO_DIR/auto-build.log"
 LOCK_FILE="$REPO_DIR/auto-build.lock"
