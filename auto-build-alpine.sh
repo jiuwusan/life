@@ -52,22 +52,22 @@ cd "$REPO_DIR" || {
 }
 
 # 获取本地和远程提交ID
-local_commit=$(docker exec -it git sh -c "cd /data/life-dev && git rev-parse HEAD")
+local_commit=$(docker exec git sh -c "cd /data/life-dev && git rev-parse HEAD")
 # git fetch origin "$BRANCH" >> "$LOG_FILE" 2>&1
-docker exec -it git sh -c "cd /data/life-dev && git fetch origin" >> "$LOG_FILE" 2>&1
+docker exec git sh -c "cd /data/life-dev && git fetch origin" >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then
     echo "$(date '+%F %T') - ERROR: git fetch 失败，退出。" >> "$LOG_FILE"
     exit 1
 fi
 
-remote_commit=$(docker exec -it git sh -c "cd /data/life-dev && git rev-parse origin/$BRANCH")
+remote_commit=$(docker exec git sh -c "cd /data/life-dev && git rev-parse origin/$BRANCH")
 
 if [ "$local_commit" != "$remote_commit" ]; then
     echo "$(date '+%F %T') - 代码有更新，开始打包..." >> "$LOG_FILE"
 
     # 拉取最新代码
-    docker exec -it git sh -c "cd /data/life-dev && git checkout -- ./"
-    docker exec -it git sh -c "cd /data/life-dev && git pull origin $BRANCH" >> "$LOG_FILE" 2>&1
+    docker exec git sh -c "cd /data/life-dev && git checkout -- ./"
+    docker exec git sh -c "cd /data/life-dev && git pull origin $BRANCH" >> "$LOG_FILE" 2>&1
     if [ $? -ne 0 ]; then
         echo "$(date '+%F %T') - ERROR: git pull 失败，退出。" >> "$LOG_FILE"
         exit 1
