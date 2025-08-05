@@ -129,10 +129,12 @@ export default function Page() {
   //选号
   const [, createBet] = useClientFetch(async formData => {
     await betLottery(formData);
+    loadMore(true);
   });
   // 删除
   const [, handleRemove] = useClientFetch(async uid => {
     await removeLottery(uid);
+    loadMore(true);
   });
 
   return (

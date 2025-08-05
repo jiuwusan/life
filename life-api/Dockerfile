@@ -1,23 +1,35 @@
 # 第一阶段：安装依赖并构建应用程序
 # 构建环境
-# FROM node:20.11.1 AS life-api-builder
-FROM node:20.11.1-alpine AS life-api-builder
+# FROM node:20.11.1 AS life_api_builder_node_modules
+FROM node:20.11.1-alpine AS life_api_builder_node_modules
 # 创建工作目录
 RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 # 文件拷贝
-COPY . .
+# COPY package.json yarn.lock ./
+COPY package.json ./
 # 安装 Yarn
 # RUN npm install -g yarn
 # 使用 Yarn 安装依赖
 RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npmmirror.com
-RUN yarn install --mutex network
+RUN yarn install
+
+
+# 第二阶段：将构建好的文件复制到最终镜像
+# FROM node:20.11.1 AS life_api_builder_dist
+FROM node:20.11.1-alpine AS life_api_builder_dist
+# 创建工作目录
+RUN mkdir -p /app
+# 移到工作目录
+WORKDIR /app
+COPY . .
+COPY --from=life_api_builder_node_modules /app/node_modules ./node_modules
 # 构建
 RUN yarn build
 
-# 第二阶段：将构建好的文件复制到最终镜像
+# 第三阶段：将构建好的文件复制到最终镜像
 # 运行环境
 FROM node:20.11.1-alpine
 # FROM node:20.11.1
@@ -30,8 +42,8 @@ RUN mkdir -p /app
 # 移到工作目录
 WORKDIR /app
 # 复制打包好的内容到容器内目录
-COPY --from=life-api-builder /app/dist/ ./
-COPY --from=life-api-builder /app/package.json ./package.json
+COPY --from=life_api_builder_dist /app/dist/ ./
+COPY --from=life_api_builder_dist /app/package.json ./package.json
 # 安装依赖
 RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npmmirror.com
