@@ -42,7 +42,7 @@ export class LotteryService extends BaseService {
           lottery.type = currentLottery.type;
           const reprintId = currentLottery.reprintId || currentLottery.uid;
           lottery.reprintId = reprintId;
-          const reprintCount = await this.lotteryRepository.count({ where: { reprintId } });
+          const reprintCount = await this.lotteryRepository.count({ where: { reprintId, deleted: Not('1') } });
           lottery.reprintCount = reprintCount + 1;
         }
       }

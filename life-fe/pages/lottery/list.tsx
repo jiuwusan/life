@@ -50,13 +50,13 @@ type ItemProps = {
 
 // 每一项
 export function LotteryItem(props: ItemProps) {
-  const router = useRouter();
   const { data, remove, reprint, adding } = props;
   const betBallList = useMemo(() => strToArray(data.betBall, ';'), [data]);
   const remarkDetailUrl = useMemo(
     () => (data.winRemark && data.type === 'sp' ? `/tools/pdf?pdfurl=${encodeURIComponent(data.winRemark)}` : data.winRemark),
     [data.type, data.winRemark]
   );
+  
   return (
     <div className={styles.itemWrap}>
       <div className={classNames([styles.itemRow, styles.type])}>
@@ -67,10 +67,10 @@ export function LotteryItem(props: ItemProps) {
               追投
             </span>
           )}
-          {remarkDetailUrl && (
-            <a className={classNames([styles.tagBtn, styles.success])} href={remarkDetailUrl}>
-              公告
-            </a>
+          {!data.winTime && (
+            <span className={classNames([styles.tagBtn, styles.remove])} onClick={() => remove && remove({ uid: data.uid })}>
+              删除
+            </span>
           )}
         </div>
       </div>
@@ -108,7 +108,9 @@ export function LotteryItem(props: ItemProps) {
       {data.winNum && (
         <div className={styles.itemRow}>
           <span className={styles.title}>开奖期数：</span>
-          {data.winNum}
+          <a href={remarkDetailUrl} style={{ display: 'inline', color: 'var(--primary-color)' }}>
+            {data.winNum}
+          </a>
         </div>
       )}
       <div className={classNames([styles.itemRow])}>

@@ -15,6 +15,7 @@ dockerImage=$appImageName
 # docker pull $dockerImage
 # 负载均衡
 for ((idx = 0; idx < $slbCount; idx++)); do
+    # slbCount
     webServer=$appName-$idx
     docker stop $webServer
     docker remove $webServer
