@@ -132,6 +132,7 @@ export default function Page() {
   // 删除
   const [, handleRemove] = useClientFetch(async uid => {
     await removeLottery(uid);
+    loadMore(true);
   });
 
   return (
