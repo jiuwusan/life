@@ -7,7 +7,7 @@ export class AuthController {
   constructor(private readonly userService: UserService) {}
 
   @Post('verification')
-  async bet(@Body() data) {
+  async verification(@Body() data) {
     await validationParameter(data, ['username', 'password']);
     // 添加 必填项校验 username,password
     const result = await this.userService.create(data);

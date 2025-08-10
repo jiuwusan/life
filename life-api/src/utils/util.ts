@@ -136,9 +136,9 @@ export const isEmpty = (value: any) => {
 export const validationParameter = (params: Record<string, any>, rules: string[] | Record<string, boolean | string | ((value: any) => void | string)>) => {
   const defRules = Array.isArray(rules)
     ? rules.reduce((result, current) => {
-        result[current] = true;
-        return result;
-      }, {})
+      result[current] = true;
+      return result;
+    }, {})
     : rules;
   const keyStrs = Object.keys(defRules);
 
@@ -176,4 +176,34 @@ export const getDatabaseDateStr = (value?: number | string | Date): string => {
   const date = value instanceof Date ? value : new Date(value ?? Date.now());
   // return date.toISOString().replace('T', ' ').slice(0, 19);
   return date.toISOString();
+};
+
+/**
+ * 通用 UUID 生成器
+ * @param length 生成的十六进制字符数（不含分隔符），默认 32
+ * @param withHyphen 是否包含分隔符（标准 UUID 格式），默认 false
+ * @param upperCase 是否转大写，默认 true
+ * @returns UUID 字符串
+ */
+export const uuid = (option?: { length: number, withHyphen: boolean, upperCase: boolean }): string => {
+  const { length = 32, withHyphen = false, upperCase = true } = option || {};
+  // 标准 UUID v4 模板
+  let template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+
+  if (!withHyphen) {
+    template = template.replace(/-/g, '');
+  }
+
+  // 根据 length 截断模板或扩展
+  if (length && length !== (withHyphen ? 36 : 32)) {
+    template = 'x'.repeat(length);
+  }
+
+  let result = template.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+
+  return upperCase ? result.toUpperCase() : result.toLowerCase();
 };
