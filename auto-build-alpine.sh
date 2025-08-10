@@ -22,7 +22,7 @@ FE_SCALE=1
 
 LOG_FILE="$REPO_DIR/auto-build.log"
 LOCK_FILE="$REPO_DIR/auto-build.lock"
-LOCK_TIMEOUT=$((30 * 60)) # 30分钟 = 1800秒
+LOCK_TIMEOUT=$((30 * 60 * 12)) # 30分钟 = 1800秒
 # ============================
 
 # 防并发锁检查
