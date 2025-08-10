@@ -186,7 +186,7 @@ export const getDatabaseDateStr = (value?: number | string | Date): string => {
  * @returns UUID 字符串
  */
 export const uuid = (option?: { length: number, withHyphen: boolean, upperCase: boolean }): string => {
-  const { length = 32, withHyphen = false, upperCase = true } = option || {};
+  const { length = 32, withHyphen = false, upperCase = false } = option || {};
   // 标准 UUID v4 模板
   let template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
 
