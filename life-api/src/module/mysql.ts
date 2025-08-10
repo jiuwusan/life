@@ -4,6 +4,8 @@ export const MYSQL57 = TypeOrmModule.forRoot({
   type: 'mysql',
   host: 'mysql-server',
   port: 3306,
+  // host: '10.86.0.239',
+  // port: 3306,
   // host: 'cloud.jiuwusan.cn',
   // port: 53306,
   username: 'root',
