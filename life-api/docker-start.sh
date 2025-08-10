@@ -23,6 +23,8 @@ for ((idx = 0; idx < $slbCount; idx++)); do
     docker run -itd \
         -e TZ=Asia/Shanghai \
         -e DELUGE_LOGLEVEL=error \
+        -e UPLOAD_BASE_DIR=/app/oss \
+        -v /volume1/workspace/services/nginx/html/oss:/app/oss \
         --network=wk \
         --name=$webServer \
         --restart=always $dockerImage

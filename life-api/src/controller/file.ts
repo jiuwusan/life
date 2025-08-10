@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 const getUploadRootDir = () => {
-    return path.join(process.env.UPLOAD_DIR || __dirname, 'uploads')
+    return path.join(process.env.UPLOAD_BASE_DIR || __dirname, 'uploads')
 }
 
 @Controller('files')
