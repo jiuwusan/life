@@ -1,12 +1,12 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import * as Controllers from '@/controller';
-import * as Services from '@/service';
 import { MYSQL57, REDIS, REDIS_INJECT } from '@/module';
 import { EntityFeature } from '@/entity';
 import { AllExceptionsFilter, ResponseInterceptor, Gateway } from '@/middleware';
 import { ScheduleModule } from '@nestjs/schedule';
+import * as Controllers from '@/controller';
+import * as Services from '@/service';
 
 // 注入模块
 @Module({
@@ -18,7 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     ScheduleModule.forRoot()
   ],
-  controllers: [],
+  controllers: [...(Object.keys(Controllers).map((name: string) => Controllers[name]))],
   providers: [
     REDIS,
     ...(Object.keys(Services).map((name: string) => Services[name])),
