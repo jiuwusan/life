@@ -70,7 +70,7 @@ export class SubService {
           上传流量: subInfo.upload,
           下载流量: subInfo.download,
           月总流量: subInfo.total,
-          剩余流量: subInfo.total,
+          剩余流量: subInfo.overage,
           到期时间: subInfo.expire
         });
         list[index] = { ...current, ...subInfo };
