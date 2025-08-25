@@ -70,12 +70,27 @@ export class User {
   @Column()
   username: string;
 
-  // 下注时间
   @Column()
   password: string;
 
   @Column({ nullable: true })
   nickname: string;
+
+  //是否删除
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
+}
+
+@Entity()
+export class Sublink {
+  @PrimaryGeneratedColumn()
+  uid: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  link: string;
 
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
