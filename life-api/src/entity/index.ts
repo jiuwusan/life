@@ -97,4 +97,4 @@ export class Sublink {
   deleted: string;
 }
 
-export const EntityFeature = TypeOrmModule.forFeature([Lottery, User]);
+export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink]);

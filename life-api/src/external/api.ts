@@ -88,7 +88,13 @@ export const qbApi = {
 // DINGTALK_WEBHOOK="https://oapi.dingtalk.com/robot/send?access_token=f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997"
 // DingDing API
 const DingDingAPI = new ApiGenerator({
-  baseUrl: 'https://oapi.dingtalk.com'
+  baseUrl: 'https://oapi.dingtalk.com',
+  formatFetchOptions: async (options: RequestOptions) => {
+    options.headers = {
+      'Content-Type': 'application/json;charset=utf-8'
+    };
+    return options;
+  }
 });
 
 export const webHookApi = {

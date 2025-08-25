@@ -29,7 +29,6 @@ export interface RequestOptions extends RequestInit {
  */
 export const request = (url: RequestInfo, options?: RequestOptions) => {
   let ACIDCount = 0;
-  console.log(`${new Date().toLocaleString()} | 发送请求：${url}`, JSON.stringify(options));
   const ACIDREQ = async (url: RequestInfo, options?: RequestOptions): Promise<any> => {
     ACIDCount++;
     try {
@@ -39,6 +38,7 @@ export const request = (url: RequestInfo, options?: RequestOptions) => {
         delete options.query;
         delete options.data;
       }
+      console.log(`${new Date().toLocaleString()} | 发送请求：${url}`, JSON.stringify(options));
       return await fetch(url, options);
     } catch (error) {
       console.error('Failed to fetch data:', error);
