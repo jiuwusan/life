@@ -99,7 +99,7 @@ export class LotteryService extends BaseService {
       if (lottery.winResult && !lottery.winResult.includes('_')) {
         this.dingService.sendMarkdown('开奖结果', {
           投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
-          投注期数: `第${padZero(lottery.betTimes, 3)}期`,
+          投注期数: `第 ${padZero(lottery.betTimes, 3)} 期`,
           投注号码: lottery.betBall.split(';').join('\n' + '\u3000'.repeat(5)),
           投注时间: formatDateToStr(lottery.betTime, 'yyyy-MM-dd HH:mm:ss'),
           开奖号码: lottery.winBall,
