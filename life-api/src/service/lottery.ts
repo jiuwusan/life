@@ -4,18 +4,20 @@ import { Lottery } from '@/entity';
 import { Repository, Not } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { getWebCookiesStr } from '@/utils/puppeteer';
-import { lotteryApi, webHookApi } from '@/external/api';
+import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
 import { BaseService } from '@/service/base';
-import { nextSleep, formatDateToStr } from '@/utils/util';
+import { DingDingService } from '@/service/dingding';
+import { nextSleep, formatDateToStr, padZero } from '@/utils/util';
 
 @Injectable()
 export class LotteryService extends BaseService {
   constructor(
     @InjectRepository(Lottery)
     private lotteryRepository: Repository<Lottery>,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly dingService: DingDingService
   ) {
     super();
   }
@@ -65,7 +67,7 @@ export class LotteryService extends BaseService {
       sp: await this.queryWinHistory({ type: 'sp' }),
       wf: await this.queryWinHistory({ type: 'wf' })
     };
-    const resultMessages = [];
+
     for (let index = 0; index < lotterys.length; index++) {
       const lottery = lotterys[index];
       if (lottery.winRemark && typeof lottery.winResult === 'string' && !lottery.winResult.includes('_')) {
@@ -82,7 +84,7 @@ export class LotteryService extends BaseService {
           ...result
         };
       });
-      console.log('lotteryResult---->', lotteryResult);
+
       const updateValues = {
         winNum: winLottery.lotteryDrawNum,
         winBall: winLottery.lotteryDrawResult,
@@ -90,35 +92,25 @@ export class LotteryService extends BaseService {
         winResult: lotteryResult.map(item => `${item.prizeLevel}：￥${item.stakeAmount}.00`).join('；'),
         winRemark: winLottery.lotteryDrawRemark
       };
-
-      if (lottery.winResult && !lottery.winResult.includes('_')) {
-        resultMessages.push({
-          msgtype: 'markdown',
-          markdown: {
-            title: '开奖结果',
-            text: `#### 开奖结果\n - 投注号码：\n - 投注时间：\n - 开奖号码：\n - 开奖时间：\n - 开奖期数：\n - 追投期数：\n - 开奖结果：`
-          }
-        });
-      }
       // 还原数据
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
       this.lotteryRepository.update(lottery.uid, updateValues);
-    }
-    // 异步发送开奖结果
-    this.sendWinMessage(resultMessages);
-    return lotterys;
-  }
 
-  /**
-   * 发送中奖消息
-   */
-  async sendWinMessage(messages: Array<{ msgtype: string; markdown: { title: string; text: string } }>) {
-    for (let index = 0; index < messages.length; index++) {
-      // 调用 webhook 钉钉通知
-      await webHookApi.sendMessage(messages[index]);
-      // 随机等待3-10秒，防止被黑名单
-      await nextSleep(1000 * (Math.floor(Math.random() * 7) + 3));
+      if (lottery.winResult && !lottery.winResult.includes('_')) {
+        this.dingService.sendMarkdown('开奖结果', {
+          投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
+          投注期数: `第${padZero(lottery.betTimes, 3)}期`,
+          投注号码: lottery.betBall.split(';').join('；'),
+          投注时间: formatDateToStr(lottery.betTime, 'yyyy-MM-dd HH:mm:ss'),
+          开奖号码: lottery.winBall,
+          开奖时间: formatDateToStr(lottery.winTime, 'yyyy-MM-dd HH:mm:ss'),
+          开奖期数: lottery.winNum,
+          开奖结果: lottery.winResult || '未中奖'
+        });
+      }
     }
+
+    return lotterys;
   }
 
   /**

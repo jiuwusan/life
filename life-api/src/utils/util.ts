@@ -136,9 +136,9 @@ export const isEmpty = (value: any) => {
 export const validationParameter = (params: Record<string, any>, rules: string[] | Record<string, boolean | string | ((value: any) => void | string)>) => {
   const defRules = Array.isArray(rules)
     ? rules.reduce((result, current) => {
-      result[current] = true;
-      return result;
-    }, {})
+        result[current] = true;
+        return result;
+      }, {})
     : rules;
   const keyStrs = Object.keys(defRules);
 
@@ -185,7 +185,7 @@ export const getDatabaseDateStr = (value?: number | string | Date): string => {
  * @param upperCase 是否转大写，默认 true
  * @returns UUID 字符串
  */
-export const uuid = (option?: { length: number, withHyphen: boolean, upperCase: boolean }): string => {
+export const uuid = (option?: { length: number; withHyphen: boolean; upperCase: boolean }): string => {
   const { length = 32, withHyphen = false, upperCase = false } = option || {};
   // 标准 UUID v4 模板
   let template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
@@ -199,11 +199,25 @@ export const uuid = (option?: { length: number, withHyphen: boolean, upperCase: 
     template = 'x'.repeat(length);
   }
 
-  let result = template.replace(/[xy]/g, (c) => {
+  const result = template.replace(/[xy]/g, c => {
     const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 
   return upperCase ? result.toUpperCase() : result.toLowerCase();
+};
+
+/**
+ * 补零
+ * @param num
+ * @param length
+ * @returns
+ */
+export const padZero = (num: string | number, length = 2) => {
+  let str = String(num);
+  while (str.length < length) {
+    str = '0' + str;
+  }
+  return str;
 };
