@@ -18,13 +18,8 @@ import * as Services from '@/service';
     }),
     ScheduleModule.forRoot()
   ],
-  controllers: [...(Object.keys(Controllers).map((name: string) => Controllers[name]))],
-  providers: [
-    REDIS,
-    ...(Object.keys(Services).map((name: string) => Services[name])),
-    { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
-    { provide: APP_FILTER, useClass: AllExceptionsFilter }
-  ],
+  controllers: [...Object.keys(Controllers).map((name: string) => Controllers[name])],
+  providers: [REDIS, ...Object.keys(Services).map((name: string) => Services[name]), { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor }, { provide: APP_FILTER, useClass: AllExceptionsFilter }],
   exports: [REDIS_INJECT]
 })
 

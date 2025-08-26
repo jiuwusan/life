@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { LotteryService } from '@/service/lottery';
 import { SubService } from '@/service/sub';
+import { isProduction } from '@/utils/util';
 
 @Injectable()
 export class TasksService {
@@ -14,15 +15,15 @@ export class TasksService {
    * 每天 21:15 执行
    */
   @Cron('15 21 * * *')
-  async updateLotteryHistory() {
-    await this.lotteryService.pollingUpdateLotteryHistory();
+  updateLotteryHistory() {
+    isProduction() && this.lotteryService.pollingUpdateLotteryHistory();
   }
 
   /**
    * 每天 7:45 执行
    */
   @Cron('45 7 * * *')
-  async sendSubMessage() {
-    await this.subService.stats();
+  sendSubMessage() {
+    isProduction() && this.subService.stats();
   }
 }

@@ -221,3 +221,7 @@ export const padZero = (num: string | number, length = 2) => {
   }
   return str;
 };
+
+export const isProduction = () => {
+  return process.env.NODE_ENV === 'production';
+};
