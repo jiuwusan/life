@@ -19,10 +19,10 @@ export class TasksService {
   }
 
   /**
-   * 每天 8:15 执行
+   * 每天 7:45 执行
    */
-  @Cron('15 8 * * *')
-  async sendSubInfo() {
-    await this.subService.statistics();
+  @Cron('45 7 * * *')
+  async sendSubMessage() {
+    await this.subService.stats();
   }
 }

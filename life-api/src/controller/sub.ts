@@ -10,8 +10,8 @@ export class SubController {
     return await this.subService.list();
   }
 
-  @Get('statistics')
-  async statistics() {
-    return await this.subService.statistics();
+  @Get('stats')
+  async stats() {
+    return await this.subService.stats();
   }
 }
