@@ -65,6 +65,9 @@ export class SubService {
         const response = await fetch(current.link, { headers });
         const subStr = response.headers.get('Subscription-Userinfo');
         const subInfo = this.formatSubscription(subStr);
+        // 更新数据库
+        this.sublinkRepository.update(current.uid, subInfo);
+        // 推送钉钉
         this.dingService.sendMarkdown('订阅信息', {
           机场名称: current.name,
           上传流量: subInfo.upload,
@@ -73,6 +76,7 @@ export class SubService {
           月总流量: subInfo.total,
           到期时间: subInfo.expire
         });
+        // 合并订阅信息
         list[index] = { ...current, ...subInfo };
       } catch (error) {
         console.error('查询订阅信息失败：', error);

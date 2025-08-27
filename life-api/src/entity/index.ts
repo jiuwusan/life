@@ -92,6 +92,21 @@ export class Sublink {
   @Column()
   link: string;
 
+  @Column({ nullable: true })
+  expire: string;
+
+  @Column({ nullable: true })
+  total: string;
+
+  @Column({ nullable: true })
+  overage: string;
+
+  @Column({ nullable: true })
+  download: string;
+
+  @Column({ nullable: true })
+  upload: string;
+
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
   deleted: string;
