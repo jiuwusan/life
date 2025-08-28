@@ -107,6 +107,9 @@ export class Sublink {
   @Column({ nullable: true })
   upload: string;
 
+  @Column({ nullable: true })
+  yesterday: string;
+
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
   deleted: string;

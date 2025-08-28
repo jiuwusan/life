@@ -24,6 +24,6 @@ export class TasksService {
    */
   @Cron('45 7 * * *')
   sendSubMessage() {
-    isProduction() && this.subService.stats();
+    isProduction() && this.subService.list({ refresh: true });
   }
 }
