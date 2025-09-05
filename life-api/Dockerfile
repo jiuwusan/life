@@ -16,7 +16,6 @@ RUN yarn config set "strict-ssl" false -g
 # RUN yarn config set registry https://registry.npmmirror.com
 RUN yarn install
 
-
 # 第二阶段：将构建好的文件复制到最终镜像
 # FROM node:20.11.1 AS life_api_builder_dist
 FROM node:20.11.1-alpine AS life_api_builder_dist
