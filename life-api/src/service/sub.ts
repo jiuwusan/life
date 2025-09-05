@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sublink } from '@/entity';
 import { Repository } from 'typeorm';
-import { DingDingService } from '@/service/dingding';
+import { WebHookService } from '@/service/webhook';
 
 @Injectable()
 export class SubService {
   constructor(
     @InjectRepository(Sublink)
     private sublinkRepository: Repository<Sublink>,
-    private readonly dingService: DingDingService
+    private readonly webHookService: WebHookService
   ) {}
 
   // 计算差值
@@ -75,7 +75,7 @@ export class SubService {
         // 更新数据库
         this.sublinkRepository.update(current.uid, subInfo);
         // 推送钉钉
-        this.dingService.sendMarkdown('订阅信息', {
+        this.webHookService.sendMarkdown('订阅信息', {
           机场名称: current.name,
           昨日总量: subInfo.yesterday,
           月度上传: subInfo.upload,

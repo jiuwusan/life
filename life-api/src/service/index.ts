@@ -5,4 +5,4 @@ export * from './qb';
 export * from './user';
 export * from './auth';
 export * from './sub';
-export * from './dingding';
+export * from './webhook';

@@ -8,7 +8,7 @@ import { lotteryApi } from '@/external/api';
 import type { WinLottery } from '@/types';
 import { RedisService } from '@/service/redis';
 import { BaseService } from '@/service/base';
-import { DingDingService } from '@/service/dingding';
+import { WebHookService } from '@/service/webhook';
 import { nextSleep, formatDateToStr, padZero } from '@/utils/util';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class LotteryService extends BaseService {
     @InjectRepository(Lottery)
     private lotteryRepository: Repository<Lottery>,
     private readonly redisService: RedisService,
-    private readonly dingService: DingDingService
+    private readonly webHookService: WebHookService
   ) {
     super();
   }
@@ -97,7 +97,7 @@ export class LotteryService extends BaseService {
       this.lotteryRepository.update(lottery.uid, updateValues);
 
       if (lottery.winResult && !lottery.winResult.includes('_')) {
-        this.dingService.sendMarkdown('开奖结果', {
+        this.webHookService.sendMarkdown('开奖结果', {
           投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
           投注期数: `第 ${padZero(lottery.betTimes, 3)} 期`,
           投注号码: lottery.betBall.split(';').join('\n' + '\u3000'.repeat(5)),

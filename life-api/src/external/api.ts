@@ -86,7 +86,7 @@ export const qbApi = {
 };
 
 // DINGTALK_WEBHOOK="https://oapi.dingtalk.com/robot/send?access_token=f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997"
-// DingDing API
+// 钉钉 API
 const DingDingAPI = new ApiGenerator({
   baseUrl: 'https://oapi.dingtalk.com',
   formatFetchOptions: async (options: RequestOptions) => {
@@ -97,7 +97,20 @@ const DingDingAPI = new ApiGenerator({
   }
 });
 
+// 企业微信 API
+const WorkWxAPI = new ApiGenerator({
+  baseUrl: 'https://qyapi.weixin.qq.com',
+  formatFetchOptions: async (options: RequestOptions) => {
+    options.headers = {
+      'Content-Type': 'application/json;charset=utf-8'
+    };
+    return options;
+  }
+});
+
 export const webHookApi = {
-  // 登录
-  sendMessage: (data?: Params) => DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data })
+  // 发送钉钉消息
+  sendDingMessage: (data?: Params) => DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data }),
+  // 发送企业微信消息
+  sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: '5c4f4ae4-29fe-47e2-8007-ca1c6a394fa3' }, data })
 };
