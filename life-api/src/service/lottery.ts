@@ -96,18 +96,15 @@ export class LotteryService extends BaseService {
       Object.keys(updateValues).forEach((key: string) => updateValues[key] && (lottery[key] = updateValues[key]));
       this.lotteryRepository.update(lottery.uid, updateValues);
 
-      if (lottery.winResult && !lottery.winResult.includes('_')) {
-        this.webHookService.sendMarkdown('开奖结果', {
-          投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
-          投注期数: `第 ${padZero(lottery.betTimes, 3)} 期`,
-          投注号码: lottery.betBall.split(';').join('\n' + '\u3000'.repeat(5)),
-          投注时间: formatDateToStr(lottery.betTime, 'yyyy-MM-dd HH:mm:ss'),
-          开奖号码: lottery.winBall,
-          开奖时间: formatDateToStr(lottery.winTime, 'yyyy-MM-dd HH:mm:ss'),
-          开奖期数: lottery.winNum,
-          开奖结果: lottery.winResult || '未中奖'
-        });
-      }
+      this.webHookService.sendMarkdown('开奖结果', {
+        投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
+        投注期数: `第 ${padZero(lottery.reprintCount, 3)} 期`,
+        投注时间: formatDateToStr(lottery.betTime, 'yyyy-MM-dd HH:mm:ss'),
+        开奖号码: lottery.winBall,
+        开奖时间: formatDateToStr(lottery.winTime, 'yyyy-MM-dd HH:mm:ss'),
+        开奖期数: lottery.winNum,
+        开奖结果: lottery.winResult || '未中奖'
+      });
     }
 
     return lotterys;
