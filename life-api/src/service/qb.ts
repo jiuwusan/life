@@ -3,10 +3,12 @@ import { qbApi } from '@/external/api';
 import { RedisService } from '@/service/redis';
 import { type Params } from '@/utils/fetch';
 
+const { QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD } = process.env;
+
 @Injectable()
 export class QbService {
   private authCacheKey = `qbittorrent:auth-cookies`;
-  private authFormInfo = { username: 'jiuwusan', password: 'ZkD953497' };
+  private authFormInfo = { username: QBITTORRENT_USERNAME, password: QBITTORRENT_PASSWORD };
   constructor(private readonly redisService: RedisService) {}
 
   /**

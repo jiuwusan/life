@@ -1,17 +1,15 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+const { MYSQL_HOST, MYSQL_PORT = 3306, MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_DATABASE } = process.env;
+
 export const MYSQL57 = TypeOrmModule.forRoot({
   type: 'mysql',
-  host: 'mysql-server',
-  port: 3306,
-  // host: '10.86.0.239',
-  // port: 3306,
-  // host: 'cloud.jiuwusan.cn',
-  // port: 53306,
-  username: 'root',
-  password: 'ZkD953HzR497',
-  database: 'life-prod',
+  host: MYSQL_HOST,
+  port: Number(MYSQL_PORT),
+  username: MYSQL_USERNAME,
+  password: MYSQL_PASSWORD,
+  database: MYSQL_DATABASE,
   entities: [__dirname + '/../entity/*{.ts,.js}'],
-  timezone: '+08:00', // 设置时区为东八区
+  timezone: '+08:00',
   synchronize: true
 });
