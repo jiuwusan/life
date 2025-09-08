@@ -7,9 +7,10 @@ export type ResponseResult = {
   data: Record<string, any> | null;
 };
 
+const { LIFE_SERVER_API = 'http://127.0.0.1:9000' } = process.env;
+
 const APIV1 = new ApiGenerator({
-  baseUrl: isServer() ? 'http://nginx/life-api' : '/life-api',
-  // baseUrl: isServer() ? 'http://localhost:9000' : '/life-api',
+  baseUrl: isServer() ? LIFE_SERVER_API : '/life-api',
   formatResponse: res => {
     if ([200].includes(res.code)) {
       return res.data;

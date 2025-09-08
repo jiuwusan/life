@@ -1,15 +1,12 @@
 const path = require('path');
-
+const { LIFE_SERVER_API = 'http://127.0.0.1:9000' } = process.env;
 module.exports = {
-  // basePath: '/life-web', 
-  // assetPrefix: '/life-web',
-  // 仅 tsx 文件作为页面
-  pageExtensions: ['tsx','jsx'],
+  pageExtensions: ['tsx', 'jsx'],
   async rewrites() {
     return [
       {
         source: '/life-api/:path*',
-        destination: 'http://localhost:9000/:path*' // 这里替换为您要代理的目标地址
+        destination: `${LIFE_SERVER_API}/:path*` // 这里替换为您要代理的目标地址
       }
     ];
   },
