@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  life-api:
+    image: jiuwusan/life-api
+    container_name: life-api
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - UPLOAD_BASE_DIR=/app/oss
+      - QBITTORRENT_USERNAME=jiuwusan
+      - QBITTORRENT_PASSWORD=ZkD953497
+      - QBITTORRENT_HOST=10.86.0.240
+      - QBITTORRENT_PORT=8080
+      - MYSQL_HOST=10.86.0.237
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=ZkD953497
+      - MYSQL_DATABASE=life-prod
+      - REDIS_HOST=10.86.0.237
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=ZkD953HzR497
+    ports:
+      - 9000:9000
+    volumes:
+      - /volume1/workspace/services/nginx/html/oss:/app/oss
+
+  life-web:
+    image: jiuwusan/life-web
+    container_name: life-web
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - LIFE_SERVER_API=http://life-api:9000
+    ports:
+      - 3000:3000
