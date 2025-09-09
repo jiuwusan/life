@@ -27,7 +27,18 @@ export class LotteryService extends BaseService {
    * @param data
    * @returns
    */
-  async bet(data: { userId: string; type: string; count: number; uid: string; recommend: boolean; betBall?: string; betTime?: string; persist?: boolean; reprint?: boolean; sequence: boolean }) {
+  async bet(data: {
+    userId: string;
+    type: string;
+    count: number;
+    uid: string;
+    recommend: boolean;
+    betBall?: string;
+    betTime?: string;
+    persist?: boolean;
+    reprint?: boolean;
+    sequence: boolean;
+  }) {
     const { userId, type = 'sp', count = 0, betBall: betBallStr, betTime, uid, reprint = false, sequence = false } = data;
     // 创建投注
     const lottery = new Lottery();

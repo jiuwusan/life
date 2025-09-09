@@ -47,7 +47,8 @@ export const lotteryApi = {
   // 查询 大乐透列表
   querySpLotteryHistory: (query?: Params) => STAPI.fetch('/gateway/lottery/getHistoryPageListV1.qry', { query }),
   // 查询 双色球列表
-  queryWfLotteryHistory: (query?: Params, options?: RequestOptions) => WFAPI.fetch('/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice', { query, redirect: 'manual', ...(options || {}) })
+  queryWfLotteryHistory: (query?: Params, options?: RequestOptions) =>
+    WFAPI.fetch('/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice', { query, redirect: 'manual', ...(options || {}) })
 };
 
 // QBittorrent API
@@ -112,7 +113,8 @@ const WorkWxAPI = new ApiGenerator({
 
 export const webHookApi = {
   // 发送钉钉消息
-  sendDingMessage: (data?: Params) => DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data }),
+  sendDingMessage: (data?: Params) =>
+    DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data }),
   // 发送企业微信消息
   sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: '5c4f4ae4-29fe-47e2-8007-ca1c6a394fa3' }, data })
 };
