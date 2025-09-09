@@ -13,4 +13,10 @@ export class AuthController {
     const result = await this.userService.create(data);
     return result;
   }
+
+  @Post('verify/token')
+  async token(@Body() data) {
+    await validationParameter(data, ['token']);
+    return data.token === '953';
+  }
 }

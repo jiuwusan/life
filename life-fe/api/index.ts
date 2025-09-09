@@ -31,3 +31,8 @@ export const lotteryApi = {
   // 投注
   remove: (data: { uid?: string }) => APIV1.fetch('lottery/remove', { method: 'POST', data })
 };
+
+export const authApi = {
+  // 验证 token
+  verifyToken: (data: { token: string }) => APIV1.fetch('auth/verify/token', { data })
+};
