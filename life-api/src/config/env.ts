@@ -1,41 +1,23 @@
-const {
-  UPLOAD_BASE_DIR,
-  QBITTORRENT_HOST,
-  QBITTORRENT_PORT,
-  QBITTORRENT_USERNAME,
-  QBITTORRENT_PASSWORD,
-  MYSQL_HOST,
-  MYSQL_PORT,
-  MYSQL_USERNAME,
-  MYSQL_PASSWORD,
-  MYSQL_DATABASE,
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PASSWORD
-} = process.env;
-
-function requireEnv(name, value) {
-  if (!value) {
-    throw new Error(`Environment variable "${name}" is required but not provided.`);
-  }
-  return value;
-}
+const requireEnv = (name: string, defaultValue: string | number): string => {
+  return String(process.env[name] || defaultValue || '');
+};
 
 export default {
-  UPLOAD_BASE_DIR: UPLOAD_BASE_DIR || '/uploads',
-
-  QBITTORRENT_HOST: requireEnv('QBITTORRENT_HOST', QBITTORRENT_HOST),
-  QBITTORRENT_PORT: Number(QBITTORRENT_PORT || 8080),
-  QBITTORRENT_USERNAME: requireEnv('QBITTORRENT_USERNAME', QBITTORRENT_USERNAME),
-  QBITTORRENT_PASSWORD: requireEnv('QBITTORRENT_PASSWORD', QBITTORRENT_PASSWORD),
-
-  MYSQL_HOST: requireEnv('MYSQL_HOST', MYSQL_HOST),
-  MYSQL_PORT: Number(MYSQL_PORT || 3306),
-  MYSQL_USERNAME: requireEnv('MYSQL_USERNAME', MYSQL_USERNAME),
-  MYSQL_PASSWORD: requireEnv('MYSQL_PASSWORD', MYSQL_PASSWORD),
-  MYSQL_DATABASE: requireEnv('MYSQL_DATABASE', MYSQL_DATABASE),
-
-  REDIS_HOST: requireEnv('REDIS_HOST', REDIS_HOST),
-  REDIS_PORT: Number(REDIS_PORT || 6379),
-  REDIS_PASSWORD: REDIS_PASSWORD || ''
+  // files
+  UPLOAD_BASE_DIR: requireEnv('UPLOAD_BASE_DIR', ''),
+  // qb
+  QBITTORRENT_HOST: requireEnv('QBITTORRENT_HOST', '10.86.0.240'),
+  QBITTORRENT_PORT: Number(requireEnv('QBITTORRENT_PORT', 8080)),
+  QBITTORRENT_USERNAME: requireEnv('QBITTORRENT_USERNAME', 'jiuwusan'),
+  QBITTORRENT_PASSWORD: requireEnv('QBITTORRENT_PASSWORD', 'ZkD953497'),
+  // mysql
+  MYSQL_HOST: requireEnv('MYSQL_HOST', '10.86.0.237'),
+  MYSQL_PORT: Number(requireEnv('MYSQL_PORT', 3306)),
+  MYSQL_USERNAME: requireEnv('MYSQL_USERNAME', 'root'),
+  MYSQL_PASSWORD: requireEnv('MYSQL_PASSWORD', 'ZkD953HzR497'),
+  MYSQL_DATABASE: requireEnv('MYSQL_DATABASE', 'life-prod'),
+  // redis
+  REDIS_HOST: requireEnv('REDIS_HOST', '10.86.0.237'),
+  REDIS_PORT: Number(requireEnv('REDIS_PORT', 6379)),
+  REDIS_PASSWORD: requireEnv('REDIS_PASSWORD', 'ZkD953HzR497')
 };

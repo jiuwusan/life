@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { qbApi } from '@/external/api';
 import { RedisService } from '@/service/redis';
 import { type Params } from '@/utils/fetch';
-
-const { QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD } = process.env;
+import config from '@/config';
 
 @Injectable()
 export class QbService {
   private authCacheKey = `qbittorrent:auth-cookies`;
-  private authFormInfo = { username: QBITTORRENT_USERNAME, password: QBITTORRENT_PASSWORD };
+  private authFormInfo = { username: config.QBITTORRENT_USERNAME, password: config.QBITTORRENT_PASSWORD };
   constructor(private readonly redisService: RedisService) {}
 
   /**

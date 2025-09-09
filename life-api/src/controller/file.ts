@@ -3,11 +3,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { uuid } from '@/utils/util';
 import { Response } from 'express';
+import config from '@/config';
 import * as path from 'path';
 import * as fs from 'fs';
 
 const getUploadRootDir = () => {
-  return path.join(process.env.UPLOAD_BASE_DIR || __dirname, 'uploads');
+  return path.join(config.UPLOAD_BASE_DIR || __dirname, 'uploads');
 };
 
 @Controller('files')

@@ -1,6 +1,5 @@
 import { ApiGenerator, type Params, type RequestOptions } from '@/utils/fetch';
-
-const { QBITTORRENT_HOST, QBITTORRENT_PORT = 8080 } = process.env;
+import config from '@/config';
 
 // 体彩 API
 const STAPI = new ApiGenerator({
@@ -53,7 +52,7 @@ export const lotteryApi = {
 
 // QBittorrent API
 const QBitAPI = new ApiGenerator({
-  baseUrl: `http://${QBITTORRENT_HOST}:${QBITTORRENT_PORT}/api/v2`,
+  baseUrl: `http://${config.QBITTORRENT_HOST}:${config.QBITTORRENT_PORT}/api/v2`,
   // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
   formatResponse: async (response: Response) => {
     if (response?.status !== 200) {
