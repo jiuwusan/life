@@ -33,6 +33,6 @@ export const lotteryApi = {
 };
 
 export const authApi = {
-  // 验证 token
-  verifyToken: (data: { token: string }) => APIV1.fetch('auth/verify/token', { data })
+  // 验证 code
+  verifyAuthCode: (data: { code: string }) => APIV1.fetch('authorization/code', { data })
 };

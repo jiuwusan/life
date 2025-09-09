@@ -115,4 +115,23 @@ export class Sublink {
   deleted: string;
 }
 
-export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink]);
+@Entity()
+export class Authcode {
+  @PrimaryGeneratedColumn()
+  uid: string;
+
+  @Column()
+  code: string;
+
+  @Column({ name: 'expire', type: 'datetime', nullable: true })
+  expire: string;
+
+  @Column()
+  remark: string;
+
+  //是否删除
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
+}
+
+export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode]);

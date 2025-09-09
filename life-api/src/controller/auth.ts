@@ -2,21 +2,21 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { UserService } from '@/service';
 import { validationParameter } from '@/utils/util';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('verification')
-  async verification(@Body() data) {
+  @Post('authorization')
+  async authorization(@Body() data) {
     await validationParameter(data, ['username', 'password']);
     // 添加 必填项校验 username,password
     const result = await this.userService.create(data);
     return result;
   }
 
-  @Post('verify/token')
-  async token(@Body() data) {
-    await validationParameter(data, ['token']);
-    return data.token === '953';
+  @Post('authorization/code')
+  async verifyCode(@Body() data) {
+    await validationParameter(data, ['code']);
+    return data.code === '953';
   }
 }
