@@ -1,7 +1,9 @@
-import { RoutePage, Button } from '@/components';
-import { useRouter } from 'next/router';
+import { RoutePage } from '@/components';
+import Link from 'next/link';
+import Image from 'next/image';
 import styles from './styles.module.scss';
-
+import lotteryImage from './images/lottery.png';
+import clashImage from './images/clash.png';
 // 在服务端获取数据
 export async function getServerSideProps() {
   return {
@@ -10,22 +12,22 @@ export async function getServerSideProps() {
 }
 
 type PageProps = {};
+
 const menus = [
-  { name: '碰碰运气', route: '/orders' },
-  { name: 'Clash 订阅', route: '/activities' }
+  { name: '碰碰运气', route: '/lottery/list', image: lotteryImage },
+  { name: 'Clash 订阅', route: '/sub/list', image: clashImage }
 ];
-// 页面
+
 export default function Page(props: PageProps) {
-  const router = useRouter();
   return (
     <RoutePage padding="8px">
       <div className={styles.home}>
-        <h1 className={styles.title}>我的网站</h1>
+        <h1 className={styles.title}>九五三の生活</h1>
         <div className={styles.grid}>
           {menus.map(item => (
-            <div key={item.route} className={styles.gridItem}>
-              {item.name}
-            </div>
+            <Link key={item.route} className={styles.gridItem} href={item.route}>
+              <Image src={item.image} alt="" objectFit='cover' style={{ width: '100%', height: 'auto' }} />
+            </Link>
           ))}
         </div>
       </div>
