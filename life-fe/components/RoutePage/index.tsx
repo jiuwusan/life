@@ -3,7 +3,7 @@ import { HTMLAttributes, useMemo } from 'react';
 import { isColor } from '@/utils/util';
 import styles from './styles.module.scss';
 import classNames from 'classnames';
-
+import pageBg from './images/bg.jpg';
 /**
  * 获取页面背景样式
  * @param bg 背景色
@@ -18,7 +18,7 @@ const getPageStyle = (bg = 'bg.jpg', padding?: string | number) => {
     if (isColor(bg)) {
       pageStyle['--page-bg-color'] = bg;
     } else {
-      pageStyle['--page-bg-image'] = `url(/oss/images/${bg})`;
+      pageStyle['--page-bg-image'] = `url(${pageBg.src})`;
     }
   }
   // 边距
