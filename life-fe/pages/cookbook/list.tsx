@@ -11,5 +11,5 @@ type PageProps = {};
 
 // 页面
 export default function Page(props: PageProps) {
-  return <RoutePage padding="8px">订阅列表</RoutePage>;
+  return <RoutePage padding="8px">菜谱</RoutePage>;
 }

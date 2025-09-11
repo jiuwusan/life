@@ -35,7 +35,7 @@ type Props = {
 } & HTMLAttributes<HTMLDivElement>;
 
 export function RoutePage(props: Props) {
-  const { children, title = 'jiuwusan-life', bg, padding, className, ...rest } = props;
+  const { children, title = '九五三の生活助手', bg, padding, className, ...rest } = props;
   const pageStyle = useMemo(() => getPageStyle(bg, padding), [bg, padding]);
 
   return (
