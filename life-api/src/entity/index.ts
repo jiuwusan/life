@@ -134,19 +134,16 @@ export class Authcode {
 }
 
 @Entity()
-@Unique('UQ_TYPE_NAME', ['machine', 'name', 'type'])
-export class Hardware {
+@Unique('UQ_TYPE_NAME', ['name', 'type'])
+export class Tracker {
   @PrimaryGeneratedColumn()
   uid: string;
 
   @Column()
-  machine: string;
+  type: string;
 
   @Column()
   name: string;
-
-  @Column()
-  type: string;
 
   @Column({ nullable: true })
   value: string;
@@ -161,4 +158,4 @@ export class Hardware {
   deleted: string;
 }
 
-export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode, Hardware]);
+export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode, Tracker]);

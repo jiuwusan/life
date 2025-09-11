@@ -5,4 +5,4 @@ export * from './file';
 export * from './auth';
 export * from './sub';
 export * from './webhook';
-export * from './hardware';
+export * from './tracker';
