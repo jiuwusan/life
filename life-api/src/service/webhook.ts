@@ -17,7 +17,7 @@ export class WebHookService {
   /**
    * 发送微信消息
    */
-  async sendWxMessage(message: { msgtype: string; markdown: { content: string } }) {
+  async sendWxMessage(message: { msgtype: string; markdown_v2: { content: string } }) {
     const result = await webHookApi.sendWxMessage(message);
     console.log('微信消息发送结果：', await result.json());
     return result;
@@ -30,7 +30,7 @@ export class WebHookService {
     const texts = [`#### ${title}`];
     if (typeof content === 'object') {
       for (const [k, v] of Object.entries(content)) {
-        texts.push(` - ${k}：${v}`);
+        texts.push(`- ${k}：${v}`);
       }
     } else {
       texts.push(content);
@@ -47,8 +47,8 @@ export class WebHookService {
 
     // 发送 企业微信消息
     this.sendWxMessage({
-      msgtype: 'markdown',
-      markdown: {
+      msgtype: 'markdown_v2',
+      markdown_v2: {
         content: texts.join('\n')
       }
     });

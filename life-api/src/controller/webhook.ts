@@ -8,18 +8,7 @@ export class WebHookController {
 
   @Post('send')
   async list(@Body() data: { msgtype?: string; title: string; content: Record<string, string | number | boolean> | string }) {
-    await validationParameter(data, {
-      title: params => {
-        if (!params.title) {
-          return 'can not be blank';
-        }
-      },
-      content: params => {
-        if (!params.content) {
-          return 'can not be blank';
-        }
-      }
-    });
+    await validationParameter(data, ['title', 'content']);
     return await this.webHookService.sendMarkdown(data.title, data.content);
   }
 }

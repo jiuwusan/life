@@ -109,7 +109,7 @@ export class LotteryService extends BaseService {
 
       this.webHookService.sendMarkdown('开奖结果', {
         投注平台: { wf: '双色球', sp: '超级大乐透' }[lottery.type],
-        投注期数: `第 ${padZero(lottery.reprintCount, 3)} 期`,
+        投注期数: `第 ${padZero(lottery.reprintCount * 1 + 1, 3)} 期`,
         投注时间: formatDateToStr(lottery.betTime, 'yyyy-MM-dd HH:mm:ss'),
         开奖号码: lottery.winBall,
         开奖时间: formatDateToStr(lottery.winTime, 'yyyy-MM-dd HH:mm:ss'),

@@ -124,7 +124,12 @@ export const isEmpty = (value: any) => {
   }
 
   //数组
-  if (!value?.length) {
+  if (Array.isArray(value) && value.length === 0) {
+    return true;
+  }
+
+  // 对象
+  if (typeof value === 'object' && Object.keys(value).length === 0) {
     return true;
   }
 
