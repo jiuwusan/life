@@ -13,14 +13,13 @@ export class HardwareService extends BaseService {
     super();
   }
 
-  async createOrUpdate(dto: Partial<Hardware>) {
+  async createOrUpdate(dtos: Partial<Hardware> | Array<Partial<Hardware>>) {
     // upsert 方法，依据 machine + name + type 联合唯一约束判断
-    dto.timestamp = this.getDatabaseDateStr();
-    return await this.hardwareRepo.upsert(dto, {
-      conflictPaths: ['machine', 'name', 'type'] // 用联合唯一性约束
-    });
+    !Array.isArray(dtos) && (dtos = [dtos]);
+    const timestamp = this.getDatabaseDateStr();
+    dtos = dtos.map(dto => ({ ...dto, timestamp }));
+    return await this.hardwareRepo.upsert(dtos, ['machine', 'name', 'type']);
   }
-
   /**
    * 查询硬件列表
    *
