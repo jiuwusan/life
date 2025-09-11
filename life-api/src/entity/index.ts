@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Entity()
@@ -123,15 +123,42 @@ export class Authcode {
   @Column()
   code: string;
 
-  @Column({ name: 'expire', type: 'datetime', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   expire: string;
 
   @Column()
   remark: string;
 
-  //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })
   deleted: string;
 }
 
-export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode]);
+@Entity()
+@Unique('UQ_TYPE_NAME', ['machine', 'name', 'type'])
+export class Hardware {
+  @PrimaryGeneratedColumn()
+  uid: string;
+
+  @Column()
+  machine: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  type: string;
+
+  @Column({ nullable: true })
+  value: string;
+
+  @Column({ type: 'datetime', nullable: true })
+  timestamp: string;
+
+  @Column({ nullable: true })
+  remark: string;
+
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
+}
+
+export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode, Hardware]);
