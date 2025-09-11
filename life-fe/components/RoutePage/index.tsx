@@ -42,6 +42,10 @@ export function RoutePage(props: Props) {
     <>
       <Head>
         <title>{title}</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <div className={classNames(styles.routePageWrap, className)} style={pageStyle} {...rest}>
         {children}
