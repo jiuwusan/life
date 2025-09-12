@@ -18,7 +18,7 @@ type PageProps = {};
 const menus = [
   { name: '家常菜', route: '/cookbook/list', image: cookbookImage },
   { name: '碰碰运气', route: '/lottery/list', image: lotteryImage, half: true },
-  { name: '硬件监控', route: '/hardware/list', image: tempImage, half: true },
+  { name: '硬件监控', route: '/sensor/list', image: tempImage, half: true },
   { name: 'Clash 订阅', route: '/sub/list', image: clashImage, half: true }
 ];
 

@@ -36,3 +36,8 @@ export const authApi = {
   // 验证 code
   verifyAuthCode: (data: { code: string }) => APIV1.fetch('authorization/code', { data })
 };
+
+export const trackerApi = {
+  // 查询列表
+  querylist: (query?: { pageNo?: number; pageSize?: number; owner?: string; type?: string }) => APIV1.fetch('tracker/query/list', { query })
+};

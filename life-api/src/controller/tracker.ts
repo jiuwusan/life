@@ -42,7 +42,7 @@ export class TrackerController {
     return await this.trackerService.createOrUpdate(list);
   }
 
-  @Get('list')
+  @Get('query/list')
   async list(@Query() { owner, type, pageNo = 1, pageSize = 20 }) {
     return await this.trackerService.list({ owner, type, pageNo, pageSize });
   }

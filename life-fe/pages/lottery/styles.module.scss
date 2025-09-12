@@ -23,7 +23,7 @@
   padding: 8px;
   margin-top: 12px;
   font-size: 16px;
-  color: var(--desc-color);
+  color: var(--content-color);
   line-height: 22px;
   font-weight: 400;
 
@@ -39,7 +39,7 @@
     }
 
     .title {
-      color: var(--title-color);
+      color: var(--label-color);
       white-space: nowrap;
     }
 
@@ -57,7 +57,7 @@
       justify-content: space-between;
 
       .title {
-        color: var(--info-color);
+        color: var(--title-color);
         font-size: 20px;
         font-weight: 600;
       }

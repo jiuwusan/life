@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, type EffectCallback } from 'react';
 
 type CallbackFunction = (...args: any[]) => any;
 
@@ -103,3 +103,8 @@ export function useScrollPager<T>({ fetchData, pageSize = 20 }: ScrollPagerProps
     loadMore
   };
 }
+
+export const useMounted = (effectCallback: EffectCallback) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(effectCallback, []); // 空数组依赖，确保只执行一次
+};
