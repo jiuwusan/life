@@ -25,7 +25,7 @@ export class TrackerController {
           // 判断 current.value 是否为数字，如果小数点后全是0，则转为整数
           if (current.value && !isNaN(current.value)) {
             current.value = String(current.value).replace(/\.0+$/g, '');
-            if (Number(current.value) <= 1000) {
+            if (current.name.startsWith('FAN') && Number(current.value) <= 1000) {
               this.webHookService.sendMarkdown('风扇状态变更', {
                 设备: current.owner,
                 名称: current.name,
