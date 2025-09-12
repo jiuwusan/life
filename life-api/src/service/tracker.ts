@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Tracker } from '@/entity';
 import { BaseService } from '@/service/base';
 
@@ -25,7 +25,24 @@ export class TrackerService extends BaseService {
    *
    * @returns
    */
-  async list() {
-    return await this.trackerRepo.find({ where: { deleted: '0' } });
+  async list({ owner, type, pageNo, pageSize }: { owner?: string; type?: string; pageNo: number; pageSize: number }) {
+    const whereQuery: Record<string, any> = { deleted: Not('1') };
+    owner && (whereQuery.owner = owner);
+    type && (whereQuery.type = type);
+
+    const [list, total] = await this.trackerRepo
+      .createQueryBuilder()
+      .where(whereQuery)
+      .skip((pageNo - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return {
+      pageNo,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+      list
+    };
   }
 }

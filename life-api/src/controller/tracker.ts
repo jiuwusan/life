@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query } from '@nestjs/common';
 import { TrackerService } from '@/service';
 import { validationParameter } from '@/utils/util';
 
@@ -18,7 +18,7 @@ export class TrackerController {
   }
 
   @Get('list')
-  async list() {
-    return await this.trackerService.list();
+  async list(@Query() { owner, type, pageNo = 1, pageSize = 20 }) {
+    return await this.trackerService.list({ owner, type, pageNo, pageSize });
   }
 }
