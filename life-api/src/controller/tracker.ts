@@ -12,7 +12,7 @@ export class TrackerController {
     // 添加 必填项校验 name,type
     const list = Array.isArray(data) ? data : [data];
     for (let i = 0; i < list.length; i++) {
-      await validationParameter(list[i], ['name', 'type']);
+      await validationParameter(list[i], ['owner', 'name', 'type']);
     }
     return await this.trackerService.createOrUpdate(list);
   }

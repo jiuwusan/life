@@ -134,10 +134,13 @@ export class Authcode {
 }
 
 @Entity()
-@Unique('UQ_TYPE_NAME', ['name', 'type'])
+@Unique('UQ_TYPE_NAME', ['owner', 'name', 'type'])
 export class Tracker {
   @PrimaryGeneratedColumn()
   uid: string;
+
+  @Column()
+  owner: string;
 
   @Column()
   type: string;

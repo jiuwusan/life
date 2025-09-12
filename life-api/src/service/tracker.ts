@@ -18,7 +18,7 @@ export class TrackerService extends BaseService {
     !Array.isArray(dtos) && (dtos = [dtos]);
     const timestamp = this.getDatabaseDateStr();
     dtos = dtos.map(dto => ({ ...dto, timestamp }));
-    return await this.trackerRepo.upsert(dtos, ['name', 'type']);
+    return await this.trackerRepo.upsert(dtos, ['owner', 'name', 'type']);
   }
   /**
    * 查询硬件列表
