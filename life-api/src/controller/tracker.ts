@@ -11,7 +11,6 @@ export class TrackerController {
 
   @Post('report')
   async tracker(@Body() data) {
-    console.log('data', data);
     // 添加 必填项校验 name,type
     const list = Array.isArray(data) ? data : [data];
     // 时间戳
