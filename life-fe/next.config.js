@@ -5,6 +5,10 @@ module.exports = {
   async rewrites() {
     return [
       {
+        source: '/',
+        destination: '/index'
+      },
+      {
         source: '/life-api/:path*',
         destination: `${LIFE_SERVER_API}/:path*` // 这里替换为您要代理的目标地址
       }

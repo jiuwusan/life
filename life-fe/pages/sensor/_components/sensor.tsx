@@ -71,3 +71,7 @@ export const SensorDashboard = (props: { data: Sensor[] }) => {
     </div>
   );
 };
+
+export default function Page() {
+  return <div>Sensor</div>;
+}
