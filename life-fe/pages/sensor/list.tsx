@@ -1,7 +1,7 @@
 import { RoutePage } from '@/components';
 import { useFetchState, useMounted } from '@/hooks/extend';
 import { queryList } from './hooks';
-import { SensorDashboard } from './_sensor';
+import { SensorDashboard } from './_components/sensor';
 
 // 页面
 export default function Page() {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import styles from './sensor.module.scss';
-import { type Sensor } from './hooks';
+import { type Sensor } from '../hooks';
 
 type Groups = {
   温度: Sensor[];
