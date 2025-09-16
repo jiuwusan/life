@@ -41,3 +41,8 @@ export const trackerApi = {
   // 查询列表
   querylist: (query?: { pageNo?: number; pageSize?: number; owner?: string; type?: string }) => APIV1.fetch('tracker/query/list', { query })
 };
+
+export const subApi = {
+  // 验证 code
+  querylist: (query?: { refresh?: number }) => APIV1.fetch('sub/list', { query })
+};
