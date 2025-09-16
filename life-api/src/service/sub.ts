@@ -33,7 +33,7 @@ export class SubService {
       total: toGB(info.total),
       upload: toGB(info.upload),
       download: toGB(info.download),
-      expire: formatDateToStr(info.expire, 'yyyy-MM-dd')
+      expire: formatDateToStr(info.expire * 1000, 'yyyy-MM-dd')
     };
   }
 
