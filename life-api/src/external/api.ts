@@ -117,3 +117,16 @@ export const webHookApi = {
   // 发送企业微信消息
   sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: '5c4f4ae4-29fe-47e2-8007-ca1c6a394fa3' }, data })
 };
+
+// 企业微信 API
+const AliSubAPI = new ApiGenerator({
+  baseUrl: config.CLASH_SUB_LInk,
+  formatResponse: async (response: Response) => {
+    return await response.json();
+  }
+});
+
+export const subApi = {
+  // 发送钉钉消息
+  update: () => AliSubAPI.fetch('sub/api/oss/update', { query: { authcode: '1fb728620b2012d039ec2bb65e359d0c' } })
+};

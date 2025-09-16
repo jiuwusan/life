@@ -82,6 +82,7 @@ export class User {
 }
 
 @Entity()
+@Unique('UQ_TYPE_NAME', ['name'])
 export class Sublink {
   @PrimaryGeneratedColumn()
   uid: string;
@@ -107,8 +108,8 @@ export class Sublink {
   @Column({ nullable: true })
   upload: string;
 
-  @Column({ nullable: true })
-  yesterday: string;
+  @Column({ name: 'update_time', type: 'datetime', nullable: true })
+  updateTime: string;
 
   //是否删除
   @Column({ type: 'varchar', length: 2, default: '0' })

@@ -19,5 +19,7 @@ export default {
   // redis
   REDIS_HOST: requireEnv('REDIS_HOST', '10.86.0.237'),
   REDIS_PORT: Number(requireEnv('REDIS_PORT', 6379)),
-  REDIS_PASSWORD: requireEnv('REDIS_PASSWORD', 'ZkD953HzR497')
+  REDIS_PASSWORD: requireEnv('REDIS_PASSWORD', 'ZkD953HzR497'),
+  // sub config
+  CLASH_SUB_LInk: requireEnv('CLASH_SUB_LInk', '')
 };
