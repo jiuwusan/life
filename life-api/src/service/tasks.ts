@@ -20,9 +20,9 @@ export class TasksService {
   }
 
   /**
-   * 每天 7:45 执行
+   * 每天 5:45 执行
    */
-  @Cron('45 7 * * *')
+  @Cron('45 5 * * *')
   sendSubMessage() {
     isProduction() && this.subService.update();
   }
