@@ -97,8 +97,7 @@ const DingDingAPI = new ApiGenerator({
     options.headers = {
       'Content-Type': 'application/json;charset=utf-8'
     };
-    !options.query && (options.query = {});
-    !options.query.access_token && (options.query.access_token = DINGDING_WEBHOOK_TOKEN);
+    (options.query ??= {}).access_token ??= DINGDING_WEBHOOK_TOKEN;
     return options;
   }
 });
@@ -110,8 +109,7 @@ const WorkWxAPI = new ApiGenerator({
     options.headers = {
       'Content-Type': 'application/json;charset=utf-8'
     };
-    !options.query && (options.query = {});
-    !options.query.key && (options.query.key = WX_WEBHOOK_TOKEN);
+    (options.query ??= {}).key ??= WX_WEBHOOK_TOKEN;
     return options;
   }
 });
