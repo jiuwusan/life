@@ -115,10 +115,10 @@ export const webHookApi = {
   sendDingMessage: (data?: Params) =>
     DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data }),
   // 发送企业微信消息
-  sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: '5c4f4ae4-29fe-47e2-8007-ca1c6a394fa3' }, data })
+  sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: 'cfcebea5-fb06-4a0b-bc15-2a474cea6b1b' }, data })
 };
 
-// 企业微信 API
+// 阿里云函数 API
 const AliSubAPI = new ApiGenerator({
   baseUrl: config.CLASH_SUB_LInk,
   formatResponse: async (response: Response) => {
