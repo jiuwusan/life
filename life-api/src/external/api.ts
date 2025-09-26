@@ -1,6 +1,9 @@
 import { ApiGenerator, type Params, type RequestOptions } from '@/utils/fetch';
 import config from '@/config';
 
+// 环境变量
+const { CLASH_SUB_LInk, QBITTORRENT_HOST, QBITTORRENT_PORT, DINGDING_WEBHOOK_TOKEN, WX_WEBHOOK_TOKEN } = config;
+
 // 体彩 API
 const STAPI = new ApiGenerator({
   baseUrl: 'https://webapi.sporttery.cn',
@@ -52,7 +55,7 @@ export const lotteryApi = {
 
 // QBittorrent API
 const QBitAPI = new ApiGenerator({
-  baseUrl: `http://${config.QBITTORRENT_HOST}:${config.QBITTORRENT_PORT}/api/v2`,
+  baseUrl: `http://${QBITTORRENT_HOST}:${QBITTORRENT_PORT}/api/v2`,
   // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
   formatResponse: async (response: Response) => {
     if (response?.status !== 200) {
@@ -95,6 +98,8 @@ const DingDingAPI = new ApiGenerator({
     options.headers = {
       'Content-Type': 'application/json;charset=utf-8'
     };
+    !options.query && (options.query = {});
+    !options.query.access_token && (options.query.access_token = DINGDING_WEBHOOK_TOKEN);
     return options;
   }
 });
@@ -106,21 +111,22 @@ const WorkWxAPI = new ApiGenerator({
     options.headers = {
       'Content-Type': 'application/json;charset=utf-8'
     };
+    !options.query && (options.query = {});
+    !options.query.key && (options.query.key = WX_WEBHOOK_TOKEN);
     return options;
   }
 });
 
 export const webHookApi = {
   // 发送钉钉消息
-  sendDingMessage: (data?: Params) =>
-    DingDingAPI.fetch('/robot/send', { method: 'POST', query: { access_token: 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997' }, data }),
+  sendDingMessage: (data?: Params) => DingDingAPI.fetch('/robot/send', { method: 'POST', data }),
   // 发送企业微信消息
-  sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', query: { key: 'cfcebea5-fb06-4a0b-bc15-2a474cea6b1b' }, data })
+  sendWxMessage: (data?: Params) => WorkWxAPI.fetch('/cgi-bin/webhook/send', { method: 'POST', data })
 };
 
 // 阿里云函数 API
 const AliSubAPI = new ApiGenerator({
-  baseUrl: config.CLASH_SUB_LInk,
+  baseUrl: CLASH_SUB_LInk,
   formatResponse: async (response: Response) => {
     return await response.json();
   }

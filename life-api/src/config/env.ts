@@ -21,5 +21,9 @@ export default {
   REDIS_PORT: Number(requireEnv('REDIS_PORT', 6379)),
   REDIS_PASSWORD: requireEnv('REDIS_PASSWORD', 'ZkD953HzR497'),
   // sub config
-  CLASH_SUB_LInk: requireEnv('CLASH_SUB_LInk', '')
+  CLASH_SUB_LInk: requireEnv('CLASH_SUB_LInk', ''),
+  // 钉钉
+  DINGDING_WEBHOOK_TOKEN: requireEnv('DINGDING_WEBHOOK_TOKEN', 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997'),
+  // 企业微信
+  WX_WEBHOOK_TOKEN: requireEnv('WX_WEBHOOK_TOKEN', 'cfcebea5-fb06-4a0b-bc15-2a474cea6b1b')
 };
