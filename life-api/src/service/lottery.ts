@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lottery } from '@/entity';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { createLottery, batchCheckLottery } from '@/utils/lottery';
 import { getWebCookiesStr } from '@/utils/puppeteer';
 import { lotteryApi } from '@/external/api';
@@ -69,11 +69,18 @@ export class LotteryService extends BaseService {
 
   /**
    * 批量验证
-   * @param lotteryNumbers
-   * @param multiUserNumbers
    * @returns
    */
-  async batchVerify(lotterys: Array<Lottery>) {
+  async verification() {
+    const lotterys = await this.lotteryRepository.find({
+      where: { deleted: Not('1'), winTime: IsNull() }
+    });
+
+    if (lotterys.length < 1) {
+      return lotterys;
+    }
+
+    // 开始验证
     const winHistory = {
       sp: await this.queryWinHistory({ type: 'sp' }),
       wf: await this.queryWinHistory({ type: 'wf' })
@@ -131,12 +138,6 @@ export class LotteryService extends BaseService {
     const whereQuery: Record<string, any> = { deleted: Not('1') };
     type && (whereQuery.type = type);
 
-    // const [list, total] = await this.lotteryRepository.findAndCount({
-    //   skip: (pageNo - 1) * pageSize,
-    //   take: pageSize,
-    //   order: { winTime: 'DESC', betTime: 'DESC' },
-    //   where: whereQuery
-    // });
     const [list, total] = await this.lotteryRepository
       .createQueryBuilder()
       .where(whereQuery)
@@ -148,11 +149,11 @@ export class LotteryService extends BaseService {
       .getManyAndCount();
 
     return {
+      list,
+      total,
       pageNo,
       pageSize,
-      total,
-      totalPages: Math.ceil(total / pageSize),
-      list: await this.batchVerify(list)
+      totalPages: Math.ceil(total / pageSize)
     };
   }
 
@@ -359,6 +360,6 @@ export class LotteryService extends BaseService {
     console.log(`${new Date().toLocaleString()} : 结束更新历史记录，共查询${queryCount}次`);
 
     // 验奖
-    this.querylist({ type });
+    this.verification();
   }
 }

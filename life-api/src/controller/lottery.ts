@@ -53,6 +53,11 @@ export class LotteryController {
     return await this.lotteryService.queryWinHistory({ type, pageNo, pageSize, refresh });
   }
 
+  @Get('verification')
+  async verification() {
+    return await this.lotteryService.verification();
+  }
+
   @Get('persist')
   async persist(@Query() { refresh = false }) {
     return await this.lotteryService.persist(refresh);
