@@ -20,8 +20,9 @@ export default {
   REDIS_HOST: requireEnv('REDIS_HOST', '10.86.0.237'),
   REDIS_PORT: Number(requireEnv('REDIS_PORT', 6379)),
   REDIS_PASSWORD: requireEnv('REDIS_PASSWORD', 'ZkD953HzR497'),
-  // sub config
-  CLASH_SUB_LInk: requireEnv('CLASH_SUB_LInk', ''),
+  // 阿里 OSS 订阅文件
+  CLASH_SUB_LInk: requireEnv('CLASH_SUB_LInk', 'https://config-bscriber-flqcvxibfo.cn-hangzhou.fcapp.run'),
+  CLASH_SUB_TOKEN: requireEnv('CLASH_SUB_TOKEN', '1fb728620b2012d039ec2bb65e359d0c'),
   // 钉钉
   DINGDING_WEBHOOK_TOKEN: requireEnv('DINGDING_WEBHOOK_TOKEN', 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997'),
   // 企业微信

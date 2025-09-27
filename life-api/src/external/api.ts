@@ -2,7 +2,7 @@ import { ApiGenerator, type Params, type RequestOptions } from '@/utils/fetch';
 import config from '@/config';
 
 // 环境变量
-const { CLASH_SUB_LInk, QBITTORRENT_HOST, QBITTORRENT_PORT, DINGDING_WEBHOOK_TOKEN, WX_WEBHOOK_TOKEN } = config;
+const { CLASH_SUB_LInk, CLASH_SUB_TOKEN, QBITTORRENT_HOST, QBITTORRENT_PORT, DINGDING_WEBHOOK_TOKEN, WX_WEBHOOK_TOKEN } = config;
 
 // 体彩 API
 const STAPI = new ApiGenerator({
@@ -124,12 +124,19 @@ export const webHookApi = {
 // 阿里云函数 API
 const AliSubAPI = new ApiGenerator({
   baseUrl: CLASH_SUB_LInk,
+  formatFetchOptions: async (options: RequestOptions) => {
+    options.headers = {
+      'Content-Type': 'application/json;charset=utf-8'
+    };
+    (options.query ??= {}).authcode ??= CLASH_SUB_TOKEN;
+    return options;
+  },
   formatResponse: async (response: Response) => {
     return await response.json();
   }
 });
 
 export const subApi = {
-  // 发送钉钉消息
-  update: () => AliSubAPI.fetch('sub/api/oss/update', { query: { authcode: '1fb728620b2012d039ec2bb65e359d0c' } })
+  // 更新订阅
+  update: () => AliSubAPI.fetch('sub/api/oss/update')
 };
