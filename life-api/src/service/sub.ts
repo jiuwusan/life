@@ -14,8 +14,10 @@ export class SubService {
     private readonly webHookService: WebHookService
   ) {}
 
-  formatSubscription(str?: string) {
+  formatSubscription(str: string) {
     try {
+      // 移除str所有空格
+      str = str.replace(/\s+/g, '');
       // 转换为对象
       const info = Object.fromEntries(
         str.split(';').map(item => {
