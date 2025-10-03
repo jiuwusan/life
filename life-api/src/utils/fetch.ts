@@ -4,12 +4,14 @@ export type Params = Record<string, any>;
 
 // 处理返回的数据
 export type FormatResponse = (response: Params, options?: RequestOptions) => Promise<any>;
-
 // 格式化
 export type FormatFetchOptions = (options: RequestOptions) => Promise<RequestOptions>;
+// 处理 URL
+export type FormatFetchURL = (url: string, options: RequestOptions) => Promise<string>;
 
 export type ApiGeneratorOptions = {
   baseUrl?: string;
+  formatFetchURL?: FormatFetchURL;
   formatResponse?: FormatResponse;
   formatFetchOptions?: FormatFetchOptions;
 };
@@ -76,6 +78,8 @@ export class ApiGenerator {
     !options && (options = 'GET');
     // 表示请求方法
     typeof options === 'string' && (options = { method: options.toUpperCase() });
+    // 处理 URL
+    this.options.formatFetchURL && (url = await this.options.formatFetchURL(url as string, options));
     // 处理请求参数
     this.options.formatFetchOptions && (options = await this.options.formatFetchOptions(options));
     // 发送请求
