@@ -2,21 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { qbApi } from '@/external/api';
 import { RedisService } from '@/service/redis';
 import { type Params } from '@/utils/fetch';
-import config from '@/config';
+
+export type QbServerInfo = {
+  server: string;
+  username: string;
+  password: string;
+};
 
 @Injectable()
 export class QbService {
-  private authCacheKey = `qbittorrent:auth-cookies`;
-  private authFormInfo = { username: config.QBITTORRENT_USERNAME, password: config.QBITTORRENT_PASSWORD };
   constructor(private readonly redisService: RedisService) {}
+
+  /**
+   * 获取缓存KEY
+   * @param server
+   * @returns
+   */
+  getAuthCacheKey(server: string) {
+    const host = new URL(server).host;
+    return `${host}:qbittorrent:auth-cookie`;
+  }
 
   /**
    * 授权
    */
-  async auth() {
+  async getAuthorization(server: string, username: string, password: string) {
     let ACIDCount = 0;
     const takeAuth = async () => {
-      const response = await qbApi.login(this.authFormInfo);
+      const response = await fetch(`${server}/api/v2/auth/login`, {
+        method: 'POST',
+        body: new URLSearchParams({ username, password })
+      });
       const cookies = response.headers.get('set-cookie');
       // 提取 SID
       const result = (cookies || '').match(/SID=([^;]+)/) || [];
@@ -26,7 +42,7 @@ export class QbService {
         return await takeAuth();
       }
       // 返回结果
-      result[1] && this.redisService.set(this.authCacheKey, result[1]);
+      result[1] && this.redisService.set(this.getAuthCacheKey(server), result[1]);
       console.log(`qBittorrent 登录成功：${result[1]}`);
       return result[1];
     };
@@ -38,13 +54,13 @@ export class QbService {
    * @param APIFunciton
    * @param options
    */
-  async fetch(APIFunciton: any, options: Params) {
+  async fetch(qb: QbServerInfo, APIFunciton: any, options: Params) {
     let ACIDCount = 0;
     const sendFetch = async (refreshAuth?: boolean) => {
-      let cookies = await this.redisService.get(this.authCacheKey);
-      (!cookies || refreshAuth) && (cookies = await this.auth());
+      let cookies = await this.redisService.get(this.getAuthCacheKey(qb.server));
+      (!cookies || refreshAuth) && (cookies = await this.getAuthorization(qb.server, qb.username, qb.password));
       try {
-        return await APIFunciton({ ...options, headers: { Cookie: `SID=${cookies}` } });
+        return await APIFunciton({ ...options, headers: { Cookie: `SID=${cookies}` }, baseUrl: qb.server });
       } catch (error) {
         if (error.status === 403 && ACIDCount < 3) {
           console.log(`qBittorrent cookie 过期，重新登录`);
@@ -60,31 +76,51 @@ export class QbService {
   /**
    * 重命名
    */
-  async updateTorrentsFileName(hash: string, regexRule: string, replaceRegexRule: string) {
+  async updateTorrentsFileName(qb: QbServerInfo, { hash, regexRule, replaceRegexRule }: { hash: string; regexRule: string; replaceRegexRule: string }) {
     const matchRegex = new RegExp(regexRule, 'g');
-    const result = await this.queryTorrentFiles(hash);
-    const reanmeResult = [];
+    const result = await this.queryTorrentFiles(qb, { hash });
+    const results = [];
+    let failed = 0;
     for (let i = 0; i < result.length; i++) {
       const current = result[i];
       const data = { hash, oldPath: current.name, newPath: current.name.replace(matchRegex, replaceRegexRule), success: true };
       try {
-        await this.fetch(qbApi.updateTorrentFileName, { data });
+        await this.fetch(qb, qbApi.updateTorrentFileName, { data });
       } catch (error) {
         data.success = false;
+        failed++;
       }
-      reanmeResult.push(data);
+      results.push(data);
     }
-    return reanmeResult;
+    return {
+      success: results.length - failed,
+      failed,
+      results
+    };
   }
 
-  async queryTorrentsInfo() {
-    return await this.fetch(qbApi.queryTorrentsInfo, { query: {} });
+  /**
+   * 获取种子列表
+   * @param qb
+   * @param query
+   * @returns
+   */
+  async queryTorrentsInfo(qb: QbServerInfo, { filter = 'all' }) {
+    console.log('qb:', qb);
+    return await this.fetch(qb, qbApi.queryTorrentsInfo, { query: { filter } });
   }
 
-  async queryTorrentFiles(hash: string) {
-    if (!hash) {
+  /**
+   * 获取种子文件列表
+   * @param qb
+   * @param query
+   * @returns
+   */
+  async queryTorrentFiles(qb: QbServerInfo, query: { hash: string; indexes?: string }) {
+    if (!query?.hash) {
       throw new Error('hash值 不能为空');
     }
-    return (await this.fetch(qbApi.queryTorrentFiles, { query: { hash } })) || [];
+    !query.indexes && delete query.indexes;
+    return (await this.fetch(qb, qbApi.queryTorrentFiles, { query })) || [];
   }
 }

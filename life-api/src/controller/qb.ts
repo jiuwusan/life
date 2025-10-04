@@ -1,22 +1,32 @@
-import { Controller, Post, Get, Query, Body } from '@nestjs/common';
+import { Controller, Post, Get, Query, Body, Headers } from '@nestjs/common';
 import { QbService } from '@/service';
+import config from '@/config';
 
 @Controller('qb')
 export class QbController {
   constructor(private readonly qbService: QbService) {}
 
+  getServerInfo(apiKeys = '') {
+    const [server, username, password] = apiKeys.split(';');
+    return {
+      server: server || config.QBITTORRENT_SERVER,
+      username: username || config.QBITTORRENT_USERNAME,
+      password: password || config.QBITTORRENT_PASSWORD
+    };
+  }
+
   @Post('torrents/rename')
-  async updateTorrentsFileName(@Body() { hash, regexRule, replaceRegexRule }) {
-    return await this.qbService.updateTorrentsFileName(hash, regexRule, replaceRegexRule);
+  async updateTorrentsFileName(@Headers('qb-api-keys') apiKeys: string, @Body() { hash, regexRule, replaceRegexRule }) {
+    return await this.qbService.updateTorrentsFileName(this.getServerInfo(apiKeys), { hash, regexRule, replaceRegexRule });
   }
 
   @Get('torrents/info')
-  async queryTorrentsInfo() {
-    return await this.qbService.queryTorrentsInfo();
+  async queryTorrentsInfo(@Headers('qb-api-keys') apiKeys: string, @Query() { filter }) {
+    return await this.qbService.queryTorrentsInfo(this.getServerInfo(apiKeys), { filter });
   }
 
   @Get('torrents/files')
-  async queryTorrentFiles(@Query() { hash }) {
-    return await this.qbService.queryTorrentFiles(hash);
+  async queryTorrentFiles(@Headers('qb-api-keys') apiKeys: string, @Query() { hash, indexes }) {
+    return await this.qbService.queryTorrentFiles(this.getServerInfo(apiKeys), { hash, indexes });
   }
 }

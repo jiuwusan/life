@@ -6,8 +6,7 @@ export default {
   // files
   UPLOAD_BASE_DIR: requireEnv('UPLOAD_BASE_DIR', ''),
   // qb
-  QBITTORRENT_HOST: requireEnv('QBITTORRENT_HOST', '10.86.0.125'),
-  QBITTORRENT_PORT: Number(requireEnv('QBITTORRENT_PORT', 8080)),
+  QBITTORRENT_SERVER: requireEnv('QBITTORRENT_SERVER', 'http://10.86.0.125:8080'),
   QBITTORRENT_USERNAME: requireEnv('QBITTORRENT_USERNAME', 'jiuwusan'),
   QBITTORRENT_PASSWORD: requireEnv('QBITTORRENT_PASSWORD', 'ZkD953497'),
   // mysql

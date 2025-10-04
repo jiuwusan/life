@@ -2,7 +2,7 @@ import { ApiGenerator, type Params, type RequestOptions } from '@/utils/fetch';
 import config from '@/config';
 
 // 环境变量
-const { CLASH_SUB_LInk, CLASH_SUB_TOKEN, QBITTORRENT_HOST, QBITTORRENT_PORT, DINGDING_WEBHOOK_TOKEN, WX_WEBHOOK_TOKEN } = config;
+const { CLASH_SUB_LInk, CLASH_SUB_TOKEN, DINGDING_WEBHOOK_TOKEN, WX_WEBHOOK_TOKEN } = config;
 
 // 体彩 API
 const STAPI = new ApiGenerator({
@@ -55,8 +55,18 @@ export const lotteryApi = {
 
 // QBittorrent API
 const QBitAPI = new ApiGenerator({
-  baseUrl: `http://${QBITTORRENT_HOST}:${QBITTORRENT_PORT}/api/v2`,
-  // baseUrl: 'https://cloud.jiuwusan.cn:36443/api/v2',
+  baseUrl: '/api/v2',
+  formatFetchURL: async (url, options: RequestOptions) => {
+    return options.baseUrl + url;
+  },
+  formatFetchOptions: async (options: RequestOptions) => {
+    if (options.data) {
+      options.body = new URLSearchParams(options.data);
+      delete options.data;
+    }
+    console.log('formatFetchOptions:', options);
+    return options;
+  },
   formatResponse: async (response: Response) => {
     if (response?.status !== 200) {
       throw response;
@@ -67,15 +77,6 @@ const QBitAPI = new ApiGenerator({
       console.error('QBitAPI Failed to fetch data:', error);
     }
     return response;
-  },
-  formatFetchOptions: async (options: RequestOptions) => {
-    if (options.data) {
-      const formData = new URLSearchParams();
-      Object.keys(options.data).forEach((keyStr: string) => formData.append(keyStr, options.data[keyStr]));
-      options.body = formData;
-      delete options.data;
-    }
-    return options;
   }
 });
 

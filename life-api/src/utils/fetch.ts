@@ -17,6 +17,7 @@ export type ApiGeneratorOptions = {
 };
 
 export interface RequestOptions extends RequestInit {
+  baseUrl?: string;
   data?: Params;
   query?: Params;
   primitive?: boolean;
