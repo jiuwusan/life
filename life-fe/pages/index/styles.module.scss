@@ -1,6 +1,7 @@
 .home {
   text-align: center;
   color: var(--white-color);
+
   .title {
     font-size: 26px;
     font-weight: 600;
@@ -11,6 +12,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+
     .gridItem {
       display: flex;
       margin: 16px 0 0 0;
@@ -18,12 +20,13 @@
       border-radius: 8px;
       font-size: 14px;
       overflow: hidden;
+      width: 100%;
 
       &.half {
         width: calc(50% - 10px);
       }
 
-      > img {
+      >img {
         width: 100%;
         height: auto;
       }

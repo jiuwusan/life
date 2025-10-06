@@ -162,4 +162,47 @@ export class Tracker {
   deleted: string;
 }
 
-export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode, Tracker]);
+@Entity()
+export class Feature {
+  @PrimaryGeneratedColumn()
+  uid: string;
+
+  @Column()
+  name: string; // 名称
+
+  @Column()
+  route: string; //路由
+
+  @Column()
+  image: string; //图片
+
+  @Column({ type: 'varchar', length: 32, default: '1' })
+  type: string; //类型
+
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
+}
+
+@Entity()
+@Unique('UQ_USER_DATE', ['userid', 'date'])
+export class WorkDaily {
+  @PrimaryGeneratedColumn()
+  uid: string;
+
+  @Column({ type: 'varchar', length: 36, default: '1' })
+  userid: string;
+
+  @Column({ type: 'date' })
+  date: string; // 日期
+
+  @Column()
+  content: string; // 内容
+
+  @Column()
+  remark: string; // 备注
+
+  @Column({ type: 'varchar', length: 2, default: '0' })
+  deleted: string;
+}
+
+export const EntityFeature = TypeOrmModule.forFeature([Lottery, User, Sublink, Authcode, Tracker, Feature, WorkDaily]);
