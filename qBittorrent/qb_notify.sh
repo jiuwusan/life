@@ -37,7 +37,20 @@ SIZE="$6"
 
 # 将种子大小（字节）转换为 GB，保留两位小数
 SIZE_GB=$(awk "BEGIN {printf \"%.2f\", $SIZE / (1024 * 1024 * 1024)}")
+# 防止钉钉风控，随机休眠 1-10 秒
+sleep $(( $(date +%s%N) % 11 ))
 
-send_dingtalk "qBittorrent ${ACTION}" "#### qBittorrent ${ACTION}\n- ${NAME}\n- ${HASH}\n- 保存路径：${SAVE_PATH}\n- 所属分类：${CATEGORY}\n- 种子大小：${SIZE_GB} GB"
+CONTENT=$(cat <<EOF
+#### qBittorrent ${ACTION}
+**${NAME}**
+> ${HASH}
+- 路径：${SAVE_PATH}
+- 存储：${SIZE_GB} GB
+- 分类：${CATEGORY}
+- 时间：$(date '+%Y-%m-%d %H:%M:%S')
+EOF
+)
+
+send_dingtalk "qBittorrent ${ACTION}" "${CONTENT}"
 
 exit 0
