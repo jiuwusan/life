@@ -1,0 +1,16 @@
+---
+name: "Wishlist"
+guid: "e7c28d34-b192-4383-8894-abdea2cfd5d6"
+version: "1.0.0.0"
+targetAbi: "10.9.0.0"
+framework: "net8.0"
+overview: "Short description about your plugin"
+description: >
+  This is a longer description that can span more than one
+  line and include details about your plugin.
+category: "General"
+owner: "jiuwusan"
+artifacts:
+- "Jellyfin.Plugin.Wishlist.dll"
+changelog: >
+  changelog
