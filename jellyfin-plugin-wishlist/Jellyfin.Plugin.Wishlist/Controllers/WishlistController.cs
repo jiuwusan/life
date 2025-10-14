@@ -1,54 +1,45 @@
-using MediaBrowser.Controller.Users;
-using MediaBrowser.Controller.Plugins;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.Wishlist.Configurations;
+using Jellyfin.Plugin.Wishlist.Models;
+using MediaBrowser.Controller.Net;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jellyfin.Plugin.Wishlist.Controllers
 {
+    /// <summary>
+    /// Wishlist controller.
+    /// </summary>
     [Route("Wishlist")]
     [ApiController]
     public class WishlistController : ControllerBase
     {
         private readonly PluginConfiguration _config;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IUserManager _userManager;
+        private readonly IAuthorizationContext _authContext;
 
-        public WishlistController(PluginConfiguration config, IHttpClientFactory httpClientFactory, IUserManager userManager)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WishlistController"/> class.
+        /// </summary>
+        /// <param name="config">Instance of the <see cref="PluginConfiguration"/> interface.</param>
+        /// <param name="authContext">Instance of the <see cref="IAuthorizationContext"/> interface.</param>
+        public WishlistController(PluginConfiguration config, IAuthorizationContext authContext)
         {
             _config = config;
-            _httpClientFactory = httpClientFactory;
-            _userManager = userManager;
+            _authContext = authContext;
         }
 
-        [HttpPost("add")]
-        public async Task<IActionResult> Add([FromBody] WishlistItem item)
+        /// <summary>
+        /// add wishlist item.
+        /// </summary>
+        /// <param name="wishItem">Quick connect code to authorize.</param>
+        /// <response code="200">Quick connect result authorized successfully.</response>
+        /// <response code="403">Unknown user id.</response>
+        /// <returns>Boolean indicating if the authorization was successful.</returns>
+        [HttpPost("Add")]
+        public async Task<ActionResult<bool>> Add([FromBody] WishItem wishItem)
         {
             // 获取当前用户
-            var user = _userManager.GetUserById(ControllerContext.HttpContext.User.GetUserId());
-            var username = user?.Name ?? "unknown";
-
-            // 构造提交数据
-            var payload = new
-            {
-                name = item.Name,
-                username = username
-            };
-
-            var http = _httpClientFactory.CreateClient();
-            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-            var res = await http.PostAsync(_config.ApiEndpoint, content);
-
-            if (res.IsSuccessStatusCode)
-                return Ok();
-            return StatusCode((int)res.StatusCode);
+            var auth = await _authContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
+            return true;
         }
-    }
-
-    public class WishlistItem
-    {
-        public string Name { get; set; }
     }
 }
