@@ -10,6 +10,8 @@ module.exports = {
         NODE_ENV: "production",
         PORT: 3000,
       },
+      out_file: "./services/service-health/logs-health.log",
+      log_date_format: "YYYY-MM-DD HH:mm:ss"
     },
   ],
 };
