@@ -1,35 +1,63 @@
 const http = require('node:http');
+const url = require('node:url');
 const medias = require('./medias');
 
-// const routes = {
-//   "/": () => "Welcome to qBittorrent and jellyfin scraper...",
-//   "/health": () => "Node Server is up and running",
-// };
+/**
+ * 获取请求 data
+ *
+ * @param {*} req
+ * @returns
+ */
+const getBodyData = req => {
+  return new Promise(resolve => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+    req.on('end', () => {
+      resolve(JSON.parse(body || '{}'));
+    });
+  });
+};
 
+// 创建服务器
 const server = http.createServer(async (req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
-  let resBody = {};
-  switch (req.url) {
+  const setResponse = (data, statusCode = 200) => {
+    res.statusCode = statusCode;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(
+      JSON.stringify({
+        code: statusCode,
+        message: 'success',
+        data
+      })
+    );
+  };
+
+  const parsedUrl = url.parse(req.url, true);
+  const { method } = req;
+  const { pathname, query: urlQuery = {} } = parsedUrl;
+  const query = Object.assign({}, urlQuery);
+  const data = await getBodyData(req);
+  console.log(`${method.toUpperCase()}：${pathname}`, { query, data });
+  switch (pathname) {
     case '/':
-      resBody = { message: 'Welcome to qBittorrent and jellyfin scraper...' };
+      setResponse('Welcome to qBittorrent and jellyfin scraper...');
       break;
     case '/health':
-      resBody = { message: 'Node Server is up and running' };
+      setResponse('Node Server is up and running...');
       break;
     case '/medias/refresh':
-      resBody = await medias.refresh(req);
+      setResponse(await medias.refresh(data));
       break;
     default:
-      res.statusCode = 404;
-      resBody = { message: 'Not Found' };
+      setResponse('Not Found', 404);
       break;
   }
-  res.end(resBody);
 });
 
+// 监听端口
 const PORT = process.env.PORT || 30001;
-
 server.listen(PORT, () => {
   console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
 });

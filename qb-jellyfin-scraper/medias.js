@@ -1,4 +1,5 @@
 const request = require('./request');
+const util = require('./util');
 // const Jellyfin_SERVER_URL = process.env.Jellyfin_SERVER_URL;
 // const Jellyfin_X_Emby_Token = process.env.Jellyfin_X_Emby_Token;
 // const DINGDING_WEBHOOK_TOKEN = process.env.DINGDING_WEBHOOK_TOKEN;
@@ -23,6 +24,12 @@ const API = {
       data,
       method: 'POST',
       headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token, 'Content-Type': 'application/json' }
+    }),
+  sendWebhook: data =>
+    request(`https://oapi.dingtalk.com/robot/send?access_token=${DINGDING_WEBHOOK_TOKEN}`, {
+      data,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
     })
 };
 
@@ -116,7 +123,7 @@ const librarys = createTasks({
     console.log('start processing librarys task...', params);
     try {
       await API.refreshLibrarys();
-      await nextSleep(5000);
+      await nextSleep(5000);// 等待媒体库刷新
       const folders = await API.queryVirtualFolders();
       const tvshowsFolders = folders.filter(item => item.CollectionType === 'tvshows');
       for (let i = 0; i < tvshowsFolders.length; i++) {
@@ -135,18 +142,35 @@ const notifications = createTasks({
   callback: async params => {
     console.log('start processing notifications task...', params);
     try {
-      // send webhook
+      // action = downloading,completed; 1024 * 1024 * 1024
+      const { client, action = 'added', name, hash, savePath, size = 0, category } = params;
+      const actionName = action === 'completed' ? '下载完成' : '添加成功';
+      const title = `qBittorrent ${actionName}`;
+      const text = `#### qBittorrent ${client} ${actionName}
+> **${name}**
+> ${hash}
+- 路径：${savePath}
+- 存储：${(size / (1024 * 1024 * 1024)).toFixed(2)} GB
+- 分类：${category}
+- 时间：${util.formatDateToStr()}`;
+      const result = await API.sendWebhook({
+        msgtype: 'markdown',
+        markdown: {
+          title,
+          text
+        }
+      });
     } catch (error) {
       console.log(error);
     }
   }
 });
 
-const refresh = async req => {
+const refresh = async data => {
   // 刷新媒体库
   return JSON.stringify({
     librarys: await librarys.pushTask(),
-    notifications: await notifications.pushTask()
+    notifications: await notifications.pushTask(data)
   });
 };
 
