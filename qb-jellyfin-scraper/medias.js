@@ -70,23 +70,32 @@ const updateMediaInfo = (() => {
       return;
     }
     updateds[ItemId] = Date.now();
-    const result = await API.queryRemoteSearch({
-      SearchInfo: {
-        ProviderIds: {
-          AniDB: '',
-          Imdb: '',
-          Tmdb: '',
-          TvdbCollection: '',
-          Tvdb: '',
-          TvdbSlug: '',
-          Zap2It: ''
-        },
-        Year,
-        Name
+    const SearchInfo = {
+      ProviderIds: {
+        AniDB: '',
+        Imdb: '',
+        Tmdb: '',
+        TvdbCollection: '',
+        Tvdb: '',
+        TvdbSlug: '',
+        Zap2It: ''
       },
+      Year,
+      Name
+    };
+    let result = await API.queryRemoteSearch({
+      SearchInfo,
       ItemId
     });
-    console.log('刮削结果：', result);
+    console.log('刮削结果 1：', result);
+    if (result?.length < 1) {
+      delete SearchInfo.Year;
+      result = await API.queryRemoteSearch({
+        SearchInfo,
+        ItemId
+      });
+      console.log('刮削结果 2：', result);
+    }
     if (result?.length < 1) {
       return;
     }
