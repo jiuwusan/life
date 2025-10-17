@@ -50,6 +50,9 @@ const server = http.createServer(async (req, res) => {
     case '/medias/refresh':
       setResponse(await medias.refresh(data));
       break;
+    case '/items/refresh':
+      setResponse(await medias.refreshItem(data));
+      break;
     default:
       setResponse('Not Found', 404);
       break;

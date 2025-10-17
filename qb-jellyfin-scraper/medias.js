@@ -1,37 +1,5 @@
-const request = require('./request');
+const API = require('./api');
 const util = require('./util');
-// const Jellyfin_SERVER_URL = process.env.Jellyfin_SERVER_URL;
-// const Jellyfin_X_Emby_Token = process.env.Jellyfin_X_Emby_Token;
-// const DINGDING_WEBHOOK_TOKEN = process.env.DINGDING_WEBHOOK_TOKEN;
-
-const Jellyfin_SERVER_URL = 'https://cloud.jiuwusan.cn:36443/jellyfin';
-const Jellyfin_X_Emby_Token = '728a845fa9da46cdaad205b6b8ea14b7';
-const DINGDING_WEBHOOK_TOKEN = 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997';
-
-const API = {
-  refreshLibrarys: () =>
-    request(`${Jellyfin_SERVER_URL}/Library/Refresh`, { method: 'POST', headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token, 'Content-Type': 'application/json' } }),
-  queryVirtualFolders: () => request(`${Jellyfin_SERVER_URL}/Library/VirtualFolders`, { headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token } }),
-  queryFolderItems: ParentId =>
-    request(`${Jellyfin_SERVER_URL}/Items`, {
-      query: { ParentId, StartIndex: 0, Limit: 20, SortOrder: 'Descending', SortBy: 'DateCreated' },
-      headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token }
-    }),
-  queryRemoteSearch: data =>
-    request(`${Jellyfin_SERVER_URL}/Items/RemoteSearch/Series`, { data, method: 'POST', headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token, 'Content-Type': 'application/json' } }),
-  updateMediaInfo: (mediaId, data) =>
-    request(`${Jellyfin_SERVER_URL}/Items/RemoteSearch/Apply/${mediaId}?ReplaceAllImages=true`, {
-      data,
-      method: 'POST',
-      headers: { 'X-Emby-Token': Jellyfin_X_Emby_Token, 'Content-Type': 'application/json' }
-    }),
-  sendWebhook: data =>
-    request(`https://oapi.dingtalk.com/robot/send?access_token=${DINGDING_WEBHOOK_TOKEN}`, {
-      data,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    })
-};
 
 /**
  * 休眠
@@ -52,9 +20,9 @@ const createTasks = ({ name, callback }) => {
     processing = true;
     // 每次只取一个任务，直到 tasks 为空，需要考虑 tasks 随时 push 新任务的情况
     while (tasks.length > 0) {
+      await nextSleep(1000);
       console.log(`${name}:  ${tasks.length}`);
       callback && typeof callback === 'function' && (await callback(tasks.shift()));
-      await nextSleep(1000);
     }
     processing = false;
   };
@@ -72,17 +40,16 @@ const createTasks = ({ name, callback }) => {
   return { getTasks, pushTask, startTasks };
 };
 
-const extractChinese = str => {
-  // 匹配中文字符（含中文标点）
-  const matches = str.match(/[\u4e00-\u9fa5\u3000-\u303F\uff00-\uffef]+/g);
-  return (matches || [])[0] || '';
-};
-
 const updateMediaInfo = (() => {
   const updateds = [];
   return async params => {
     console.log('start processing mediainfos task...', params);
-    const Name = extractChinese(params.Name);
+    const { Id: ItemId, Name: ItemName } = params;
+    const itemInfo = await API.queryMediaItemInfo(ItemId);
+    console.log('itemInfo:', itemInfo);
+    const BeforeName = itemInfo.Path.split('/').pop() || ItemName;
+    const Name = (await API.getMediaName({ name: BeforeName }))?.name;
+    console.log('Name Processing Result:', { ItemName, BeforeName, Name });
     if (!Name || updateds.includes(params.Id)) {
       return;
     }
@@ -100,15 +67,16 @@ const updateMediaInfo = (() => {
         },
         Name
       },
-      ItemId: params.Id
+      ItemId
     });
-    console.log('搜索结果：', result);
+    console.log('刮削结果：', result);
     if (result?.length < 1) {
       return;
     }
     const current = result[0];
-    const updateResult = await API.updateMediaInfo(params.Id, current);
-    console.log('更新结果：', updateResult?.status);
+    console.log('更新媒体信息：', { ItemId, ...current });
+    // 异步更新更新媒体信息
+    API.updateMediaInfo(ItemId, current);
   };
 })();
 
@@ -123,7 +91,7 @@ const librarys = createTasks({
     console.log('start processing librarys task...', params);
     try {
       await API.refreshLibrarys();
-      await nextSleep(5000);// 等待媒体库刷新
+      await nextSleep(5000); // 等待媒体库刷新
       const folders = await API.queryVirtualFolders();
       const tvshowsFolders = folders.filter(item => item.CollectionType === 'tvshows');
       for (let i = 0; i < tvshowsFolders.length; i++) {
@@ -168,10 +136,19 @@ const notifications = createTasks({
 
 const refresh = async data => {
   // 刷新媒体库
-  return JSON.stringify({
+  return {
     librarys: await librarys.pushTask(),
     notifications: await notifications.pushTask(data)
-  });
+  };
 };
 
-module.exports = { refresh };
+const refreshItem = async data => {
+  if (!data.Name || !data.Id) {
+    return '参数异常';
+  }
+  updateMediaInfo(data);
+  // 刷新媒体信息
+  return '刮削信息已提交，请到媒体库查看结果。';
+};
+
+module.exports = { refresh, refreshItem };

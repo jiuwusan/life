@@ -32,7 +32,9 @@ const request = async (url, options = {}) => {
   const response = await fetch(url, options);
   try {
     return await response.json();
-  } catch (error) {}
+  } catch (error) {
+    // 返回的不是 JSON
+  }
   return response;
 };
 
