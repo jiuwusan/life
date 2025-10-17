@@ -52,8 +52,8 @@ const updateMediaInfo = (() => {
       return;
     }
     const itemInfo = await API.queryMediaItemInfo(ItemId);
-    console.log('itemInfo:', itemInfo);
-    const BeforeName = itemInfo.Path.split('/').pop() || ItemName;
+    console.log('itemInfo Path:', itemInfo?.Path);
+    const BeforeName = (itemInfo?.Path || '').split('/').pop() || ItemName;
     if (CollectionType === 'movies') {
       const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
       // 电影名称必须包含后缀名
