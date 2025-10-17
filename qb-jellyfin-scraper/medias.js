@@ -23,13 +23,13 @@ const formatMediaResultNotice = params => {
   const { ItemId, ItemName, BeforeName, AiName, Name, ImageUrl } = params || {};
   const title = `jellyfin 刮削成功`;
   const text = `#### jellyfin 刮削成功
+![](${ImageUrl})
 > **${Name}**
 > ${ItemId}
 - AI名称：${AiName}
 - 原名称：${ItemName}
 - 文件：${BeforeName}
-- 时间：${formatDateToStr()}
-![](${ImageUrl})`;
+- 时间：${formatDateToStr()}`;
   return {
     msgtype: 'markdown',
     markdown: {
@@ -63,9 +63,8 @@ const updateMediaInfo = (() => {
         return;
       }
     }
-    const Name = (await API.getMediaName({ name: BeforeName }))?.name;
-    const Year = '';
-    console.log('Name Processing Result:', { ItemName, BeforeName, Name, Year });
+    const { Name, Year } = await API.getMediaName({ name: BeforeName });
+    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName });
     if (!Name) {
       console.log('获取媒体名称无结果，跳过...');
       return;

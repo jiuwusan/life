@@ -13,9 +13,14 @@ const AI_API_TOKEN = process.env.AI_API_TOKEN;
 // const AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
 // const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES;
 
-const extractChinese = str => {
+const extractChinese = filename => {
   // 匹配中文字符（含中文标点）
-  const matches = str.match(/[\u4e00-\u9fa5\u3000-\u303F\uff00-\uffef]+/g);
+  const matches = filename.match(/[\u4e00-\u9fa5\u3000-\u303F\uff00-\uffef]+/g);
+  return (matches || [])[0] || '';
+};
+
+const extractYear = filename => {
+  const matches = filename.match(/\b(19|20)\d{2}\b/);
   return (matches || [])[0] || '';
 };
 
@@ -56,7 +61,8 @@ module.exports = {
   },
   getMediaName: async ({ name }) => {
     if (!AI_API_TOKEN) {
-      return { status: 200, message: '未配置阿里云 API 密钥，使用正则 pattern 匹配中文名称', name: extractChinese(name) };
+      console.log('未配置阿里云 API 密钥，使用正则 pattern 匹配中文名称');
+      return { Name: extractChinese(name), Year: extractYear(name) };
     }
     const result = await request(`https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions`, {
       data: {
@@ -68,7 +74,7 @@ module.exports = {
           },
           {
             role: 'user',
-            content: `这是“${name}”某个影视文件/文件夹名称,请结合全球影视资料库（TheTVDB/TheMovieDB/TMDB/IMDb/豆瓣...）分析并仅返回影视名称（优先中文名称，如无中文名称则返回英文名称）`
+            content: `这是“${name}”某个影视文件/文件夹名称,请结合全球影视资料库（TheTVDB/TheMovieDB/TMDB/IMDb/豆瓣...）分析并仅返回影视名称（优先中文名称，如无中文名称则返回英文名称）和年份，使用“|”分割`
           }
         ]
       },
@@ -76,6 +82,7 @@ module.exports = {
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${AI_API_TOKEN}` }
     });
     console.log('AI Result:', result?.choices?.[0]);
-    return { code: 200, message: '成功', name: result?.choices?.[0]?.message?.content ?? extractChinese(name) };
+    const [AiName, AiYear] = (result?.choices?.[0]?.message?.content || '')?.split('|');
+    return { Name: AiName ?? extractChinese(name), Year: AiYear ?? extractYear(name) };
   }
 };
