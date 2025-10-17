@@ -42,7 +42,7 @@ const formatMediaResultNotice = params => {
  * 更新媒体数据
  */
 const updateMediaInfo = (() => {
-  const updateds = [];
+  const updateds = {};
   return async params => {
     console.log('start processing mediainfos task...', params);
     const { Id: ItemId, Name: ItemName } = params;
@@ -51,10 +51,11 @@ const updateMediaInfo = (() => {
     const BeforeName = itemInfo.Path.split('/').pop() || ItemName;
     const Name = (await API.getMediaName({ name: BeforeName }))?.name;
     console.log('Name Processing Result:', { ItemName, BeforeName, Name });
-    if (!Name || updateds.includes(params.Id)) {
+    if (!Name || Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
+      console.log(!Name ? '获取媒体名称无结果...' : '距离上次刮削时间小于30分钟，跳过...');
       return;
     }
-    updateds.push(params.Id);
+    updateds[ItemId] = Date.now();
     const result = await API.queryRemoteSearch({
       SearchInfo: {
         ProviderIds: {
