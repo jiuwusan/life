@@ -20,12 +20,12 @@ const notifications = createTasks({
 });
 
 const formatMediaResultNotice = params => {
-  const { BeforeName, AiName, Name, ImageUrl } = params || {};
+  const { Path, AiName, Name, ImageUrl } = params || {};
   const title = `jellyfin 刮削成功`;
   const text = `![](${ImageUrl})
 - 影视：**${Name}**
 - 识别：${AiName}
-- 文件：${BeforeName}
+- 路径：${Path}
 - 时间：${formatDateToStr()}`;
   return {
     msgtype: 'markdown',
@@ -61,7 +61,7 @@ const updateMediaInfo = (() => {
       }
     }
     const { Name, Year } = await API.getMediaName({ name: BeforeName });
-    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName });
+    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path: itemInfo?.Path });
     if (!Name) {
       console.log('获取媒体名称无结果，跳过...');
       return;
@@ -99,7 +99,7 @@ const updateMediaInfo = (() => {
     const current = result[0];
     formatMediaResultNotice;
     console.log('更新媒体信息：', { ItemId, ...current });
-    notifications.pushTask(formatMediaResultNotice({ ItemId, ItemName, AiName: Name, BeforeName, ...current }));
+    notifications.pushTask(formatMediaResultNotice({ ItemId, ItemName, AiName: Name, BeforeName, Path: itemInfo?.Path, ...current }));
     // 异步更新更新媒体信息
     API.updateMediaInfo(ItemId, current);
   };
