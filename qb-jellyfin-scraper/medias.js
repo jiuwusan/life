@@ -20,14 +20,11 @@ const notifications = createTasks({
 });
 
 const formatMediaResultNotice = params => {
-  const { ItemId, ItemName, BeforeName, AiName, Name, ImageUrl } = params || {};
+  const { BeforeName, AiName, Name, ImageUrl } = params || {};
   const title = `jellyfin 刮削成功`;
   const text = `![](${ImageUrl})
-#### jellyfin 刮削成功
-> **${Name}**
-> ${ItemId}
-- AI名称：${AiName}
-- 原名称：${ItemName}
+- 影视：**${Name}**
+- 识别：${AiName}
 - 文件：${BeforeName}
 - 时间：${formatDateToStr()}`;
   return {
@@ -124,6 +121,7 @@ const librarys = createTasks({
   callback: async params => {
     console.log('start processing librarys task...', params);
     try {
+      await nextSleep(5000);
       await API.refreshLibrarys();
       await nextSleep(15000); // 等待媒体库刷新
       const folders = await API.queryVirtualFolders();
