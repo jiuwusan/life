@@ -1,6 +1,7 @@
 const API = require('./api');
 const { formatDateToStr, nextSleep } = require('./util');
 const { createTasks } = require('./tasks');
+const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES || ''; // movies,tvshows
 
 /**
  * 创建通知任务
@@ -101,13 +102,15 @@ const librarys = createTasks({
     console.log('start processing librarys task...', params);
     try {
       await API.refreshLibrarys();
-      await nextSleep(5000); // 等待媒体库刷新
+      await nextSleep(15000); // 等待媒体库刷新
       const folders = await API.queryVirtualFolders();
-      const tvshowsFolders = folders.filter(item => item.CollectionType === 'tvshows');
-      for (let i = 0; i < tvshowsFolders.length; i++) {
-        const current = tvshowsFolders[i];
-        const result = await API.queryFolderItems(current.ItemId);
-        mediainfos.pushTask(result.Items.filter(item => !item.Status && !item.ProductionYear));
+      const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
+      for (let i = 0; i < includedFolders.length; i++) {
+        const { ItemId, CollectionType } = includedFolders[i];
+        const result = await API.queryFolderItems(ItemId);
+        mediainfos.pushTask(
+          result.Items.filter(item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.ProductionYear))
+        );
       }
     } catch (error) {
       console.log(error);

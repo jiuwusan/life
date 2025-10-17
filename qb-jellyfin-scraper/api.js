@@ -11,6 +11,7 @@ const AI_API_TOKEN = process.env.AI_API_TOKEN;
 // const JELLYFIN_X_EMBY_TOKEN = '728a845fa9da46cdaad205b6b8ea14b7';
 // const DINGDING_WEBHOOK_TOKEN = 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997';
 // const AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
+// const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES;
 
 const extractChinese = str => {
   // 匹配中文字符（含中文标点）
