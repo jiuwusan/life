@@ -22,8 +22,8 @@ const notifications = createTasks({
 const formatMediaResultNotice = params => {
   const { ItemId, ItemName, BeforeName, AiName, Name, ImageUrl } = params || {};
   const title = `jellyfin 刮削成功`;
-  const text = `#### jellyfin 刮削成功
-![](${ImageUrl})
+  const text = `![](${ImageUrl})
+#### jellyfin 刮削成功
 > **${Name}**
 > ${ItemId}
 - AI名称：${AiName}
