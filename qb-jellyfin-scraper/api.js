@@ -1,16 +1,16 @@
 const request = require('./request');
 
-// const JELLYFIN_SERVER_URL = process.env.JELLYFIN_SERVER_URL;
-// const JELLYFIN_X_EMBY_TOKEN_USER_ID = process.env.JELLYFIN_X_EMBY_TOKEN_USER_ID;
-// const JELLYFIN_X_EMBY_TOKEN = process.env.JELLYFIN_X_EMBY_TOKEN;
-// const DINGDING_WEBHOOK_TOKEN = process.env.DINGDING_WEBHOOK_TOKEN;
-// const AI_API_TOKEN = process.env.AI_API_TOKEN;
+const JELLYFIN_SERVER_URL = process.env.JELLYFIN_SERVER_URL;
+const JELLYFIN_X_EMBY_TOKEN_USER_ID = process.env.JELLYFIN_X_EMBY_TOKEN_USER_ID;
+const JELLYFIN_X_EMBY_TOKEN = process.env.JELLYFIN_X_EMBY_TOKEN;
+const DINGDING_WEBHOOK_TOKEN = process.env.DINGDING_WEBHOOK_TOKEN;
+const AI_API_TOKEN = process.env.AI_API_TOKEN;
 
-const JELLYFIN_SERVER_URL = 'https://cloud.jiuwusan.cn:36443/jellyfin';
-const JELLYFIN_X_EMBY_TOKEN_USER_ID = '0684f8441d8c42cf90fd4adf212983ee';
-const JELLYFIN_X_EMBY_TOKEN = '728a845fa9da46cdaad205b6b8ea14b7';
-const DINGDING_WEBHOOK_TOKEN = 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997';
-const AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
+// const JELLYFIN_SERVER_URL = 'https://cloud.jiuwusan.cn:36443/jellyfin';
+// const JELLYFIN_X_EMBY_TOKEN_USER_ID = '0684f8441d8c42cf90fd4adf212983ee';
+// const JELLYFIN_X_EMBY_TOKEN = '728a845fa9da46cdaad205b6b8ea14b7';
+// const DINGDING_WEBHOOK_TOKEN = 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997';
+// const AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
 
 const extractChinese = str => {
   // 匹配中文字符（含中文标点）
