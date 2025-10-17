@@ -166,11 +166,19 @@ const formatQBittorrentNotice = params => {
 };
 
 const refresh = async data => {
+  const { action } = data;
+  switch (action) {
+    case 'completed':
+      librarys.pushTask();
+    case 'added':
+      notifications.pushTask(formatQBittorrentNotice(data));
+      break;
+    case 'refresh':
+      librarys.pushTask();
+      break;
+  }
   // 刷新媒体库
-  return {
-    librarys: librarys.pushTask(),
-    notifications: notifications.pushTask(formatQBittorrentNotice(data))
-  };
+  return '刷新任务已提交，请稍后查看结果。';
 };
 
 const refreshItem = async data => {
