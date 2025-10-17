@@ -68,7 +68,7 @@ module.exports = {
           },
           {
             role: 'user',
-            content: `这是“${name}”某个影视文件/文件夹名称,请结合相关影视库分析并仅返回影视中文名称`
+            content: `这是“${name}”某个影视文件/文件夹名称,请结合全球影视资料库（TheTVDB/TheMovieDB/TMDB/IMDb/豆瓣...）分析并仅返回影视中文名称`
           }
         ]
       },
