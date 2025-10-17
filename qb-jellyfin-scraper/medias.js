@@ -64,7 +64,8 @@ const updateMediaInfo = (() => {
       }
     }
     const Name = (await API.getMediaName({ name: BeforeName }))?.name;
-    console.log('Name Processing Result:', { ItemName, BeforeName, Name });
+    const Year = '';
+    console.log('Name Processing Result:', { ItemName, BeforeName, Name, Year });
     if (!Name) {
       console.log('获取媒体名称无结果，跳过...');
       return;
@@ -81,6 +82,7 @@ const updateMediaInfo = (() => {
           TvdbSlug: '',
           Zap2It: ''
         },
+        Year,
         Name
       },
       ItemId
