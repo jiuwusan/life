@@ -123,7 +123,7 @@ const librarys = createTasks({
     try {
       await nextSleep(5000);
       await API.refreshLibrarys();
-      await nextSleep(15000); // 等待媒体库刷新
+      await nextSleep(1000 * 60 * 5); // 等待媒体库刷新
       const folders = await API.queryVirtualFolders();
       const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
       for (let i = 0; i < includedFolders.length; i++) {
