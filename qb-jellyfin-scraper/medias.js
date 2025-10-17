@@ -46,10 +46,18 @@ const updateMediaInfo = (() => {
   const updateds = {};
   return async params => {
     console.log('start processing mediainfos task...', params);
-    const { Id: ItemId, Name: ItemName } = params;
+    const { Id: ItemId, Name: ItemName, CollectionType } = params;
     const itemInfo = await API.queryMediaItemInfo(ItemId);
     console.log('itemInfo:', itemInfo);
     const BeforeName = itemInfo.Path.split('/').pop() || ItemName;
+    if (CollectionType === 'movies') {
+      const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
+      // 电影名称必须包含后缀名
+      if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
+        console.log('电影名称无后缀名，跳过...', BeforeName);
+        return;
+      }
+    }
     const Name = (await API.getMediaName({ name: BeforeName }))?.name;
     console.log('Name Processing Result:', { ItemName, BeforeName, Name });
     if (!Name || Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
@@ -109,7 +117,12 @@ const librarys = createTasks({
         const { ItemId, CollectionType } = includedFolders[i];
         const result = await API.queryFolderItems(ItemId);
         mediainfos.pushTask(
-          result.Items.filter(item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.ProductionYear))
+          result.Items.filter(item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.ProductionYear)).map(
+            item => ({
+              ...item,
+              CollectionType
+            })
+          )
         );
       }
     } catch (error) {
