@@ -47,6 +47,10 @@ const updateMediaInfo = (() => {
   return async params => {
     console.log('start processing mediainfos task...', params);
     const { Id: ItemId, Name: ItemName, CollectionType } = params;
+    if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
+      console.log('距离上次刮削时间小于30分钟，跳过...');
+      return;
+    }
     const itemInfo = await API.queryMediaItemInfo(ItemId);
     console.log('itemInfo:', itemInfo);
     const BeforeName = itemInfo.Path.split('/').pop() || ItemName;
@@ -55,13 +59,14 @@ const updateMediaInfo = (() => {
       // 电影名称必须包含后缀名
       if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
         console.log('电影名称无后缀名，跳过...', BeforeName);
+        updateds[ItemId] = Date.now();
         return;
       }
     }
     const Name = (await API.getMediaName({ name: BeforeName }))?.name;
     console.log('Name Processing Result:', { ItemName, BeforeName, Name });
-    if (!Name || Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
-      console.log(!Name ? '获取媒体名称无结果...' : '距离上次刮削时间小于30分钟，跳过...');
+    if (!Name) {
+      console.log('获取媒体名称无结果，跳过...');
       return;
     }
     updateds[ItemId] = Date.now();
