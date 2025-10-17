@@ -74,6 +74,7 @@ module.exports = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${AI_API_TOKEN}` }
     });
+    console.log('AI Result:', result?.choices?.[0]);
     return { code: 200, message: '成功', name: result?.choices?.[0]?.message?.content ?? extractChinese(name) };
   }
 };

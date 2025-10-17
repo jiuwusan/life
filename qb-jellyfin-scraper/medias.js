@@ -1,45 +1,46 @@
 const API = require('./api');
-const util = require('./util');
+const { formatDateToStr, nextSleep } = require('./util');
+const { createTasks } = require('./tasks');
 
 /**
- * 休眠
- *
- * @param {*} delay
- * @returns
+ * 创建通知任务
  */
-const nextSleep = delay => new Promise(resolve => setTimeout(resolve, delay));
-
-const createTasks = ({ name, callback }) => {
-  const tasks = [];
-  let processing = false;
-
-  const startTasks = async () => {
-    if (processing) {
-      return;
+const notifications = createTasks({
+  name: 'notifications',
+  callback: async params => {
+    console.log('start processing notifications task...', params);
+    try {
+      const result = await API.sendWebhook(params);
+      console.log('notifications result:', result);
+    } catch (error) {
+      console.log(error);
     }
-    processing = true;
-    // 每次只取一个任务，直到 tasks 为空，需要考虑 tasks 随时 push 新任务的情况
-    while (tasks.length > 0) {
-      await nextSleep(1000);
-      console.log(`${name}:  ${tasks.length}`);
-      callback && typeof callback === 'function' && (await callback(tasks.shift()));
+  }
+});
+
+const formatMediaResultNotice = params => {
+  const { ItemId, ItemName, BeforeName, AiName, Name, ImageUrl } = params || {};
+  const title = `jellyfin 刮削成功`;
+  const text = `#### jellyfin 刮削成功
+> **${Name}**
+> ${ItemId}
+- AI名称：${AiName}
+- 原名称：${ItemName}
+- 文件：${BeforeName}
+- 时间：${formatDateToStr()}
+![](${ImageUrl})`;
+  return {
+    msgtype: 'markdown',
+    markdown: {
+      title,
+      text
     }
-    processing = false;
   };
-
-  const pushTask = taskParams => {
-    !taskParams && (taskParams = { timestamp: Date.now() });
-    const newParams = Array.isArray(taskParams) ? taskParams : [taskParams];
-    tasks.push(...newParams);
-    startTasks();
-    return tasks.length;
-  };
-
-  const getTasks = () => tasks;
-
-  return { getTasks, pushTask, startTasks };
 };
 
+/**
+ * 更新媒体数据
+ */
 const updateMediaInfo = (() => {
   const updateds = [];
   return async params => {
@@ -74,17 +75,25 @@ const updateMediaInfo = (() => {
       return;
     }
     const current = result[0];
+    formatMediaResultNotice;
     console.log('更新媒体信息：', { ItemId, ...current });
+    notifications.pushTask(formatMediaResultNotice({ ItemId, ItemName, AiName: Name, BeforeName, ...current }));
     // 异步更新更新媒体信息
     API.updateMediaInfo(ItemId, current);
   };
 })();
 
+/**
+ * 创建更新任务
+ */
 const mediainfos = createTasks({
   name: 'mediainfos',
   callback: updateMediaInfo
 });
 
+/**
+ * 创建媒体库刷新任务
+ */
 const librarys = createTasks({
   name: 'librarys',
   callback: async params => {
@@ -105,40 +114,32 @@ const librarys = createTasks({
   }
 });
 
-const notifications = createTasks({
-  name: 'notifications',
-  callback: async params => {
-    console.log('start processing notifications task...', params);
-    try {
-      // action = downloading,completed; 1024 * 1024 * 1024
-      const { client, action = 'added', name, hash, savePath, size = 0, category } = params;
-      const actionName = action === 'completed' ? '下载完成' : '添加成功';
-      const title = `qBittorrent ${actionName}`;
-      const text = `#### qBittorrent ${client} ${actionName}
+const formatQBittorrentNotice = params => {
+  // action = downloading,completed; 1024 * 1024 * 1024
+  const { client, action = 'added', name, hash, savePath, size = 0, category } = params || {};
+  const actionName = action === 'completed' ? '下载完成' : '添加成功';
+  const title = `qBittorrent ${actionName}`;
+  const text = `#### qBittorrent ${client} ${actionName}
 > **${name}**
 > ${hash}
 - 路径：${savePath}
 - 存储：${(size / (1024 * 1024 * 1024)).toFixed(2)} GB
 - 分类：${category}
-- 时间：${util.formatDateToStr()}`;
-      const result = await API.sendWebhook({
-        msgtype: 'markdown',
-        markdown: {
-          title,
-          text
-        }
-      });
-    } catch (error) {
-      console.log(error);
+- 时间：${formatDateToStr()}`;
+  return {
+    msgtype: 'markdown',
+    markdown: {
+      title,
+      text
     }
-  }
-});
+  };
+};
 
 const refresh = async data => {
   // 刷新媒体库
   return {
-    librarys: await librarys.pushTask(),
-    notifications: await notifications.pushTask(data)
+    librarys: librarys.pushTask(),
+    notifications: notifications.pushTask(formatQBittorrentNotice(data))
   };
 };
 

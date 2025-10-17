@@ -40,4 +40,12 @@ const formatDateToStr = (date, format = 'yyyy-MM-dd HH:mm:ss') => {
   return formattedDate;
 };
 
-module.exports = { formatDateToStr };
+/**
+ * 休眠
+ *
+ * @param {*} delay
+ * @returns
+ */
+const nextSleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+
+module.exports = { formatDateToStr, nextSleep };
