@@ -45,8 +45,8 @@ const formatMediaResultNotice = params => {
 const updateMediaInfo = (() => {
   const updateds = {};
   return async params => {
-    console.log('start processing mediainfos task...', params);
     const { Id: ItemId, Name: ItemName, CollectionType } = params;
+    console.log('start processing mediainfos task...', { ItemId, ItemName, CollectionType });
     if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
       console.log('距离上次刮削时间小于30分钟，跳过...');
       return;
