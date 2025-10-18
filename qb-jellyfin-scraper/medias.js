@@ -16,7 +16,7 @@ const waitingMediasScanCompleted = async (taskId = '', totalDuration = 0) => {
     console.log(`进程Id=${current?.Id || ''}，媒体库扫描 已结束 或 不存在！`);
     return;
   }
-  console.log(`进程Id=${current.Id}，媒体库扫描状态：${current.Status}，进度：${current.CurrentProgressPercentage}`);
+  console.log(`进程Id=${current.Id}，媒体库扫描状态：${current.State}，进度：${current.CurrentProgressPercentage}`);
   return await waitingMediasScanCompleted(current.Id, totalDuration + duration);
 };
 
@@ -113,7 +113,7 @@ const updateMediaInfo = (() => {
     if (result?.length < 1) {
       return;
     }
-    const current = result[0];
+    const current = result.find(item => item.Name === Name) || result[0];
     formatMediaResultNotice;
     console.log('更新媒体信息：', { ItemId, ...current });
     notifications.pushTask(formatMediaResultNotice({ ItemId, ItemName, AiName: Name, BeforeName, Path: itemInfo?.Path, ...current }));
