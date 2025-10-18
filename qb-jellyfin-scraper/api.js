@@ -27,6 +27,10 @@ const extractYear = filename => {
 module.exports = {
   refreshLibrarys: () =>
     request(`${JELLYFIN_SERVER_URL}/Library/Refresh`, { method: 'POST', headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN, 'Content-Type': 'application/json' } }),
+  queryScheduledTasks: taskId =>
+    request(`${JELLYFIN_SERVER_URL}/ScheduledTasks` + (taskId ? `/${taskId}` : ''), {
+      headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN }
+    }),
   queryVirtualFolders: () => request(`${JELLYFIN_SERVER_URL}/Library/VirtualFolders`, { headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN } }),
   queryFolderItems: ParentId =>
     request(`${JELLYFIN_SERVER_URL}/Items`, {

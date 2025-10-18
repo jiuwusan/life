@@ -4,6 +4,23 @@ const { createTasks } = require('./tasks');
 const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES || ''; // movies,tvshows
 
 /**
+ * 等待媒体库扫描完成
+ */
+const waitingMediasScanCompleted = async (taskId = '', totalDuration = 0) => {
+  const duration = 1000 * 15;
+  await nextSleep(duration);
+  let result = (await API.queryScheduledTasks(taskId)) || [];
+  !Array.isArray(result) && (result = [result]);
+  const current = result.find(item => item?.Key === 'RefreshLibrary' || item?.Name === '扫描媒体库');
+  if (!current || current?.State === 'Idle' || totalDuration >= 1000 * 60 * 30) {
+    console.log(`进程Id=${current?.Id || ''}，媒体库扫描 已结束 或 不存在！`);
+    return;
+  }
+  console.log(`进程Id=${current.Id}，媒体库扫描状态：${current.Status}，进度：${current.CurrentProgressPercentage}`);
+  return await waitingMediasScanCompleted(current.Id, totalDuration + duration);
+};
+
+/**
  * 创建通知任务
  */
 const notifications = createTasks({
@@ -123,7 +140,9 @@ const librarys = createTasks({
     try {
       await nextSleep(5000);
       await API.refreshLibrarys();
-      await nextSleep(1000 * 60 * 5); // 等待媒体库刷新
+      // 等待媒体库刷新完成
+      await waitingMediasScanCompleted();
+      // 针对媒体库，进行二次刮削
       const folders = await API.queryVirtualFolders();
       const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
       for (let i = 0; i < includedFolders.length; i++) {
