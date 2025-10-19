@@ -58,11 +58,16 @@ const formatMediaResultNotice = params => {
  */
 const updateMediaInfo = (() => {
   const updateds = {};
+  const blocked = {};
   return async params => {
     const { Id: ItemId, Name: ItemName, CollectionType } = params;
     console.log('start processing mediainfos task...', { ItemId, ItemName, CollectionType });
-    if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 30) {
-      console.log('距离上次刮削时间小于30分钟，跳过...');
+    if (blocked[ItemId]) {
+      console.log('资源异常，跳过...', ItemName);
+      return;
+    }
+    if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 60) {
+      console.log('距离上次刮削时间小于60分钟，跳过...', ItemName);
       return;
     }
     const itemInfo = await API.queryMediaItemInfo(ItemId);
@@ -73,7 +78,7 @@ const updateMediaInfo = (() => {
       // 电影名称必须包含后缀名
       if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
         console.log('电影名称无后缀名，跳过...', BeforeName);
-        updateds[ItemId] = Date.now();
+        blocked[ItemId] = Date.now();
         return;
       }
     }
