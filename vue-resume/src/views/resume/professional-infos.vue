@@ -7,9 +7,7 @@
       </div>
     </div>
     <div class="person">
-      <div v-for="item in data.others" :key="item.label" class="person-li">
-        <iconfont :name="item.icon" style="color: #3679bd; margin: 0 4px 0 0" />{{ item.value }}
-      </div>
+      <div v-for="item in data.others" :key="item.label" class="person-li"><iconfont :name="item.icon" style="color: #3679bd; margin: 0 4px 0 0" />{{ item.value }}</div>
     </div>
   </div>
 </template>
@@ -24,4 +22,40 @@ defineProps<{
 
 <style lang="scss" scoped>
 @import './styles.scss';
+.my-name {
+  font-size: 22px;
+  font-weight: bold;
+  margin-left: 5px;
+  color: #3679bd;
+  display: flex;
+  align-items: center;
+}
+
+.my-name-icon {
+  margin-right: 6px;
+  font-size: 20px;
+}
+
+.person {
+  display: flex;
+  margin: 10px 0 0 10px;
+  flex-wrap: wrap;
+}
+
+.person-ul {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.person-li {
+  width: 50%;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.person-li-icon {
+  margin-right: 6px;
+}
 </style>
