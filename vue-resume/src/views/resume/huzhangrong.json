@@ -1,0 +1,43 @@
+{
+  "infos": {
+    "name": "胡章容",
+    "position": "前端开发工程师",
+    "others": [
+      {
+        "icon": "xuewei",
+        "label": "手机号",
+        "value": "15923649848"
+      },
+      {
+        "icon": "mail",
+        "label": "邮箱",
+        "value": "huzhangrong497@qq.com"
+      },
+      {
+        "icon": "zhicheng",
+        "label": "资质",
+        "value": "CET4/软件设计师"
+      },
+      {
+        "icon": "xuewei",
+        "label": "学历",
+        "value": "计算机科学与技术/全日制/本科"
+      }
+    ]
+  },
+  "skills": {
+    "name": "专业技能",
+    "englishName": "Professional Skills",
+    "rows": [
+      "掌握前端基础知识 HTML、CSS、Javascript",
+      "掌握 React、Vue、Uni-App、Taro 等前端开发框架",
+      "掌握 Less、Sass 等 CSS 预处理语言",
+      "掌握 Webpack、Vite、Next.js、Umi 等前端工程化工具",
+      "掌握 Redux、Mobx、Vuex、Pinia 等状态管理器",
+      "掌握 Git 版本控制工具",
+      "掌握 Canvas、SVG 等图形化技术",
+      "具备组件化和模块化思维，能根据业务需求，进行抽离或抽象",
+      "了解 Node、Java、Mysql 等后端语言"
+    ]
+  }
+}
