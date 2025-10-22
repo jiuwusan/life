@@ -53,6 +53,12 @@ const server = http.createServer(async (req, res) => {
     case '/items/refresh':
       setResponse(await medias.refreshItem(data));
       break;
+    case '/items/polling':
+      setResponse(await medias.pollingLibrarysRefresh(data));
+      break;
+    case '/items/pending':
+      setResponse(await medias.queryPendingFolderItems(data));
+      break;
     default:
       setResponse('Not Found', 404);
       break;

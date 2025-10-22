@@ -136,6 +136,43 @@ const mediainfos = createTasks({
 });
 
 /**
+ * 获取等待刮削列表
+ * @returns
+ */
+const queryPendingFolderItems = async () => {
+  // 获取等待刮削列表
+  const list = [];
+  const folders = await API.queryVirtualFolders();
+  const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
+  for (let i = 0; i < includedFolders.length; i++) {
+    const { ItemId, CollectionType } = includedFolders[i];
+    const result = await API.queryFolderItems(ItemId);
+    list.push(
+      ...result.Items.filter(
+        item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.IsFolder && !item.ProductionYear)
+      ).map(item => ({
+        ...item,
+        CollectionType
+      }))
+    );
+  }
+  return list;
+};
+
+const pollingLibrarysRefresh = async () => {
+  const list = await queryPendingFolderItems();
+  if (list.length < 1) {
+    return 0;
+  }
+  let result = (await API.queryScheduledTasks()) || [];
+  const current = result.find(item => item?.Key === 'RefreshLibrary' || item?.Name === '扫描媒体库');
+  if (current?.State !== 'Idle') {
+    return 0;
+  }
+  return mediainfos.pushTask(list);
+};
+
+/**
  * 创建媒体库刷新任务
  */
 const librarys = createTasks({
@@ -148,20 +185,8 @@ const librarys = createTasks({
       // 等待媒体库刷新完成
       await waitingMediasScanCompleted();
       // 针对媒体库，进行二次刮削
-      const folders = await API.queryVirtualFolders();
-      const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
-      for (let i = 0; i < includedFolders.length; i++) {
-        const { ItemId, CollectionType } = includedFolders[i];
-        const result = await API.queryFolderItems(ItemId);
-        mediainfos.pushTask(
-          result.Items.filter(item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.ProductionYear)).map(
-            item => ({
-              ...item,
-              CollectionType
-            })
-          )
-        );
-      }
+      const list = await queryPendingFolderItems();
+      mediainfos.pushTask(list);
     } catch (error) {
       console.log(error);
     }
@@ -214,4 +239,4 @@ const refreshItem = async data => {
   return '刮削信息已提交，请到媒体库查看结果。';
 };
 
-module.exports = { refresh, refreshItem };
+module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems };
