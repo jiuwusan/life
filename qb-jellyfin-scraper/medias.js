@@ -46,7 +46,7 @@ const queryRemoteSearch = (() => {
     }
     const { Path = '', ProviderIds = {}, Type } = await API.queryMediaItemInfo(ItemId);
     if (Object.keys(ProviderIds).length > 0 && !Refresh) {
-      console.log('查询媒体库，发现媒体信息已刮削，无需重复刮削:', { ItemId, ItemName, ProviderIds, Path });
+      console.log('查询媒体库，发现媒体信息已刮削，无需重复刮削:', { ItemId, ItemName, Type, ProviderIds, Path });
       completed[ItemId] = true;
       return;
     }
@@ -61,7 +61,7 @@ const queryRemoteSearch = (() => {
       }
     }
     const { Name, Year } = await API.getMediaName({ name: BeforeName });
-    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path });
+    console.log('Name Processing Result:', { Name, Year, Type, ItemName, BeforeName, Path });
     if (!Name) {
       console.log('获取媒体名称无结果，跳过...');
       return;
@@ -80,7 +80,6 @@ const queryRemoteSearch = (() => {
       Year,
       Name
     };
-
     let result = await API.queryRemoteSearch(Type, {
       SearchInfo,
       ItemId
