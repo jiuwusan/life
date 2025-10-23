@@ -1,8 +1,9 @@
 .page-box {
   width: 900px;
-  height: 2600px;
+  // height: 2600px;
   box-sizing: border-box;
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1.6;
   color: #333333;
 }
 
@@ -12,29 +13,20 @@
 }
 
 .module-box {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .module-title {
-  border-bottom: 1px solid rgba(54, 121, 189, 0.15);
+  border-bottom: 1px solid rgba(153, 153, 153, 0.3);
   box-sizing: border-box;
   padding: 10px 0;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
-  color: #3679bd;
+  // color: #3679bd;
 }
 
 .module-title-icon {
   font-size: 20px;
-}
-
-.module-ul {
-  margin: 20px 0 0 0;
-}
-
-.module-li {
-  margin-top: 10px;
-  line-height: 1.2;
 }
 
 .duty-ul {

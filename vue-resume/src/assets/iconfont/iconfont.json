@@ -6,6 +6,27 @@
   "description": "九五三个人用",
   "glyphs": [
     {
+      "icon_id": "6762088",
+      "name": "zuanshi2",
+      "font_class": "zuanshi2",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    },
+    {
+      "icon_id": "16728183",
+      "name": "zuanshi1",
+      "font_class": "zuanshi1",
+      "unicode": "e714",
+      "unicode_decimal": 59156
+    },
+    {
+      "icon_id": "5387846",
+      "name": "zuanshi",
+      "font_class": "zuanshi",
+      "unicode": "eb70",
+      "unicode_decimal": 60272
+    },
+    {
       "icon_id": "45849762",
       "name": "xuewei",
       "font_class": "xuewei",

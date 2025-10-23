@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="person">
-      <div v-for="item in data.others" :key="item.label" class="person-li"><iconfont :name="item.icon" style="color: #3679bd; margin: 0 4px 0 0" />{{ item.value }}</div>
+      <div v-for="item in data.others" :key="item.label" class="person-li"><iconfont :name="item.icon" style="margin: 0 4px 0 0" />{{ item.value }}</div>
     </div>
   </div>
 </template>
@@ -23,12 +23,13 @@ defineProps<{
 <style lang="scss" scoped>
 @use './styles.scss' as *;
 .my-name {
-  font-size: 22px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 600;
   margin-left: 5px;
-  color: #3679bd;
+  // color: #3679bd;
   display: flex;
   align-items: center;
+  color: #000000;
 }
 
 .my-name-icon {
@@ -38,7 +39,7 @@ defineProps<{
 
 .person {
   display: flex;
-  margin: 10px 0 0 10px;
+  margin: 4px 0 0 19px;
   flex-wrap: wrap;
 }
 

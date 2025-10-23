@@ -40,17 +40,17 @@ defineProps<{
 
 .company-item {
   position: relative;
-  margin-top: 20px;
+  margin-top: 12px;
   opacity: 0.8;
 }
 
 .company-item::after {
   position: absolute;
   height: calc(100% + 20px);
-  left: 95px;
-  top: 10px;
+  left: 94px;
+  top: 12px;
   z-index: -1;
-  border: 1px solid #3679bd;
+  border: 1px solid #999999;
   content: '';
 }
 
@@ -65,8 +65,9 @@ defineProps<{
   z-index: 99;
   display: flex;
   align-items: center;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
+  color: #000000;
 }
 
 .company-item-time {
@@ -75,20 +76,23 @@ defineProps<{
 }
 
 .company-item-circle {
-  width: 12px;
-  height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(54, 121, 189, 0.65);
+  width: 10px;
+  height: 10px;
+  background-color: #666666;
   border-radius: 50%;
   margin: 0px 10px;
+  position: relative;
 }
 
 .company-item-circle::after {
-  width: 7px;
-  height: 7px;
-  background-color: rgba(54, 121, 189, 1);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  background-color: #999999;
   border-radius: 50%;
   content: '';
 }

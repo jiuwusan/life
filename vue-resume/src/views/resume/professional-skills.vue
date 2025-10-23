@@ -4,8 +4,8 @@
       <iconfont name="skills" class="module-title-icon" />
       {{ data.name }} <span style="font-size: 14px">{{ data.englishName }}</span>
     </div>
-    <ul class="module-ul">
-      <li v-for="item in data.rows" :key="item" class="module-li">{{ item }}</li>
+    <ul style="margin: 14px 0 0 0">
+      <li v-for="item in data.rows" :key="item">{{ item }}</li>
     </ul>
   </div>
 </template>
