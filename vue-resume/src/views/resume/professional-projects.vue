@@ -37,7 +37,7 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@import './styles.scss';
+@use './styles.scss' as *;
 
 .project-item {
   display: flex;

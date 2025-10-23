@@ -32,7 +32,7 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@import './styles.scss';
+@use './styles.scss' as *;
 .company-box {
   position: relative;
   margin: 10px 0 0 20px;
