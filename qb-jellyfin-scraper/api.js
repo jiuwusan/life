@@ -45,8 +45,8 @@ module.exports = {
       headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN }
     });
   },
-  queryRemoteSearch: data =>
-    request(`${JELLYFIN_SERVER_URL}/Items/RemoteSearch/Series`, { data, method: 'POST', headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN, 'Content-Type': 'application/json' } }),
+  queryRemoteSearch: (type, data) =>
+    request(`${JELLYFIN_SERVER_URL}/Items/RemoteSearch/${type}`, { data, method: 'POST', headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN, 'Content-Type': 'application/json' } }),
   updateMediaInfo: (mediaId, data) =>
     request(`${JELLYFIN_SERVER_URL}/Items/RemoteSearch/Apply/${mediaId}?ReplaceAllImages=true`, {
       data,

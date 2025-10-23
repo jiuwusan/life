@@ -13,7 +13,11 @@ const createTasks = ({ name, callback }) => {
     while (tasks.length > 0) {
       await nextSleep(1000);
       console.log(`${name}:  ${tasks.length}`);
-      callback && typeof callback === 'function' && (await callback(tasks.shift()));
+      try {
+        callback && typeof callback === 'function' && (await callback(tasks.shift()));
+      } catch (error) {
+        console.log('任务执行异常', error);
+      }
     }
     processing = false;
   };

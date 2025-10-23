@@ -50,6 +50,9 @@ const server = http.createServer(async (req, res) => {
     case '/medias/refresh':
       setResponse(await medias.refresh(data));
       break;
+    case '/medias/scraping':
+      setResponse(await medias.queryRemoteSearch(data));
+      break;
     case '/items/refresh':
       setResponse(await medias.refreshItem(data));
       break;

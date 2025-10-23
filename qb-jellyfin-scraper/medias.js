@@ -1,7 +1,7 @@
 const API = require('./api');
 const { formatDateToStr, nextSleep } = require('./util');
 const { createTasks } = require('./tasks');
-const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES || ''; // movies,tvshows
+const JELLYFIN_COLLECTION_TYPES = (process.env.NODE_ENV === 'production' ? process.env.JELLYFIN_COLLECTION_TYPES : 'movies,tvshows') || '';
 
 /**
  * 等待媒体库扫描完成
@@ -36,12 +36,94 @@ const notifications = createTasks({
   }
 });
 
+const queryRemoteSearch = async mediaItem => {
+  const { Id: ItemId, Name: ItemName = '', CollectionType } = mediaItem;
+  const searchType = { movies: 'Movie', tvshows: 'Series' }[CollectionType];
+  if (!searchType) {
+    console.log('不支持的媒体类型，跳过...', CollectionType);
+    return;
+  }
+  const { Path = '' } = await API.queryMediaItemInfo(ItemId);
+  console.log('itemInfo Path:', Path);
+  const BeforeName = Path.split('/').pop() || ItemName;
+  if (CollectionType === 'movies') {
+    const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
+    // 电影名称必须包含后缀名
+    if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
+      console.log('电影名称无后缀名，跳过...', BeforeName);
+      return;
+    }
+  }
+  const { Name, Year } = await API.getMediaName({ name: BeforeName });
+  console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path });
+  if (!Name) {
+    console.log('获取媒体名称无结果，跳过...');
+    return;
+  }
+  const SearchInfo = {
+    ProviderIds: {
+      AniDB: '',
+      Imdb: '',
+      Tmdb: '',
+      TmdbCollection: '',
+      TvdbCollection: '',
+      Tvdb: '',
+      TvdbSlug: '',
+      Zap2It: ''
+    },
+    Year,
+    Name
+  };
+
+  let result = await API.queryRemoteSearch(searchType, {
+    SearchInfo,
+    ItemId
+  });
+  console.log('刮削结果 1：', result);
+  if (result?.length < 1 && Name.includes('：')) {
+    result = await API.queryRemoteSearch(searchType, {
+      SearchInfo: {
+        ...SearchInfo,
+        Name: Name.split('：')[0]
+      },
+      ItemId
+    });
+    console.log('刮削结果 2：', result);
+  }
+  if (result?.length < 1) {
+    delete SearchInfo.Year;
+    result = await API.queryRemoteSearch(searchType, {
+      SearchInfo,
+      ItemId
+    });
+    console.log('刮削结果 3：', result);
+  }
+  if (result?.length < 1 && Name.includes('：')) {
+    result = await API.queryRemoteSearch(searchType, {
+      SearchInfo: {
+        ...SearchInfo,
+        Name: Name.split('：')[0]
+      },
+      ItemId
+    });
+    console.log('刮削结果 4：', result);
+  }
+  return {
+    ItemId,
+    Name,
+    Path,
+    ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
+  };
+};
+
 const formatMediaResultNotice = params => {
-  const { Path, AiName, Name, ImageUrl } = params || {};
+  const {
+    Path,
+    ProviderInfo: { Name, ImageUrl }
+  } = params || {};
   const title = `jellyfin 刮削成功`;
   const text = `![](${ImageUrl})
 - 影视：**${Name}**
-- 识别：${AiName}
 - 路径：${Path}
 - 时间：${formatDateToStr()}`;
   return {
@@ -60,8 +142,7 @@ const updateMediaInfo = (() => {
   const updateds = {};
   const blocked = {};
   return async params => {
-    const { Id: ItemId, Name: ItemName, CollectionType } = params;
-    console.log('start processing mediainfos task...', { ItemId, ItemName, CollectionType });
+    const { Id: ItemId, Name: ItemName } = params;
     if (blocked[ItemId]) {
       console.log('资源异常，跳过...', ItemName);
       return;
@@ -70,60 +151,14 @@ const updateMediaInfo = (() => {
       console.log('距离上次刮削时间小于60分钟，跳过...', ItemName);
       return;
     }
-    const itemInfo = await API.queryMediaItemInfo(ItemId);
-    console.log('itemInfo Path:', itemInfo?.Path);
-    const BeforeName = (itemInfo?.Path || '').split('/').pop() || ItemName;
-    if (CollectionType === 'movies') {
-      const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
-      // 电影名称必须包含后缀名
-      if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
-        console.log('电影名称无后缀名，跳过...', BeforeName);
-        blocked[ItemId] = Date.now();
-        return;
-      }
-    }
-    const { Name, Year } = await API.getMediaName({ name: BeforeName });
-    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path: itemInfo?.Path });
-    if (!Name) {
-      console.log('获取媒体名称无结果，跳过...');
-      return;
-    }
     updateds[ItemId] = Date.now();
-    const SearchInfo = {
-      ProviderIds: {
-        AniDB: '',
-        Imdb: '',
-        Tmdb: '',
-        TvdbCollection: '',
-        Tvdb: '',
-        TvdbSlug: '',
-        Zap2It: ''
-      },
-      Year,
-      Name
-    };
-    let result = await API.queryRemoteSearch({
-      SearchInfo,
-      ItemId
-    });
-    console.log('刮削结果 1：', result);
-    if (result?.length < 1) {
-      delete SearchInfo.Year;
-      result = await API.queryRemoteSearch({
-        SearchInfo,
-        ItemId
-      });
-      console.log('刮削结果 2：', result);
+    const current = await queryRemoteSearch(params);
+    if (current?.ProviderInfo) {
+      console.log('更新媒体信息：', current);
+      notifications.pushTask(formatMediaResultNotice(current));
+      // 异步更新更新媒体信息
+      API.updateMediaInfo(ItemId, current.ProviderInfo);
     }
-    if (result?.length < 1) {
-      return;
-    }
-    const current = result.find(item => item.Name === Name) || result[0];
-    formatMediaResultNotice;
-    console.log('更新媒体信息：', { ItemId, ...current });
-    notifications.pushTask(formatMediaResultNotice({ ItemId, ItemName, AiName: Name, BeforeName, Path: itemInfo?.Path, ...current }));
-    // 异步更新更新媒体信息
-    API.updateMediaInfo(ItemId, current);
   };
 })();
 
@@ -241,4 +276,4 @@ const refreshItem = async data => {
   return '刮削信息已提交，请到媒体库查看结果。';
 };
 
-module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems };
+module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems, queryRemoteSearch };
