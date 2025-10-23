@@ -44,12 +44,7 @@ const queryRemoteSearch = (() => {
       console.log('【缓存】无需重复刮削:', { ItemId, ItemName });
       return;
     }
-    const searchType = { movies: 'Movie', tvshows: 'Series' }[CollectionType];
-    if (!searchType) {
-      console.log('不支持的媒体类型，跳过...', CollectionType);
-      return;
-    }
-    const { Path = '', ProviderIds = {} } = await API.queryMediaItemInfo(ItemId);
+    const { Path = '', ProviderIds = {}, Type } = await API.queryMediaItemInfo(ItemId);
     if (Object.keys(ProviderIds).length > 0 && !Refresh) {
       console.log('查询媒体库，发现媒体信息已刮削，无需重复刮削:', { ItemId, ItemName, ProviderIds, Path });
       completed[ItemId] = true;
@@ -86,13 +81,13 @@ const queryRemoteSearch = (() => {
       Name
     };
 
-    let result = await API.queryRemoteSearch(searchType, {
+    let result = await API.queryRemoteSearch(Type, {
       SearchInfo,
       ItemId
     });
     console.log('刮削结果 1：', result);
     if (result?.length < 1 && Name.includes('：')) {
-      result = await API.queryRemoteSearch(searchType, {
+      result = await API.queryRemoteSearch(Type, {
         SearchInfo: {
           ...SearchInfo,
           Name: Name.split('：')[0]
@@ -103,14 +98,14 @@ const queryRemoteSearch = (() => {
     }
     if (result?.length < 1) {
       delete SearchInfo.Year;
-      result = await API.queryRemoteSearch(searchType, {
+      result = await API.queryRemoteSearch(Type, {
         SearchInfo,
         ItemId
       });
       console.log('刮削结果 3：', result);
     }
     if (result?.length < 1 && Name.includes('：')) {
-      result = await API.queryRemoteSearch(searchType, {
+      result = await API.queryRemoteSearch(Type, {
         SearchInfo: {
           ...SearchInfo,
           Name: Name.split('：')[0]
