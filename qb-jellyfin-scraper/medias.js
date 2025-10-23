@@ -36,85 +36,97 @@ const notifications = createTasks({
   }
 });
 
-const queryRemoteSearch = async mediaItem => {
-  const { Id: ItemId, Name: ItemName = '', CollectionType } = mediaItem;
-  const searchType = { movies: 'Movie', tvshows: 'Series' }[CollectionType];
-  if (!searchType) {
-    console.log('不支持的媒体类型，跳过...', CollectionType);
-    return;
-  }
-  const { Path = '' } = await API.queryMediaItemInfo(ItemId);
-  console.log('itemInfo Path:', Path);
-  const BeforeName = Path.split('/').pop() || ItemName;
-  if (CollectionType === 'movies') {
-    const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
-    // 电影名称必须包含后缀名
-    if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
-      console.log('电影名称无后缀名，跳过...', BeforeName);
+const queryRemoteSearch = (() => {
+  const completed = {};
+  return async mediaItem => {
+    const { Id: ItemId, Name: ItemName = '', CollectionType, Refresh = false } = mediaItem;
+    if (completed[ItemId]) {
+      console.log('【缓存】无需重复刮削:', { ItemId, ItemName });
       return;
     }
-  }
-  const { Name, Year } = await API.getMediaName({ name: BeforeName });
-  console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path });
-  if (!Name) {
-    console.log('获取媒体名称无结果，跳过...');
-    return;
-  }
-  const SearchInfo = {
-    ProviderIds: {
-      AniDB: '',
-      Imdb: '',
-      Tmdb: '',
-      TmdbCollection: '',
-      TvdbCollection: '',
-      Tvdb: '',
-      TvdbSlug: '',
-      Zap2It: ''
-    },
-    Year,
-    Name
-  };
-
-  let result = await API.queryRemoteSearch(searchType, {
-    SearchInfo,
-    ItemId
-  });
-  console.log('刮削结果 1：', result);
-  if (result?.length < 1 && Name.includes('：')) {
-    result = await API.queryRemoteSearch(searchType, {
-      SearchInfo: {
-        ...SearchInfo,
-        Name: Name.split('：')[0]
+    const searchType = { movies: 'Movie', tvshows: 'Series' }[CollectionType];
+    if (!searchType) {
+      console.log('不支持的媒体类型，跳过...', CollectionType);
+      return;
+    }
+    const { Path = '', ProviderIds = {} } = await API.queryMediaItemInfo(ItemId);
+    if (Object.keys(ProviderIds).length > 0 && !Refresh) {
+      console.log('查询媒体库，发现媒体信息已刮削，无需重复刮削:', { ItemId, ItemName, ProviderIds, Path });
+      completed[ItemId] = true;
+      return;
+    }
+    console.log('itemInfo Path:', Path);
+    const BeforeName = Path.split('/').pop() || ItemName;
+    if (CollectionType === 'movies') {
+      const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
+      // 电影名称必须包含后缀名
+      if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
+        console.log('电影名称无后缀名，跳过...', BeforeName);
+        return;
+      }
+    }
+    const { Name, Year } = await API.getMediaName({ name: BeforeName });
+    console.log('Name Processing Result:', { Name, Year, ItemName, BeforeName, Path });
+    if (!Name) {
+      console.log('获取媒体名称无结果，跳过...');
+      return;
+    }
+    const SearchInfo = {
+      ProviderIds: {
+        AniDB: '',
+        Imdb: '',
+        Tmdb: '',
+        TmdbCollection: '',
+        TvdbCollection: '',
+        Tvdb: '',
+        TvdbSlug: '',
+        Zap2It: ''
       },
-      ItemId
-    });
-    console.log('刮削结果 2：', result);
-  }
-  if (result?.length < 1) {
-    delete SearchInfo.Year;
-    result = await API.queryRemoteSearch(searchType, {
+      Year,
+      Name
+    };
+
+    let result = await API.queryRemoteSearch(searchType, {
       SearchInfo,
       ItemId
     });
-    console.log('刮削结果 3：', result);
-  }
-  if (result?.length < 1 && Name.includes('：')) {
-    result = await API.queryRemoteSearch(searchType, {
-      SearchInfo: {
-        ...SearchInfo,
-        Name: Name.split('：')[0]
-      },
-      ItemId
-    });
-    console.log('刮削结果 4：', result);
-  }
-  return {
-    ItemId,
-    Name,
-    Path,
-    ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
+    console.log('刮削结果 1：', result);
+    if (result?.length < 1 && Name.includes('：')) {
+      result = await API.queryRemoteSearch(searchType, {
+        SearchInfo: {
+          ...SearchInfo,
+          Name: Name.split('：')[0]
+        },
+        ItemId
+      });
+      console.log('刮削结果 2：', result);
+    }
+    if (result?.length < 1) {
+      delete SearchInfo.Year;
+      result = await API.queryRemoteSearch(searchType, {
+        SearchInfo,
+        ItemId
+      });
+      console.log('刮削结果 3：', result);
+    }
+    if (result?.length < 1 && Name.includes('：')) {
+      result = await API.queryRemoteSearch(searchType, {
+        SearchInfo: {
+          ...SearchInfo,
+          Name: Name.split('：')[0]
+        },
+        ItemId
+      });
+      console.log('刮削结果 4：', result);
+    }
+    return {
+      ItemId,
+      Name,
+      Path,
+      ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
+    };
   };
-};
+})();
 
 const formatMediaResultNotice = params => {
   const {
@@ -147,8 +159,8 @@ const updateMediaInfo = (() => {
       console.log('资源异常，跳过...', ItemName);
       return;
     }
-    if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 60) {
-      console.log('距离上次刮削时间小于60分钟，跳过...', ItemName);
+    if (Date.now() - (updateds[ItemId] || 0) < 1000 * 60 * 15) {
+      console.log('距离上次刮削时间小于15分钟，跳过...', ItemName);
       return;
     }
     updateds[ItemId] = Date.now();
