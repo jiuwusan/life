@@ -149,7 +149,9 @@ const queryPendingFolderItems = async () => {
     const result = await API.queryFolderItems(ItemId);
     list.push(
       ...result.Items.filter(
-        item => (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) || (CollectionType === 'movies' && !item.IsFolder && !item.ProductionYear)
+        item =>
+          (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) ||
+          (CollectionType === 'movies' && !item.IsFolder && (!item.ProductionYear || !item.BackdropImageTags.length))
       ).map(item => ({
         ...item,
         CollectionType
