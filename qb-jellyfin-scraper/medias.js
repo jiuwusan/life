@@ -39,7 +39,7 @@ const notifications = createTasks({
 const queryRemoteSearch = (() => {
   const completed = {};
   return async mediaItem => {
-    const { Id: ItemId, Name: ItemName = '', CollectionType, Refresh = false } = mediaItem;
+    const { Id: ItemId, Name: ItemName = '', Refresh = false } = mediaItem;
     if (completed[ItemId]) {
       console.log('【缓存】无需重复刮削:', { ItemId, ItemName });
       return;
@@ -52,14 +52,6 @@ const queryRemoteSearch = (() => {
     }
     console.log('itemInfo Path:', Path);
     const BeforeName = Path.split('/').pop() || ItemName;
-    if (CollectionType === 'movies') {
-      const videoExts = ['mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', 'm4v', '3gp', 'ts', 'm2ts', 'vob', 'ogv', 'f4v', 'rm', 'rmvb'];
-      // 电影名称必须包含后缀名
-      if (!new RegExp(`\\.(${videoExts.join('|')})$`, 'i').test(BeforeName)) {
-        console.log('电影名称无后缀名，跳过...', BeforeName);
-        return;
-      }
-    }
     const { Name, Year } = await API.getMediaName({ name: BeforeName });
     console.log('Name Processing Result:', { Name, Year, Type, ItemName, BeforeName, Path });
     if (!Name) {
@@ -186,17 +178,28 @@ const queryPendingFolderItems = async () => {
   const folders = await API.queryVirtualFolders();
   const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
   for (let i = 0; i < includedFolders.length; i++) {
-    const { ItemId, CollectionType } = includedFolders[i];
+    const { ItemId } = includedFolders[i];
     const result = await API.queryFolderItems(ItemId);
     list.push(
-      ...result.Items.filter(
-        item =>
-          (CollectionType === 'tvshows' && !item.Status && !item.ProductionYear) ||
-          (CollectionType === 'movies' && !item.IsFolder && (!item.ProductionYear || !item.BackdropImageTags.length))
-      ).map(item => ({
-        ...item,
-        CollectionType
-      }))
+      ...result.Items.filter(item => {
+        const { Type, Status, CriticRating, OfficialRating, CommunityRating } = item;
+        // 是否有评分
+        const isRating = ['string', 'number'].includes(typeof (CriticRating || OfficialRating || CommunityRating));
+        // 是否需要刮削
+        let isPending = false;
+        switch (Type) {
+          case 'Series':
+            isPending = !Status && !isRating;
+            break;
+          case 'Movie':
+            isPending = !isRating;
+            break;
+          // case 'Folder':
+          //   isPending = false;
+          //   break;
+        }
+        return isPending;
+      })
     );
   }
   return list;
