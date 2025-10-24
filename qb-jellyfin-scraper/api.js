@@ -127,7 +127,7 @@ module.exports = {
     }
 
     if (!result.Name || !result.Year) {
-      result = { Name: extractChinese(name), Year: extractYear(name) };
+      [result.Name, result.Year] = [extractChinese(name), extractYear(name)];
     }
     console.log('Media Name Result:', result);
     return result;
