@@ -277,10 +277,10 @@ const refresh = async data => {
 };
 
 const refreshItem = async data => {
-  if (!data.Name || !data.Id) {
+  if (!data?.Id) {
     return '参数异常';
   }
-  updateMediaInfo(data);
+  mediainfos.pushTask({ ...data, Refresh: true });
   // 刷新媒体信息
   return '刮削信息已提交，请到媒体库查看结果。';
 };
