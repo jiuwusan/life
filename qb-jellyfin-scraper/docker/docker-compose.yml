@@ -1,0 +1,23 @@
+services:
+  pm2:
+    image: jiuwusan/pm2:node22
+    container_name: pm2
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1g
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./services:/app/services
+    networks:
+      - wk
+    restart: always
+    ports:
+      - "30001:30001"
+      - "30002:30002"
+
+networks:
+  wk:
+    external: true
