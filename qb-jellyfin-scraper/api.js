@@ -70,7 +70,7 @@ module.exports = {
     }
     const result = await request(`https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions`, {
       data: {
-        model: 'qwen3-max',
+        model: 'qwen3-max', // deepseek-r1
         messages: [
           {
             role: 'system',
