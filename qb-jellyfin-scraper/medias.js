@@ -36,83 +36,72 @@ const notifications = createTasks({
   }
 });
 
-const queryRemoteSearch = (() => {
-  const completed = {};
-  return async mediaItem => {
-    const { Id: ItemId, Name: ItemName = '', Refresh = false } = mediaItem;
-    if (completed[ItemId]) {
-      console.log('【缓存】无需重复刮削:', { ItemId, ItemName });
-      return;
-    }
-    const { Path = '', ProviderIds = {}, Type } = await API.queryMediaItemInfo(ItemId);
-    if (Object.keys(ProviderIds).length > 0 && !Refresh) {
-      console.log('查询媒体库，发现媒体信息已刮削，无需重复刮削:', { ItemId, ItemName, Type, ProviderIds, Path });
-      completed[ItemId] = true;
-      return;
-    }
-    console.log('itemInfo Path:', Path);
-    const BeforeName = Path.split('/').pop() || ItemName;
-    const { Name, Year } = await API.getMediaName({ name: BeforeName });
-    console.log('Name Processing Result:', { Name, Year, Type, ItemName, BeforeName, Path });
-    if (!Name) {
-      console.log('获取媒体名称无结果，跳过...');
-      return;
-    }
-    const SearchInfo = {
-      ProviderIds: {
-        AniDB: '',
-        Imdb: '',
-        Tmdb: '',
-        TmdbCollection: '',
-        TvdbCollection: '',
-        Tvdb: '',
-        TvdbSlug: '',
-        Zap2It: ''
+const queryRemoteSearch = async mediaItem => {
+  const { Id: ItemId, Name: ItemName = '' } = mediaItem;
+  // ProviderIds = {}
+  const { Path = '', Type } = await API.queryMediaItemInfo(ItemId);
+  console.log('itemInfo Path:', Path);
+  const BeforeName = Path.split('/').pop() || ItemName;
+  const { Name, Year } = await API.getMediaName({ name: BeforeName });
+  console.log('Name Processing Result:', { Name, Year, Type, ItemName, BeforeName, Path });
+  if (!Name) {
+    console.log('获取媒体名称无结果，跳过...');
+    return;
+  }
+  const SearchInfo = {
+    ProviderIds: {
+      AniDB: '',
+      Imdb: '',
+      Tmdb: '',
+      TmdbCollection: '',
+      TvdbCollection: '',
+      Tvdb: '',
+      TvdbSlug: '',
+      Zap2It: ''
+    },
+    Year,
+    Name
+  };
+  let result = await API.queryRemoteSearch(Type, {
+    SearchInfo,
+    ItemId
+  });
+  console.log('刮削结果 1：', result);
+  if (result?.length < 1 && Name.includes('：')) {
+    result = await API.queryRemoteSearch(Type, {
+      SearchInfo: {
+        ...SearchInfo,
+        Name: Name.split('：')[0]
       },
-      Year,
-      Name
-    };
-    let result = await API.queryRemoteSearch(Type, {
+      ItemId
+    });
+    console.log('刮削结果 2：', result);
+  }
+  if (result?.length < 1) {
+    delete SearchInfo.Year;
+    result = await API.queryRemoteSearch(Type, {
       SearchInfo,
       ItemId
     });
-    console.log('刮削结果 1：', result);
-    if (result?.length < 1 && Name.includes('：')) {
-      result = await API.queryRemoteSearch(Type, {
-        SearchInfo: {
-          ...SearchInfo,
-          Name: Name.split('：')[0]
-        },
-        ItemId
-      });
-      console.log('刮削结果 2：', result);
-    }
-    if (result?.length < 1) {
-      delete SearchInfo.Year;
-      result = await API.queryRemoteSearch(Type, {
-        SearchInfo,
-        ItemId
-      });
-      console.log('刮削结果 3：', result);
-    }
-    if (result?.length < 1 && Name.includes('：')) {
-      result = await API.queryRemoteSearch(Type, {
-        SearchInfo: {
-          ...SearchInfo,
-          Name: Name.split('：')[0]
-        },
-        ItemId
-      });
-      console.log('刮削结果 4：', result);
-    }
-    return {
-      ItemId,
-      Name,
-      Path,
-      ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
-    };
+    console.log('刮削结果 3：', result);
+  }
+  if (result?.length < 1 && Name.includes('：')) {
+    result = await API.queryRemoteSearch(Type, {
+      SearchInfo: {
+        ...SearchInfo,
+        Name: Name.split('：')[0]
+      },
+      ItemId
+    });
+    console.log('刮削结果 4：', result);
+  }
+  return {
+    ItemId,
+    Name,
+    Path,
+    ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
   };
-})();
+};
 
 const formatMediaResultNotice = params => {
   const {
@@ -282,7 +271,7 @@ const refreshItem = async data => {
   if (!data?.Id) {
     return '参数异常';
   }
-  mediainfos.pushTask({ ...data, Refresh: true });
+  mediainfos.pushTask(data);
   // 刷新媒体信息
   return '刮削信息已提交，请到媒体库查看结果。';
 };
