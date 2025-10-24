@@ -173,7 +173,7 @@ const queryPendingFolderItems = async () => {
       ...result.Items.filter(item => {
         const { Name, Type, Status, CriticRating, OfficialRating, CommunityRating } = item;
         const isChineseName = /[\u4e00-\u9fa5]+/.test(Name);
-        console.log('isChineseName:', Name, isChineseName);
+        // console.log('isChineseName:', Name, isChineseName);
         // 是否有评分
         const isRating = ['string', 'number'].includes(typeof (CriticRating || OfficialRating || CommunityRating));
         // 是否需要刮削
