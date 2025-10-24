@@ -25,7 +25,8 @@ module.exports = {
         JELLYFIN_X_EMBY_TOKEN_USER_ID: "0684f8441d8c42cf90fd4adf212983ee",
         JELLYFIN_COLLECTION_TYPES: "movies,tvshows", // movies,tvshows
         DINGDING_WEBHOOK_TOKEN: "f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997",
-        AI_API_TOKEN: "sk-6a05e0f81ad04c038fef0053b040e3d6",
+        ALI_AI_API_TOKEN: "sk-6a05e0f81ad04c038fef0053b040e3d6",
+        GEMINI_AI_API_TOKEN: "AIzaSyC4w2fgNRd63DATqYWOPTzH_Y4lflgZ7Zw"
       },
       out_file: "./services/service-scraper/logs/family.log",
       log_date_format: "YYYY-MM-DD HH:mm:ss",
@@ -44,7 +45,8 @@ module.exports = {
         JELLYFIN_X_EMBY_TOKEN_USER_ID: "1ea59e8111234b41867c833a2118cf46",
         JELLYFIN_COLLECTION_TYPES: "",
         DINGDING_WEBHOOK_TOKEN: "f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997",
-        AI_API_TOKEN: "sk-6a05e0f81ad04c038fef0053b040e3d6",
+        ALI_AI_API_TOKEN: "sk-6a05e0f81ad04c038fef0053b040e3d6",
+        GEMINI_AI_API_TOKEN: "AIzaSyC4w2fgNRd63DATqYWOPTzH_Y4lflgZ7Zw"
       },
       out_file: "./services/service-scraper/logs/9kg.log",
       log_date_format: "YYYY-MM-DD HH:mm:ss",

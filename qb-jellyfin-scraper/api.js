@@ -4,13 +4,15 @@ const JELLYFIN_SERVER_URL = process.env.JELLYFIN_SERVER_URL;
 const JELLYFIN_X_EMBY_TOKEN_USER_ID = process.env.JELLYFIN_X_EMBY_TOKEN_USER_ID;
 const JELLYFIN_X_EMBY_TOKEN = process.env.JELLYFIN_X_EMBY_TOKEN;
 const DINGDING_WEBHOOK_TOKEN = process.env.DINGDING_WEBHOOK_TOKEN;
-const AI_API_TOKEN = process.env.AI_API_TOKEN;
+const ALI_AI_API_TOKEN = process.env.ALI_AI_API_TOKEN;
+const GEMINI_AI_API_TOKEN = process.env.GEMINI_AI_API_TOKEN;
 
 // const JELLYFIN_SERVER_URL = 'https://cloud.jiuwusan.cn:36443/jellyfin';
 // const JELLYFIN_X_EMBY_TOKEN_USER_ID = '0684f8441d8c42cf90fd4adf212983ee';
 // const JELLYFIN_X_EMBY_TOKEN = '728a845fa9da46cdaad205b6b8ea14b7';
 // const DINGDING_WEBHOOK_TOKEN = 'f36d504ec20bac730fe83dfd89517611232d99d39c097158fa16c1729582e997';
-// const AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
+// const ALI_AI_API_TOKEN = 'sk-6a05e0f81ad04c038fef0053b040e3d6';
+// const GEMINI_AI_API_TOKEN = 'AIzaSyC4w2fgNRd63DATqYWOPTzH_Y4lflgZ7Zw';
 // const JELLYFIN_COLLECTION_TYPES = process.env.JELLYFIN_COLLECTION_TYPES;
 
 const extractChinese = filename => {
@@ -64,29 +66,70 @@ module.exports = {
     });
   },
   getMediaName: async ({ name }) => {
-    if (!AI_API_TOKEN) {
+    const result = { Name: '', Year: '' };
+    if (!ALI_AI_API_TOKEN && !GEMINI_AI_API_TOKEN) {
       console.log('未配置阿里云 API 密钥，使用正则 pattern 匹配中文名称');
-      return { Name: extractChinese(name), Year: extractYear(name) };
+      return result;
     }
-    const result = await request(`https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions`, {
-      data: {
-        model: 'qwen3-max', // deepseek-r1
-        messages: [
-          {
-            role: 'system',
-            content: '我是一个影视爱好者，使用jellyfin搭建了家庭影院'
+    const systemPrompt = '我是一个影视爱好者，使用jellyfin搭建了家庭影院';
+    const userPrompt = `这是“${name}”某个影视文件/文件夹名称,请结合全球影视资料库（TheTVDB/TheMovieDB/TMDB/IMDb/豆瓣...）分析并仅返回影视名称（优先中文名称，如无中文名称则返回英文名称，不要混用，不要包含季信息）和年份，使用“|”分割`;
+    if (GEMINI_AI_API_TOKEN && (!result.Name || !result.Year)) {
+      // 谷歌 AI API
+      try {
+        const result1 = await request(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, {
+          data: {
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `${systemPrompt}。${userPrompt}`
+                  }
+                ]
+              }
+            ]
           },
-          {
-            role: 'user',
-            content: `这是“${name}”某个影视文件/文件夹名称,请结合全球影视资料库（TheTVDB/TheMovieDB/TMDB/IMDb/豆瓣...）分析并仅返回影视名称（优先中文名称，如无中文名称则返回英文名称，不要混用，不要包含季信息）和年份，使用“|”分割`
-          }
-        ]
-      },
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${AI_API_TOKEN}` }
-    });
-    console.log('AI Result:', result?.choices?.[0]);
-    const [AiName, AiYear] = (result?.choices?.[0]?.message?.content || '')?.split('|');
-    return { Name: AiName ?? extractChinese(name), Year: AiYear ?? extractYear(name) };
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_AI_API_TOKEN }
+        });
+        console.log('GEMINI AI Result:', result1?.candidates?.[0].content?.parts?.[0], result1?.usageMetadata);
+        const result1Text = result1?.candidates?.[0].content?.parts?.[0]?.text || '';
+        result1Text && ([result.Name, result.Year] = result1Text.replace(/\s+/g, '')?.split('|'));
+      } catch (error) {
+        console.log('GEMINI AI Error:', error);
+      }
+    }
+    if (ALI_AI_API_TOKEN && (!result.Name || !result.Year)) {
+      // 阿里国内 AI API
+      try {
+        const result2 = await request(`https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions`, {
+          data: {
+            model: 'qwen3-max', // deepseek-r1
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: userPrompt
+              }
+            ]
+          },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${ALI_AI_API_TOKEN}` }
+        });
+        console.log('ALI AI Result:', result2?.choices?.[0]?.message, result2?.usage);
+        const result2Text = result2?.choices?.[0]?.message?.content || '';
+        result2Text && ([result.Name, result.Year] = result2Text.replace(/\s+/g, '')?.split('|'));
+      } catch (error) {
+        console.log('ALI AI Error:', error);
+      }
+    }
+
+    if (!result.Name || !result.Year) {
+      result = { Name: extractChinese(name), Year: extractYear(name) };
+    }
+    console.log('Media Name Result:', result);
+    return result;
   }
 };
