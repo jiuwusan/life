@@ -182,21 +182,23 @@ const queryPendingFolderItems = async () => {
     const result = await API.queryFolderItems(ItemId);
     list.push(
       ...result.Items.filter(item => {
-        const { Type, Status, CriticRating, OfficialRating, CommunityRating } = item;
+        const { Name, Type, Status, CriticRating, OfficialRating, CommunityRating } = item;
+        const isChineseName = /[\u4e00-\u9fa5]+/.test(Name);
+        console.log('isChineseName:', Name, isChineseName);
         // 是否有评分
         const isRating = ['string', 'number'].includes(typeof (CriticRating || OfficialRating || CommunityRating));
         // 是否需要刮削
         let isPending = false;
         switch (Type) {
           case 'Series':
-            isPending = !Status && !isRating;
+            isPending = (!Status && !isRating) || !isChineseName;
             break;
           case 'Movie':
-            isPending = !isRating;
+            isPending = !isRating || !isChineseName;
             break;
-          // case 'Folder':
-          //   isPending = false;
-          //   break;
+          case 'Folder':
+            isPending = false;
+            break;
         }
         return isPending;
       })
