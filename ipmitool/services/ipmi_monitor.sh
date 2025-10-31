@@ -62,7 +62,7 @@ EOF
 
 while true; do
     sleep 15
-    log_message "========== $(date) =========="
+    log_message "start ipmi monitor"
 
     # 一次性获取结果
     SENSOR_OUTPUT=$(ipmitool -I lanplus -H $IPMI_HOST -U $IPMI_USER -P $IPMI_PASS sensor)
