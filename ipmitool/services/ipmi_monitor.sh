@@ -12,7 +12,8 @@ mkdir -p "$LOG_DIR"
 
 # 定义一个日志函数，将输出写入文件并添加时间戳
 log_message() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "$1"
+    # echo "$(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
 }
 
 # IPMI 登录信息
