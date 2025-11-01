@@ -34,9 +34,9 @@ module.exports = {
       headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN }
     }),
   queryVirtualFolders: () => request(`${JELLYFIN_SERVER_URL}/Library/VirtualFolders`, { headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN } }),
-  queryFolderItems: ParentId =>
+  queryFolderItems: ({ ParentId, IncludeItemTypes }) =>
     request(`${JELLYFIN_SERVER_URL}/Items`, {
-      query: { ParentId, StartIndex: 0, Limit: 100, SortOrder: 'Descending', SortBy: 'DateCreated' },
+      query: { ParentId, StartIndex: 0, Limit: 100, SortOrder: 'Descending', SortBy: 'DateCreated', IncludeItemTypes, Recursive: true },
       headers: { 'X-Emby-Token': JELLYFIN_X_EMBY_TOKEN }
     }),
   queryMediaItemInfo: itemId => {

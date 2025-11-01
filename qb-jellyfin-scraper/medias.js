@@ -167,8 +167,9 @@ const queryPendingFolderItems = async () => {
   const folders = await API.queryVirtualFolders();
   const includedFolders = folders.filter(item => JELLYFIN_COLLECTION_TYPES.includes(item.CollectionType));
   for (let i = 0; i < includedFolders.length; i++) {
-    const { ItemId } = includedFolders[i];
-    const result = await API.queryFolderItems(ItemId);
+    const { ItemId: ParentId, TypeOptions = [] } = includedFolders[i];
+    const IncludeItemTypes = TypeOptions[0]?.Type || '';
+    const result = await API.queryFolderItems({ ParentId, IncludeItemTypes });
     list.push(
       ...result.Items.filter(item => {
         const { Name, Type, Status, CriticRating, OfficialRating, CommunityRating } = item;
