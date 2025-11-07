@@ -72,10 +72,10 @@ class QBittorrent {
     const regExp2 = new RegExp('EP?(\\d{2,})');
     for (let index = 0; index < files.length; index++) {
       const current = files[index];
-      const fileNames = current.name.split('/');
-      const fileName = fileNames.pop();
+      !folderRename && (current.splitNames = current.name.split('/'));
+      const fileName = !folderRename ? current.splitNames.pop() : current.name;
       if (userRegExp && userRenameRegExp) {
-        current.newPath = [...fileNames, fileName.replace(new RegExp(userRegExp, 'gi'), userRenameRegExp)].join('/');
+        current.newPath = fileName.replace(new RegExp(userRegExp, 'gi'), userRenameRegExp);
         continue;
       }
       // 处理名称
@@ -87,18 +87,24 @@ class QBittorrent {
       const matched1 = fileName.match(regExp1);
       if (matched1) {
         console.log(`${matched1.input} matched1 result:`, ...matched1);
-        current.newPath = [...fileNames, fileName.replace(regExp1, `S$1E$2`)].join('/');
+        current.newPath = fileName.replace(regExp1, `S$1E$2`);
         continue;
       }
       const matched2 = fileName.match(regExp2);
       if (matched2) {
         console.log(`${matched2.input} matched2 result:`, ...matched2);
-        current.newPath = [...fileNames, fileName.replace(regExp2, `S01E$1`)].join('/');
+        current.newPath = fileName.replace(regExp2, `S01E$1`);
         continue;
       }
     }
     // 格式化
-    const newFiles = files.map(({ index, name: oldPath, newPath }) => ({ index, hash, oldPath, newPath, success: true }));
+    const newFiles = files.map(({ index, name: oldPath, newPath, splitNames }) => ({
+      index,
+      hash,
+      oldPath,
+      newPath: newPath ? (splitNames ? [...splitNames, newPath].join('/') : newPath) : '',
+      success: true
+    }));
     // 发送请求
     for (let index = 0; index < newFiles.length; index++) {
       const { hash, oldPath, newPath } = newFiles[index];
