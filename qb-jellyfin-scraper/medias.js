@@ -58,12 +58,12 @@ const notifications = createTasks({
 });
 
 const queryRemoteSearch = async mediaItem => {
-  const { Id: ItemId, Name: ItemName = '' } = mediaItem;
+  const { Id: ItemId, Name: ItemName = '', CustomName = '', CustomYear = '' } = mediaItem;
   // ProviderIds = {}
   const { Path = '', Type } = await API.queryMediaItemInfo(ItemId);
   console.log('itemInfo Path:', Path);
   const BeforeName = Path.split('/').pop() || ItemName;
-  const { Name, Year } = await API.getMediaName({ name: BeforeName });
+  const { Name, Year } = CustomName || CustomYear ? { Name: CustomName, Year: CustomYear } : await API.getMediaName({ name: BeforeName });
   console.log('Name Processing Result:', { Name, Year, Type, ItemName, BeforeName, Path });
   if (!Name) {
     console.log('获取媒体名称无结果，跳过...');
