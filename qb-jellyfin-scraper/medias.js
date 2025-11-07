@@ -5,6 +5,25 @@ const QBittorrent = require('./qBittorrent');
 const JELLYFIN_COLLECTION_TYPES = (process.env.NODE_ENV === 'production' ? process.env.JELLYFIN_COLLECTION_TYPES : 'movies,tvshows') || '';
 const [QBITTORRENT_SERVER, QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD] = (process.env.QBITTORRENT_CONFIG || '').split(';');
 const qBittorrentClient = new QBittorrent({ server: QBITTORRENT_SERVER, username: QBITTORRENT_USERNAME, password: QBITTORRENT_PASSWORD });
+
+/**
+ * 创建通知任务
+ */
+const qBittorrents = createTasks({
+  name: 'qBittorrent',
+  callback: async params => {
+    console.log('start processing qBittorrent task...', params);
+    const { hash, category = '', savePath = '' } = params || {};
+    if (category.includes('剧集') || savePath.includes('tv')) {
+      try {
+        await qBittorrentClient.checkAndRenameFiles({ hash });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+});
+
 /**
  * 等待媒体库扫描完成
  */
@@ -261,6 +280,7 @@ const refresh = async data => {
     case 'completed':
       librarys.pushTask();
     case 'added':
+      qBittorrents.pushTask(data);
       notifications.pushTask(formatQBittorrentNotice(data));
       break;
     case 'refresh':
