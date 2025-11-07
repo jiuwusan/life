@@ -11,7 +11,7 @@ const createTasks = ({ name, callback }) => {
     processing = true;
     // 每次只取一个任务，直到 tasks 为空，需要考虑 tasks 随时 push 新任务的情况
     while (tasks.length > 0) {
-      await nextSleep(1000);
+      await nextSleep(2000);
       console.log(`${name}:  ${tasks.length}`);
       try {
         callback && typeof callback === 'function' && (await callback(tasks.shift()));

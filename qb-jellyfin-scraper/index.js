@@ -62,6 +62,9 @@ const server = http.createServer(async (req, res) => {
     case '/items/pending':
       setResponse(await medias.queryPendingFolderItems(data));
       break;
+    case '/items/checkNames':
+      setResponse(await medias.checkAndRenameFiles(query, data));
+      break;
     default:
       setResponse('Not Found', 404);
       break;

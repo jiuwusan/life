@@ -1,0 +1,151 @@
+{
+  "ruleName": "CatEDU",
+  "ruleDef": {
+    "addPaused": null,
+    "affectedFeeds": [
+      "https://rss.m-team.cc/api/rss/fetch?categories=404&dl=1&pageSize=20&sign=e25b671b586d1c5b0ec641dcd706ba18&t=1760250011&tkeys=ttitle%2Ctcat%2Ctsmalldescr%2Ctsize%2Ctuploader&uid=264393"
+    ],
+    "assignedCategory": "纪录片",
+    "enabled": true,
+    "episodeFilter": "",
+    "ignoreDays": 0,
+    "lastMatch": "29 Oct 2025 01:31:29 +0000",
+    "mustContain": "CatEDU.*(自然传奇|大地餐桌|味·道)",
+    "mustNotContain": "",
+    "previouslyMatchedEpisodes": [],
+    "priority": 0,
+    "savePath": "",
+    "smartFilter": false,
+    "torrentContentLayout": null,
+    "torrentParams": {
+      "category": "纪录片",
+      "download_limit": -1,
+      "download_path": "",
+      "inactive_seeding_time_limit": -2,
+      "operating_mode": "AutoManaged",
+      "ratio_limit": -2,
+      "save_path": "",
+      "seeding_time_limit": -2,
+      "share_limit_action": "Default",
+      "skip_checking": false,
+      "ssl_certificate": "",
+      "ssl_dh_params": "",
+      "ssl_private_key": "",
+      "tags": ["纪录片"],
+      "upload_limit": -1,
+      "stopped": null,
+      "content_layout": null
+    },
+    "useRegex": true
+  },
+  "rules": {
+    "CatEDU": {
+      "addPaused": null,
+      "affectedFeeds": [
+        "https://rss.m-team.cc/api/rss/fetch?categories=404&dl=1&pageSize=20&sign=e25b671b586d1c5b0ec641dcd706ba18&t=1760250011&tkeys=ttitle%2Ctcat%2Ctsmalldescr%2Ctsize%2Ctuploader&uid=264393"
+      ],
+      "assignedCategory": "纪录片",
+      "enabled": true,
+      "episodeFilter": "",
+      "ignoreDays": 0,
+      "lastMatch": "29 Oct 2025 01:31:29 +0000",
+      "mustContain": "CatEDU.*(自然传奇|大地餐桌|味·道)",
+      "mustNotContain": "",
+      "previouslyMatchedEpisodes": [],
+      "priority": 0,
+      "savePath": "",
+      "smartFilter": false,
+      "torrentContentLayout": null,
+      "torrentParams": {
+        "category": "纪录片",
+        "download_limit": -1,
+        "download_path": "",
+        "inactive_seeding_time_limit": -2,
+        "operating_mode": "AutoManaged",
+        "ratio_limit": -2,
+        "save_path": "",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "skip_checking": false,
+        "ssl_certificate": "",
+        "ssl_dh_params": "",
+        "ssl_private_key": "",
+        "tags": ["纪录片"],
+        "upload_limit": -1
+      },
+      "useRegex": true
+    },
+    "天空剧集": {
+      "addPaused": null,
+      "affectedFeeds": [
+        "https://hdsky.me/torrentrss.php?rows=20&cat402=1&cat411=1&cat403=1&icat=1&ismalldescr=1&isize=1&iuplder=1&linktype=dl&passkey=123cd79e3590fb1665e9195f2ac74e22"
+      ],
+      "assignedCategory": "剧集",
+      "enabled": true,
+      "episodeFilter": "",
+      "ignoreDays": 0,
+      "lastMatch": "31 Oct 2025 10:38:12 +0000",
+      "mustContain": "2160.*H265-Pure@HDSWEB",
+      "mustNotContain": "",
+      "previouslyMatchedEpisodes": [],
+      "priority": 0,
+      "savePath": "",
+      "smartFilter": false,
+      "torrentContentLayout": null,
+      "torrentParams": {
+        "category": "剧集",
+        "download_limit": -1,
+        "download_path": "",
+        "inactive_seeding_time_limit": -2,
+        "operating_mode": "AutoManaged",
+        "ratio_limit": -2,
+        "save_path": "",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "skip_checking": false,
+        "ssl_certificate": "",
+        "ssl_dh_params": "",
+        "ssl_private_key": "",
+        "tags": ["SKY-剧集"],
+        "upload_limit": -1
+      },
+      "useRegex": true
+    },
+    "天空特需": {
+      "addPaused": null,
+      "affectedFeeds": [
+        "https://hdsky.me/torrentrss.php?rows=20&cat402=1&cat411=1&cat403=1&icat=1&ismalldescr=1&isize=1&iuplder=1&linktype=dl&passkey=123cd79e3590fb1665e9195f2ac74e22"
+      ],
+      "assignedCategory": "剧集",
+      "enabled": true,
+      "episodeFilter": "",
+      "ignoreDays": 0,
+      "lastMatch": "21 Oct 2025 06:05:14 +0000",
+      "mustContain": "H265-HDSWEB.*(九五三|遮云)",
+      "mustNotContain": "",
+      "previouslyMatchedEpisodes": [],
+      "priority": 0,
+      "savePath": "",
+      "smartFilter": false,
+      "torrentContentLayout": null,
+      "torrentParams": {
+        "category": "剧集",
+        "download_limit": -1,
+        "download_path": "",
+        "inactive_seeding_time_limit": -2,
+        "operating_mode": "AutoManaged",
+        "ratio_limit": -2,
+        "save_path": "",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "skip_checking": false,
+        "ssl_certificate": "",
+        "ssl_dh_params": "",
+        "ssl_private_key": "",
+        "tags": ["SKY-剧集-Plus"],
+        "upload_limit": -1
+      },
+      "useRegex": true
+    }
+  }
+}

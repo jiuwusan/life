@@ -1,8 +1,10 @@
 const API = require('./api');
 const { formatDateToStr, nextSleep } = require('./util');
 const { createTasks } = require('./tasks');
+const QBittorrent = require('./qBittorrent');
 const JELLYFIN_COLLECTION_TYPES = (process.env.NODE_ENV === 'production' ? process.env.JELLYFIN_COLLECTION_TYPES : 'movies,tvshows') || '';
-
+const [QBITTORRENT_SERVER, QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD] = (process.env.QBITTORRENT_CONFIG || 'https://cloud.jiuwusan.cn:36080;jiuwusan;ZkD953497').split(';');
+const qBittorrentClient = new QBittorrent({ server: QBITTORRENT_SERVER, username: QBITTORRENT_USERNAME, password: QBITTORRENT_PASSWORD });
 /**
  * 等待媒体库扫描完成
  */
@@ -278,4 +280,16 @@ const refreshItem = async data => {
   return '刮削信息已提交，请到媒体库查看结果。';
 };
 
-module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems, queryRemoteSearch };
+const checkAndRenameFiles = async (query, data = {}) => {
+  const hash = query?.hash || data?.hash;
+  const { userRegExp, userRenameRegExp } = data;
+  if (!hash) {
+    return 'hash 参数异常';
+  }
+  if (!!userRegExp !== !!userRenameRegExp) {
+    return 'userRegExp 或 userRenameRegExp 参数异常';
+  }
+  return await qBittorrentClient.checkAndRenameFiles({ hash, userRegExp, userRenameRegExp });
+};
+
+module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems, queryRemoteSearch, checkAndRenameFiles };
