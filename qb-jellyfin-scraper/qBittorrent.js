@@ -62,7 +62,7 @@ class QBittorrent {
     return result;
   }
 
-  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename = false, folderRename = false, fields }) {
+  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename = false, folderRename = false, fields, padLength }) {
     const files = (await this.fetchApi('torrents/files', { query: { hash } })) || [];
     if (skipRename) {
       return !fields ? files : files.map(item => fields.split(',').reduce((acc, cur) => ({ ...acc, [cur]: item[cur] }), {}));
@@ -75,7 +75,18 @@ class QBittorrent {
       !folderRename && (current.splitNames = current.name.split('/'));
       const fileName = !folderRename ? current.splitNames.pop() : current.name;
       if (userRegExp && userRenameRegExp) {
-        current.newPath = fileName.replace(new RegExp(userRegExp, 'gi'), userRenameRegExp);
+        !padLength && (current.newPath = fileName.replace(new RegExp(userRegExp, 'gi'), userRenameRegExp));
+        padLength &&
+          (current.newPath = fileName.replace(new RegExp(userRegExp, 'gi'), (matched, ...captures) => {
+            console.log('matched:', matched);
+            let nextRenameRegExp = userRenameRegExp;
+            // 如果是纯数字，根据 padLength 填充 0
+            for (let i = 0; i < captures.length; i++) {
+              const current = captures[i];
+              /^\d+$/.test(current) && (nextRenameRegExp = nextRenameRegExp.replace(`$${i + 1}`, String(current).padStart(Number(padLength), '0')));
+            }
+            return nextRenameRegExp;
+          }));
         continue;
       }
       // 处理名称
