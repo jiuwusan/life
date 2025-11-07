@@ -3,7 +3,7 @@ const { formatDateToStr, nextSleep } = require('./util');
 const { createTasks } = require('./tasks');
 const QBittorrent = require('./qBittorrent');
 const JELLYFIN_COLLECTION_TYPES = (process.env.NODE_ENV === 'production' ? process.env.JELLYFIN_COLLECTION_TYPES : 'movies,tvshows') || '';
-const [QBITTORRENT_SERVER, QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD] = (process.env.QBITTORRENT_CONFIG || 'https://cloud.jiuwusan.cn:36080;jiuwusan;ZkD953497').split(';');
+const [QBITTORRENT_SERVER, QBITTORRENT_USERNAME, QBITTORRENT_PASSWORD] = (process.env.QBITTORRENT_CONFIG || '').split(';');
 const qBittorrentClient = new QBittorrent({ server: QBITTORRENT_SERVER, username: QBITTORRENT_USERNAME, password: QBITTORRENT_PASSWORD });
 /**
  * 等待媒体库扫描完成
