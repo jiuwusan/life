@@ -282,14 +282,14 @@ const refreshItem = async data => {
 
 const checkAndRenameFiles = async (query, data = {}) => {
   const hash = query?.hash || data?.hash;
-  const { userRegExp, userRenameRegExp, skipRename, fields } = data;
+  const { userRegExp, userRenameRegExp, skipRename, folderRename, fields } = data;
   if (!hash) {
     return 'hash 参数异常';
   }
   if (!!userRegExp !== !!userRenameRegExp) {
     return 'userRegExp 或 userRenameRegExp 参数异常';
   }
-  return await qBittorrentClient.checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename, fields });
+  return await qBittorrentClient.checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename, folderRename, fields });
 };
 
 module.exports = { refresh, refreshItem, pollingLibrarysRefresh, queryPendingFolderItems, queryRemoteSearch, checkAndRenameFiles };

@@ -62,7 +62,7 @@ class QBittorrent {
     return result;
   }
 
-  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename = false, fields }) {
+  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename = false, folderRename = false, fields }) {
     const files = (await this.fetchApi('torrents/files', { query: { hash } })) || [];
     if (skipRename) {
       return !fields ? files : files.map(item => fields.split(',').reduce((acc, cur) => ({ ...acc, [cur]: item[cur] }), {}));
@@ -72,26 +72,28 @@ class QBittorrent {
     const regExp2 = new RegExp('EP?(\\d{2,})');
     for (let index = 0; index < files.length; index++) {
       const current = files[index];
+      const fileNames = current.name.split('/');
+      const fileName = fileNames.pop();
       if (userRegExp && userRenameRegExp) {
-        current.newPath = current.name.replace(new RegExp(userRegExp), userRenameRegExp);
+        current.newPath = [...fileNames, fileName.replace(new RegExp(userRegExp, 'gi'), userRenameRegExp)].join('/');
         continue;
       }
       // 处理名称
-      const matched = current.name.match(regExp);
+      const matched = fileName.match(regExp);
       if (matched) {
-        console.log(`matched result:`, ...matched);
+        console.log(`${matched.input} matched result:`, ...matched);
         continue;
       }
-      const matched1 = current.name.match(regExp1);
+      const matched1 = fileName.match(regExp1);
       if (matched1) {
-        console.log(`matched1 result:`, ...matched1);
-        current.newPath = current.name.replace(regExp1, `S$1E$2`);
+        console.log(`${matched1.input} matched1 result:`, ...matched1);
+        current.newPath = [...fileNames, fileName.replace(regExp1, `S$1E$2`)].join('/');
         continue;
       }
-      const matched2 = current.name.match(regExp2);
+      const matched2 = fileName.match(regExp2);
       if (matched2) {
-        console.log(`matched2 result:`, ...matched2);
-        current.newPath = current.name.replace(regExp2, `S01E$1`);
+        console.log(`${matched2.input} matched2 result:`, ...matched2);
+        current.newPath = [...fileNames, fileName.replace(regExp2, `S01E$1`)].join('/');
         continue;
       }
     }
