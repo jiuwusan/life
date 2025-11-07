@@ -120,7 +120,7 @@ const queryRemoteSearch = async mediaItem => {
     ItemId,
     Name,
     Path,
-    ProviderInfo: (result || []).find(item => item.Name === Name) || result?.[0]
+    ProviderInfo: (Array.isArray(result) ? result : []).find(item => item.Name === Name) || result?.[0]
   };
 };
 
