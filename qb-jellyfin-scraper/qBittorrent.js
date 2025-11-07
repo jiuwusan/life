@@ -62,8 +62,11 @@ class QBittorrent {
     return result;
   }
 
-  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp }) {
+  async checkAndRenameFiles({ hash, userRegExp, userRenameRegExp, skipRename = false, fields }) {
     const files = (await this.fetchApi('torrents/files', { query: { hash } })) || [];
+    if (skipRename) {
+      return !fields ? files : files.map(item => fields.split(',').reduce((acc, cur) => ({ ...acc, [cur]: item[cur] }), {}));
+    }
     const regExp = new RegExp('S(\\d{2})E(\\d{2,})');
     const regExp1 = new RegExp('S(\\d{2})[\\.\\s\\-]?EP?(\\d{2,})');
     const regExp2 = new RegExp('EP?(\\d{2,})');
