@@ -7,6 +7,11 @@ class QBittorrent {
    * @param {string} config.password
    */
   constructor(config) {
+    if (typeof config === 'string') {
+      // 兼容字符串配置
+      const [server, username, password] = config.split(';');
+      config = { server, username, password };
+    }
     this.config = config;
   }
 
@@ -132,4 +137,4 @@ class QBittorrent {
   }
 }
 
-module.exports = QBittorrent;
+module.exports = { QBittorrent };

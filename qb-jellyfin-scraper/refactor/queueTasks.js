@@ -52,3 +52,5 @@ class QueueTasks {
     return this.tasks;
   }
 }
+
+module.exports = { QueueTasks };
